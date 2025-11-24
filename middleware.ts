@@ -23,14 +23,16 @@ function extractSubdomain(request: NextRequest): string | null {
     return null;
   }
 
+  // Production environment
+  const rootDomainFormatted = rootDomain.split(':')[0];
+
   // Handle Vercel preview deployments (subdomain---branch.vercel.app)
   if (hostname.includes('---') && hostname.endsWith('.vercel.app')) {
     const parts = hostname.split('---');
     return parts.length > 0 ? parts[0] : null;
   }
 
-  // Production environment - check if it's a subdomain of pholio.link
-  const rootDomainFormatted = rootDomain.split(':')[0];
+  // Regular subdomain detection
   const isSubdomain =
     hostname !== rootDomainFormatted &&
     hostname !== `www.${rootDomainFormatted}` &&
@@ -43,21 +45,15 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const subdomain = extractSubdomain(request);
 
-  // Debug logging
-  const host = request.headers.get('host') || 'unknown';
-  console.log(`[MW] host=${host} path=${pathname} subdomain=${subdomain} [v3]`);
-
   if (subdomain) {
     // Block access to auth pages from subdomains
     if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // For the root path on a subdomain, redirect to www with /s/[subdomain]
+    // For the root path on a subdomain, rewrite to the subdomain page
     if (pathname === '/') {
-      const redirectUrl = `https://www.pholio.link/s/${subdomain}`;
-      console.log(`[MW] Redirecting to ${redirectUrl}`);
-      return NextResponse.redirect(redirectUrl);
+      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
     }
   }
 
@@ -67,8 +63,13 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all paths on subdomains
-    '/:path*',
+    /*
+     * Match all paths except for:
+     * 1. /api routes
+     * 2. /_next (Next.js internals)
+     * 3. all root files inside /public (e.g. /favicon.ico)
+     */
+    '/((?!api|_next|[\\w-]+\\.\\w+).*)',
   ],
 };
 
