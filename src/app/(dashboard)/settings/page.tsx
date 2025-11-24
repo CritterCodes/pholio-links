@@ -298,21 +298,21 @@ export default function SettingsPage() {
   const renderIntegrationsSettings = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Connected Apps</h3>
-        <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">
+        <h3 className="text-lg font-medium text-white mb-4">Connected Apps</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 divide-y divide-slate-700">
           {/* Google Analytics */}
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                  <HiCog className="h-5 w-5 text-orange-600" />
+                <div className="w-10 h-10 bg-orange-900/30 rounded-full flex items-center justify-center">
+                  <HiCog className="h-5 w-5 text-orange-400" />
                 </div>
                 <div className="ml-4">
-                  <h4 className="text-sm font-medium text-gray-900">Google Analytics</h4>
-                  <p className="text-sm text-gray-500">Track detailed visitor analytics</p>
+                  <h4 className="text-sm font-medium text-white">Google Analytics</h4>
+                  <p className="text-sm text-slate-400">Track detailed visitor analytics</p>
                 </div>
               </div>
-              <button className="text-blue-600 hover:text-blue-500 text-sm font-medium">
+              <button className="text-purple-400 hover:text-purple-300 text-sm font-medium">
                 Connect
               </button>
             </div>
@@ -322,19 +322,19 @@ export default function SettingsPage() {
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <HiGlobe className="h-5 w-5 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-900/30 rounded-full flex items-center justify-center">
+                  <HiGlobe className="h-5 w-5 text-blue-400" />
                 </div>
                 <div className="ml-4">
-                  <h4 className="text-sm font-medium text-gray-900">Custom Domain</h4>
-                  <p className="text-sm text-gray-500">Use your own domain name</p>
+                  <h4 className="text-sm font-medium text-white">Custom Domain</h4>
+                  <p className="text-sm text-slate-400">Use your own domain name</p>
                 </div>
               </div>
               <div className="flex items-center">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mr-3">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-900/50 text-purple-300 mr-3">
                   PRO
                 </span>
-                <button className="text-gray-400 text-sm font-medium cursor-not-allowed">
+                <button className="text-slate-500 text-sm font-medium cursor-not-allowed">
                   Upgrade Required
                 </button>
               </div>
@@ -345,17 +345,17 @@ export default function SettingsPage() {
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <HiUser className="h-5 w-5 text-green-600" />
+                <div className="w-10 h-10 bg-green-900/30 rounded-full flex items-center justify-center">
+                  <HiUser className="h-5 w-5 text-green-400" />
                 </div>
                 <div className="ml-4">
-                  <h4 className="text-sm font-medium text-gray-900">Email Capture</h4>
-                  <p className="text-sm text-gray-500">Collect visitor email addresses</p>
+                  <h4 className="text-sm font-medium text-white">Email Capture</h4>
+                  <p className="text-sm text-slate-400">Collect visitor email addresses</p>
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" className="sr-only peer" />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
               </label>
             </div>
           </div>
@@ -363,20 +363,20 @@ export default function SettingsPage() {
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">API Access</h3>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">API Access</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h4 className="text-sm font-medium text-gray-900">API Key</h4>
-              <p className="text-sm text-gray-500">Use our API to manage your profile programmatically</p>
+              <h4 className="text-sm font-medium text-white">API Key</h4>
+              <p className="text-sm text-slate-400">Use our API to manage your profile programmatically</p>
             </div>
-            <button className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <button className="inline-flex items-center px-3 py-2 border border-slate-600 shadow-sm text-sm leading-4 font-medium rounded-md text-slate-300 bg-slate-700 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
               Generate Key
             </button>
           </div>
           <div className="text-center py-4">
-            <HiCog className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-            <p className="text-sm text-gray-500">No API key generated yet</p>
+            <HiCog className="mx-auto h-8 w-8 text-slate-500 mb-2" />
+            <p className="text-sm text-slate-400">No API key generated yet</p>
           </div>
         </div>
       </div>
@@ -386,30 +386,30 @@ export default function SettingsPage() {
   const renderSecuritySettings = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Password</h3>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Password</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Current Password
               </label>
               <input
                 type="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 New Password
               </label>
               <input
                 type="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               />
             </div>
           </div>
           <div className="mt-4">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors">
               Update Password
             </button>
           </div>
@@ -417,18 +417,18 @@ export default function SettingsPage() {
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Two-Factor Authentication</h3>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Two-Factor Authentication</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-sm font-medium text-gray-900">Authenticator App</h4>
-              <p className="text-sm text-gray-500">Secure your account with 2FA</p>
+              <h4 className="text-sm font-medium text-white">Authenticator App</h4>
+              <p className="text-sm text-slate-400">Secure your account with 2FA</p>
             </div>
             <div className="flex items-center">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-3">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/50 text-red-300 mr-3">
                 Disabled
               </span>
-              <button className="text-blue-600 hover:text-blue-500 text-sm font-medium">
+              <button className="text-purple-400 hover:text-purple-300 text-sm font-medium">
                 Enable 2FA
               </button>
             </div>
@@ -437,26 +437,26 @@ export default function SettingsPage() {
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Login Activity</h3>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Login Activity</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div className="flex items-center justify-between py-3 border-b border-slate-700">
               <div>
-                <div className="text-sm font-medium text-gray-900">Chrome on Windows</div>
-                <div className="text-sm text-gray-500">Current session • IP: 192.168.1.1</div>
+                <div className="text-sm font-medium text-white">Chrome on Windows</div>
+                <div className="text-sm text-slate-400">Current session • IP: 192.168.1.1</div>
               </div>
-              <div className="text-sm text-gray-500">Now</div>
+              <div className="text-sm text-slate-400">Now</div>
             </div>
-            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div className="flex items-center justify-between py-3 border-b border-slate-700">
               <div>
-                <div className="text-sm font-medium text-gray-900">Safari on iPhone</div>
-                <div className="text-sm text-gray-500">IP: 192.168.1.5</div>
+                <div className="text-sm font-medium text-white">Safari on iPhone</div>
+                <div className="text-sm text-slate-400">IP: 192.168.1.5</div>
               </div>
-              <div className="text-sm text-gray-500">2 hours ago</div>
+              <div className="text-sm text-slate-400">2 hours ago</div>
             </div>
           </div>
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <button className="text-red-600 hover:text-red-500 text-sm font-medium">
+          <div className="mt-4 pt-4 border-t border-slate-700">
+            <button className="text-red-400 hover:text-red-300 text-sm font-medium">
               Sign out all other sessions
             </button>
           </div>
