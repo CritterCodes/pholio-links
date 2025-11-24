@@ -44,19 +44,23 @@ async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
     console.log(`[SUBDOMAIN PAGE] Fetching profile for subdomain: "${subdomain}"`);
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
     console.log(`[SUBDOMAIN PAGE] Base URL: ${baseUrl}`);
-    const response = await fetch(`${baseUrl}/api/profile?username=${subdomain}`, {
+    const url = `${baseUrl}/api/profile?username=${subdomain}`;
+    console.log(`[SUBDOMAIN PAGE] Full fetch URL: ${url}`);
+    
+    const response = await fetch(url, {
       cache: 'no-store',
     });
 
     console.log(`[SUBDOMAIN PAGE] Response status: ${response.status}`);
 
     if (!response.ok) {
-      console.log(`[SUBDOMAIN PAGE] Profile not found for subdomain: "${subdomain}"`);
+      const text = await response.text();
+      console.log(`[SUBDOMAIN PAGE] Profile not found for subdomain: "${subdomain}". Response: ${text}`);
       return null;
     }
 
     const data = await response.json();
-    console.log(`[SUBDOMAIN PAGE] Profile loaded successfully for: "${subdomain}"`);
+    console.log(`[SUBDOMAIN PAGE] Profile loaded successfully for: "${subdomain}". Data:`, data);
 
     return {
       name: data.displayName || data.name || '',
