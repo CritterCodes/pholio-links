@@ -3,78 +3,75 @@ import { type NextRequest, NextResponse } from 'next/server';
 const rootDomain = 'pholio.link';
 
 function extractSubdomain(request: NextRequest): string | null {
-  const hostname = request.headers.get('host') || '';
   const url = request.url;
+  const host = request.headers.get('host') || '';
+  const hostname = host.split(':')[0]; // Remove port if present
 
-  // Handle localhost for development
-  if (hostname.includes('localhost')) {
-    const match = url.match(/http:\/\/([^.]+)\.localhost/);
-    if (match) return match[1];
+  // Local development
+  if (url.includes('localhost') || url.includes('127.0.0.1')) {
+    // Try to extract subdomain from the full URL
+    const fullUrlMatch = url.match(/http:\/\/([^.]+)\.localhost/);
+    if (fullUrlMatch && fullUrlMatch[1]) {
+      return fullUrlMatch[1];
+    }
+
+    // Fallback to host header approach
+    if (hostname.includes('.localhost')) {
+      return hostname.split('.')[0];
+    }
+
     return null;
   }
 
-  // Handle Vercel preview deployments (user---branch.vercel.app)
-  if (hostname.includes('vercel.app')) {
-    if (hostname.includes('---')) {
-      const subdomain = hostname.split('---')[0];
-      if (subdomain !== 'pholio') return subdomain;
-    }
-    return null;
+  // Handle Vercel preview deployments (subdomain---branch.vercel.app)
+  if (hostname.includes('---') && hostname.endsWith('.vercel.app')) {
+    const parts = hostname.split('---');
+    return parts.length > 0 ? parts[0] : null;
   }
 
-  // Handle production (subdomain.pholio.link)
-  if (hostname.includes('pholio.link')) {
-    // Split and check if we have a subdomain
-    const parts = hostname.split('.');
-    
-    // pholio.link = no subdomain
-    // www.pholio.link = no subdomain
-    // username.pholio.link = subdomain
-    if (parts[0] !== 'pholio' && parts[0] !== 'www') {
-      return parts[0];
-    }
-  }
+  // Production environment - check if it's a subdomain of pholio.link
+  const rootDomainFormatted = rootDomain.split(':')[0];
+  const isSubdomain =
+    hostname !== rootDomainFormatted &&
+    hostname !== `www.${rootDomainFormatted}` &&
+    hostname.endsWith(`.${rootDomainFormatted}`);
 
-  return null;
+  return isSubdomain ? hostname.replace(`.${rootDomainFormatted}`, '') : null;
 }
 
 export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+  const { pathname } = request.nextUrl;
   const subdomain = extractSubdomain(request);
 
-  // Always log for debugging
+  // Debug logging
   const host = request.headers.get('host') || 'unknown';
   console.log(`[MW] host=${host} path=${pathname} subdomain=${subdomain}`);
 
-  // If no subdomain, allow normal routing
-  if (!subdomain) {
-    return NextResponse.next();
+  if (subdomain) {
+    // Block access to auth pages from subdomains
+    if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    // For the root path on a subdomain, rewrite to the subdomain page
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
+    }
   }
 
-  // Block auth pages on subdomains
-  if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  // Rewrite subdomain requests to /s/[subdomain]
-  if (pathname === '/') {
-    return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
-  }
-
-  // Other paths on subdomain
-  return NextResponse.rewrite(new URL(`/s/${subdomain}${pathname}`, request.url));
+  // On the root domain, allow normal access
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * Match all paths except for:
+     * 1. /api routes
+     * 2. /_next (Next.js internals)
+     * 3. all root files inside /public (e.g. /favicon.ico)
      */
-    '/((?!api|_next/static|_next/image|favicon\\.ico).*)',
+    '/((?!api|_next|[\\w-]+\\.\\w+).*)',
   ],
 };
 
