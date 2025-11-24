@@ -49,11 +49,6 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // Rewrite /profile to /s/[subdomain]/profile on subdomains
-    if (pathname === '/profile') {
-      return NextResponse.rewrite(new URL(`/s/${subdomain}/profile`, request.url));
-    }
-
     // For the root path on a subdomain, redirect to /profile
     if (pathname === '/') {
       const url = request.nextUrl.clone();
