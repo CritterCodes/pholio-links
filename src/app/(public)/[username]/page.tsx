@@ -3,9 +3,9 @@ import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import { PreviewBlock } from '@/components/preview/PreviewBlock';
 
-interface SubdomainPageProps {
+interface UserProfilePageProps {
   params: Promise<{
-    subdomain: string;
+    username: string;
   }>;
 }
 
@@ -39,26 +39,24 @@ interface UserProfile {
 }
 
 // Fetch user profile from API
-async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
+async function getUserProfile(username: string): Promise<UserProfile | null> {
   try {
-    console.log(`[SUBDOMAIN PAGE] Fetching profile for subdomain: "${subdomain}"`);
-    const url = `/api/profile?username=${subdomain}`;
-    console.log(`[SUBDOMAIN PAGE] Full fetch URL: ${url}`);
-    
-    const response = await fetch(url, {
+    console.log(`[PROFILE PAGE] Fetching profile for username: "${username}"`);
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    console.log(`[PROFILE PAGE] Base URL: ${baseUrl}`);
+    const response = await fetch(`${baseUrl}/api/profile?username=${username}`, {
       cache: 'no-store',
     });
 
-    console.log(`[SUBDOMAIN PAGE] Response status: ${response.status}`);
+    console.log(`[PROFILE PAGE] Response status: ${response.status}`);
 
     if (!response.ok) {
-      const text = await response.text();
-      console.log(`[SUBDOMAIN PAGE] Profile not found for subdomain: "${subdomain}". Response: ${text}`);
+      console.log(`[PROFILE PAGE] Profile not found for username: "${username}"`);
       return null;
     }
 
     const data = await response.json();
-    console.log(`[SUBDOMAIN PAGE] Profile loaded successfully for: "${subdomain}". Data:`, data);
+    console.log(`[PROFILE PAGE] Profile loaded successfully for: "${username}"`);
 
     return {
       name: data.displayName || data.name || '',
@@ -79,22 +77,22 @@ async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
       },
     };
   } catch (error) {
-    console.error(`[SUBDOMAIN PAGE] Failed to fetch profile for "${subdomain}":`, error);
+    console.error(`[PROFILE PAGE] Failed to fetch profile for "${username}":`, error);
     return null;
   }
 }
 
-export default async function SubdomainPage({ params }: SubdomainPageProps) {
+export default async function UserProfilePage({ params }: UserProfilePageProps) {
   const resolvedParams = await params;
-  console.log(`[SUBDOMAIN PAGE] Page rendered for subdomain: "${resolvedParams.subdomain}"`);
-  const profile = await getUserProfile(resolvedParams.subdomain);
+  console.log(`[PROFILE PAGE] Page rendered for username: "${resolvedParams.username}"`);
+  const profile = await getUserProfile(resolvedParams.username);
 
   if (!profile) {
-    console.log(`[SUBDOMAIN PAGE] Profile is null, showing notFound()`);
+    console.log(`[PROFILE PAGE] Profile is null, showing notFound()`);
     notFound();
   }
 
-  console.log(`[SUBDOMAIN PAGE] Rendering profile page for: "${resolvedParams.subdomain}"`);
+  console.log(`[PROFILE PAGE] Rendering profile page for: "${resolvedParams.username}"`);
 
   const getBackgroundStyle = () => {
     if (profile.theme.backgroundType === 'gradient') {
@@ -169,7 +167,7 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
               <h1 className="text-3xl font-bold mb-2">{profile.name}</h1>
             ) : (
               <h1 className="text-3xl font-bold text-gray-400 dark:text-gray-500 mb-2">
-                @{resolvedParams.subdomain}
+                @{resolvedParams.username}
               </h1>
             )}
 
