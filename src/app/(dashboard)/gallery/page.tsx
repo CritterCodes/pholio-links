@@ -32,7 +32,7 @@ interface UserSubscription {
 }
 
 export default function GalleryPage() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   
   const [images, setImages] = useState<GalleryImage[]>([]);
@@ -52,6 +52,15 @@ export default function GalleryPage() {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
+      // Update subscription from session
+      if (session?.user) {
+        const userTier = (session.user as any)?.subscriptionTier || 'free';
+        setSubscription({ 
+          plan: userTier === 'paid' ? 'pro' : 'free', 
+          isActive: userTier === 'paid' 
+        });
+      }
+
       // Load gallery images
       // const response = await fetch('/api/gallery');
       // if (response.ok) {
@@ -65,17 +74,13 @@ export default function GalleryPage() {
       //   const subData = await subResponse.json();
       //   setSubscription(subData);
       // }
-
-      // Mock data for now
-      setSubscription({ plan: 'free', isActive: false });
-      setImages([]);
     } catch (error) {
       console.error('Error loading gallery:', error);
       setMessage('Error loading gallery data');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
