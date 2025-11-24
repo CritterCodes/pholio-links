@@ -51,9 +51,11 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // For the root path on a subdomain, rewrite to the subdomain page
+    // For the root path on a subdomain, redirect to /profile
     if (pathname === '/') {
-      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
+      const url = request.nextUrl.clone();
+      url.pathname = '/profile';
+      return NextResponse.redirect(url);
     }
   }
 
