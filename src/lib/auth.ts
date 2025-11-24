@@ -10,6 +10,19 @@ export const authOptions = {
   session: {
     strategy: 'jwt' as const,
   },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax' as const,
+        path: '/',
+        // Allow cookies to be shared across subdomains
+        domain: process.env.NODE_ENV === 'production' ? '.pholio.link' : undefined,
+      },
+    },
+  },
   providers: [
     CredentialsProvider({
       name: 'credentials',
