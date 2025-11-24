@@ -68,16 +68,11 @@ async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
   try {
     console.log(`[PROFILE] getUserProfile called with subdomain: "${subdomain}"`);
 
-    // Use absolute URL for server-side fetch
-    const vercelUrl = process.env.VERCEL_URL;
-    const nextAuthUrl = process.env.NEXTAUTH_URL;
-    const baseUrl = vercelUrl 
-      ? `https://${vercelUrl}`
-      : nextAuthUrl || 'http://localhost:3000';
+    // Use public domain to bypass deployment protection
+    // VERCEL_URL would hit the deployment protection, so we use www.pholio.link instead
+    const baseUrl = 'https://www.pholio.link';
     
-    console.log(`[PROFILE] VERCEL_URL: ${vercelUrl}`);
-    console.log(`[PROFILE] NEXTAUTH_URL: ${nextAuthUrl}`);
-    console.log(`[PROFILE] baseUrl: ${baseUrl}`);
+    console.log(`[PROFILE] Using baseUrl: ${baseUrl}`);
     
     const url = `${baseUrl}/api/profile?username=${subdomain}`;
     console.log(`[PROFILE] Fetch URL: ${url}`);
@@ -90,12 +85,12 @@ async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
 
     if (!response.ok) {
       const text = await response.text();
-      console.log(`[PROFILE] Profile fetch failed. Status: ${response.status}, Response: ${text}`);
+      console.log(`[PROFILE] Profile fetch failed. Status: ${response.status}, Response: ${text.substring(0, 200)}`);
       return null;
     }
 
     const data = await response.json();
-    console.log(`[PROFILE] Profile data received:`, JSON.stringify(data, null, 2));
+    console.log(`[PROFILE] Profile data received successfully`);
 
     return {
       name: data.displayName || data.name || '',
@@ -129,7 +124,6 @@ export default async function ProfilePage() {
     const host = headersList.get('host') || '';
     
     console.log(`[PROFILE] Host header: "${host}"`);
-    console.log(`[PROFILE] All headers:`, Object.fromEntries(headersList));
 
     const subdomain = extractSubdomain(host);
     console.log(`[PROFILE] Extracted subdomain: "${subdomain}"`);
@@ -147,7 +141,7 @@ export default async function ProfilePage() {
       notFound();
     }
 
-    console.log(`[PROFILE] Profile loaded successfully:`, JSON.stringify(profile, null, 2));
+    console.log(`[PROFILE] Profile loaded successfully`);
 
     const getBackgroundStyle = () => {
       if (profile.theme.backgroundType === 'gradient') {
