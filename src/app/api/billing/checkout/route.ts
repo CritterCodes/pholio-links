@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
     const checkoutSession = await createCheckoutSession(
       stripeCustomerId,
       priceId,
-      `${baseUrl}/billing?session_id={CHECKOUT_SESSION_ID}`,
-      `${baseUrl}/billing`,
+      `${baseUrl}/settings?tab=billing&session_id={CHECKOUT_SESSION_ID}`,
+      `${baseUrl}/settings?tab=billing`,
       { username: user.username, plan }
     );
 
