@@ -27,72 +27,72 @@ export default function SettingsPage() {
   const renderAccountSettings = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Account Information</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address
               </label>
               <input
                 type="email"
                 value={session?.user?.email || ''}
                 disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700 text-gray-400"
               />
-              <p className="text-sm text-gray-500 mt-1">Contact support to change your email</p>
+              <p className="text-sm text-gray-400 mt-1">Contact support to change your email</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Username
               </label>
               <input
                 type="text"
                 placeholder="your-username"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               />
-              <p className="text-sm text-gray-500 mt-1">This will be your public profile URL</p>
+              <p className="text-sm text-gray-400 mt-1">This will be your public profile URL</p>
             </div>
           </div>
         </div>
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Preferences</h3>
-        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+        <h3 className="text-lg font-medium text-white mb-4">Preferences</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-sm font-medium text-gray-900">Email Notifications</h4>
-              <p className="text-sm text-gray-500">Receive updates about your account</p>
+              <h4 className="text-sm font-medium text-white">Email Notifications</h4>
+              <p className="text-sm text-gray-400">Receive updates about your account</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
           </div>
           
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-sm font-medium text-gray-900">Analytics Tracking</h4>
-              <p className="text-sm text-gray-500">Track clicks and views on your profile</p>
+              <h4 className="text-sm font-medium text-white">Analytics Tracking</h4>
+              <p className="text-sm text-gray-400">Track clicks and views on your profile</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
           </div>
         </div>
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-red-600 mb-4">Danger Zone</h3>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <h3 className="text-lg font-medium text-red-500 mb-4">Danger Zone</h3>
+        <div className="bg-red-900/20 border border-red-700/50 rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-sm font-medium text-red-900">Delete Account</h4>
-              <p className="text-sm text-red-700">Permanently delete your account and all data</p>
+              <h4 className="text-sm font-medium text-red-400">Delete Account</h4>
+              <p className="text-sm text-red-300">Permanently delete your account and all data</p>
             </div>
-            <button className="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            <button className="inline-flex items-center px-3 py-2 border border-red-700 shadow-sm text-sm leading-4 font-medium rounded-md text-red-400 bg-red-900/20 hover:bg-red-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
               <HiTrash className="h-4 w-4 mr-1" />
               Delete Account
             </button>
@@ -105,19 +105,19 @@ export default function SettingsPage() {
   const renderBillingSettings = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Current Plan</h3>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Current Plan</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-lg font-semibold text-gray-900">Free Plan</h4>
-              <p className="text-sm text-gray-500">Perfect for getting started</p>
-              <ul className="mt-3 text-sm text-gray-600 space-y-1">
+              <h4 className="text-lg font-semibold text-white">Free Plan</h4>
+              <p className="text-sm text-gray-400">Perfect for getting started</p>
+              <ul className="mt-3 text-sm text-gray-300 space-y-1">
                 <li>• Unlimited links</li>
                 <li>• Basic themes</li>
                 <li>• Analytics</li>
               </ul>
             </div>
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors">
               Upgrade to Pro
             </button>
           </div>
@@ -125,15 +125,15 @@ export default function SettingsPage() {
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Pro Features</h3>
-        <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg border border-purple-200 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Pro Features</h3>
+        <div className="bg-gradient-to-br from-purple-900/40 to-slate-800 rounded-lg border border-purple-700/50 p-6">
           <div className="flex items-center mb-4">
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-medium">
               PRO
             </div>
-            <span className="ml-3 text-lg font-semibold text-gray-900">$9/month</span>
+            <span className="ml-3 text-lg font-semibold text-white">$7/month or $60/year</span>
           </div>
-          <ul className="space-y-2 text-sm text-gray-600">
+          <ul className="space-y-2 text-sm text-gray-300">
             <li className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
               Advanced themes and customization
@@ -159,14 +159,14 @@ export default function SettingsPage() {
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h3>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Payment Method</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <div className="text-center py-8">
-            <HiCreditCard className="mx-auto h-12 w-12 text-gray-400" />
-            <h4 className="mt-2 text-sm font-medium text-gray-900">No payment method</h4>
-            <p className="mt-1 text-sm text-gray-500">Add a payment method to upgrade to Pro</p>
-            <button className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              <FaStripe className="h-4 w-4 mr-2 text-purple-600" />
+            <HiCreditCard className="mx-auto h-12 w-12 text-gray-500" />
+            <h4 className="mt-2 text-sm font-medium text-white">No payment method</h4>
+            <p className="mt-1 text-sm text-gray-400">Add a payment method to upgrade to Pro</p>
+            <button className="mt-4 inline-flex items-center px-4 py-2 border border-slate-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-slate-700 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+              <FaStripe className="h-4 w-4 mr-2 text-purple-400" />
               Add Payment Method
             </button>
           </div>
@@ -348,11 +348,11 @@ export default function SettingsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-          <HiCog className="h-8 w-8 mr-3 text-gray-600" />
+        <h1 className="text-2xl font-bold text-white flex items-center">
+          <HiCog className="h-8 w-8 mr-3 text-purple-400" />
           Settings
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-400">
           Manage your account settings, billing, and integrations
         </p>
       </div>
@@ -367,14 +367,14 @@ export default function SettingsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
                   activeTab === tab.id
-                    ? 'bg-blue-50 border-blue-500 text-blue-700'
-                    : 'border-transparent text-gray-900 hover:bg-gray-50',
+                    ? 'bg-purple-900/40 border-purple-500 text-purple-300'
+                    : 'border-transparent text-gray-300 hover:bg-slate-800',
                   'w-full group border-l-4 px-3 py-2 flex items-center text-sm font-medium text-left'
                 )}
               >
                 <tab.icon
                   className={cn(
-                    activeTab === tab.id ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500',
+                    activeTab === tab.id ? 'text-purple-400' : 'text-gray-500 group-hover:text-gray-400',
                     'flex-shrink-0 -ml-1 mr-3 h-6 w-6'
                   )}
                 />
