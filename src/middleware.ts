@@ -72,13 +72,12 @@ export async function middleware(request: NextRequest) {
 
   // Handle pholio.link subdomain routing (e.g., username.pholio.link)
   if (subdomain && subdomain !== 'www') {
-    url.pathname = `/${subdomain}`;
+    url.pathname = `/${subdomain}/profile`;
     return NextResponse.rewrite(url);
   }
 
-  // Check for custom domain - handle gracefully with caching
-  // This now works for ANY path, not just root
-  if (!isPholia && !isLocalhost && !subdomain) {
+  // Check for custom domain - only for /profile requests to minimize database queries
+  if (!isPholia && !isLocalhost && !subdomain && pathname === '/profile') {
     try {
       // Lazy load the database module only when needed
       const { getUsersCollection } = await import('@/lib/mongodb');
@@ -98,7 +97,7 @@ export async function middleware(request: NextRequest) {
 
       // If we found a user with this custom domain, rewrite the request
       if (user) {
-        url.pathname = `/${user.username}`;
+        url.pathname = `/${user.username}/profile`;
         return NextResponse.rewrite(url);
       }
     } catch (error) {
