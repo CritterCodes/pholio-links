@@ -14,7 +14,7 @@ import {
 import { FaStripe } from 'react-icons/fa';
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState('account');
   const [subscription, setSubscription] = useState<any>(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
@@ -23,6 +23,7 @@ export default function SettingsPage() {
   const [customDomainLoading, setCustomDomainLoading] = useState(false);
   const [customDomainError, setCustomDomainError] = useState<string>('');
   const [customDomainSuccess, setCustomDomainSuccess] = useState<string>('');
+  const [showDnsInstructions, setShowDnsInstructions] = useState(false);
 
   const tabs = [
     { id: 'account', name: 'Account', icon: HiUser },
@@ -424,10 +425,68 @@ export default function SettingsPage() {
                       onChange={(e) => setCustomDomain(e.target.value.toLowerCase())}
                       className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     />
-                    <p className="text-xs text-slate-400 mt-1">
-                      Point your domain DNS records to: <code className="bg-slate-900 px-2 py-1 rounded">pholio.link</code>
-                    </p>
                   </div>
+
+                  {/* DNS Instructions Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setShowDnsInstructions(!showDnsInstructions)}
+                    className="text-sm text-purple-400 hover:text-purple-300 underline"
+                  >
+                    {showDnsInstructions ? '▼ Hide' : '▶ Show'} DNS Setup Instructions
+                  </button>
+
+                  {/* DNS Instructions */}
+                  {showDnsInstructions && (
+                    <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-4 space-y-3">
+                      <h4 className="text-sm font-semibold text-white mb-3">How to Point Your Domain</h4>
+                      
+                      <div className="space-y-2">
+                        <p className="text-xs text-slate-300">
+                          <strong>Step 1:</strong> Go to your domain registrar (GoDaddy, Namecheap, Google Domains, etc.)
+                        </p>
+                        <p className="text-xs text-slate-300">
+                          <strong>Step 2:</strong> Find the DNS or Domain Settings section
+                        </p>
+                        <p className="text-xs text-slate-300">
+                          <strong>Step 3:</strong> Add a <span className="bg-slate-800 px-1 py-0.5 rounded text-purple-300 font-mono text-xs">CNAME</span> record with these details:
+                        </p>
+                      </div>
+
+                      <div className="bg-slate-800 rounded p-3 space-y-2 text-xs font-mono">
+                        <div>
+                          <span className="text-slate-400">Name/Host:</span>
+                          <span className="text-white ml-2">@</span>
+                          <span className="text-slate-500 ml-2">(or leave blank for root domain)</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400">Type:</span>
+                          <span className="text-purple-300 ml-2 font-semibold">CNAME</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400">Value/Target:</span>
+                          <span className="text-green-300 ml-2">pholio.link</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400">TTL:</span>
+                          <span className="text-white ml-2">3600</span>
+                          <span className="text-slate-500 ml-2">(default is fine)</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-blue-900/30 border border-blue-700/50 rounded p-3">
+                        <p className="text-xs text-blue-300">
+                          <strong>Note:</strong> Some registrars don't allow CNAME records on root domains. If that's the case, use an <span className="bg-slate-800 px-1 py-0.5 rounded text-blue-300 font-mono text-xs">A record</span> pointing to <span className="font-mono">65.21.227.202</span> instead.
+                        </p>
+                      </div>
+
+                      <div className="bg-amber-900/30 border border-amber-700/50 rounded p-3">
+                        <p className="text-xs text-amber-300">
+                          <strong>DNS Propagation:</strong> Changes can take 24-48 hours to propagate globally. You can verify your DNS at <span className="font-mono text-amber-200">dnschecker.org</span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {customDomainError && (
                     <div className="text-sm text-red-400 bg-red-900/20 p-3 rounded">
