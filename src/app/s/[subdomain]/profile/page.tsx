@@ -39,12 +39,11 @@ interface UserProfile {
 }
 
 // Fetch user profile from API
-async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
+async function getUserProfile(subdomain: string): Promise<UserProfile | null> {        
   try {
-    console.log(`[SUBDOMAIN PROFILE] Fetching profile for subdomain: "${subdomain}"`);
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const url = `${baseUrl}/api/profile?username=${subdomain}`;
-    console.log(`[SUBDOMAIN PROFILE] Full fetch URL: ${url}`);
+    console.log(`[SUBDOMAIN PROFILE] Fetching profile for subdomain: "${subdomain}"`); 
+    const url = `/api/profile?username=${subdomain}`;
+    console.log(`[SUBDOMAIN PROFILE] Fetch URL: ${url}`);
 
     const response = await fetch(url, {
       cache: 'no-store',
@@ -59,8 +58,7 @@ async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
     }
 
     const data = await response.json();
-    console.log(`[SUBDOMAIN PROFILE] Profile loaded successfully for: "${subdomain}". Data:`, data);
-
+    console.log(`[SUBDOMAIN PROFILE] Profile loaded successfully for: "${subdomain}". Data:`, data);                                                                          
     return {
       name: data.displayName || data.name || '',
       subtitle: data.subtitle || '',
@@ -96,7 +94,6 @@ export default async function SubdomainProfilePage({ params }: SubdomainProfileP
   }
 
   console.log(`[SUBDOMAIN PROFILE] Rendering profile page for: "${resolvedParams.subdomain}"`);
-
   const getBackgroundStyle = () => {
     if (profile.theme.backgroundType === 'gradient') {
       return {
@@ -124,7 +121,7 @@ export default async function SubdomainProfilePage({ params }: SubdomainProfileP
       {/* Main Content */}
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Profile Image */}
-        <div className={profile.heroImage ? '-mt-20 mb-8 relative z-10' : 'mb-8'}>
+        <div className={profile.heroImage ? '-mt-20 mb-8 relative z-10' : 'mb-8'}>     
           {profile.profileImage ? (
             <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mx-auto">
               <Image
