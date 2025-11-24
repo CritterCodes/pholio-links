@@ -26,15 +26,28 @@ export function middleware(request: NextRequest) {
   if (!subdomain || subdomain === 'www') {
     const pathname = request.nextUrl.pathname;
     
-    // Keep dashboard and auth routes accessible
-    if (pathname.startsWith('/dashboard') || pathname.startsWith('/auth') || pathname.startsWith('/api')) {
+    // API routes pass through
+    if (pathname.startsWith('/api')) {
+      return NextResponse.next();
+    }
+    
+    // Auth routes pass through
+    if (pathname.startsWith('/auth') || pathname.startsWith('/login') || pathname.startsWith('/register')) {
+      return NextResponse.next();
+    }
+    
+    // Root path goes to landing
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL('/landing', request.url));
+    }
+    
+    // Already on landing page
+    if (pathname === '/landing') {
       return NextResponse.next();
     }
     
     // Everything else on root/www goes to landing page
-    return NextResponse.rewrite(
-      new URL('/landing', request.url)
-    );
+    return NextResponse.redirect(new URL('/landing', request.url));
   }
 
   // If we have a subdomain (and it's not www), route to the public profile
