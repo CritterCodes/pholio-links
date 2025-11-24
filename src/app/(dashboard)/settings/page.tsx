@@ -19,6 +19,10 @@ export default function SettingsPage() {
   const [subscription, setSubscription] = useState<any>(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [customDomain, setCustomDomain] = useState<string>('');
+  const [customDomainLoading, setCustomDomainLoading] = useState(false);
+  const [customDomainError, setCustomDomainError] = useState<string>('');
+  const [customDomainSuccess, setCustomDomainSuccess] = useState<string>('');
 
   const tabs = [
     { id: 'account', name: 'Account', icon: HiUser },
@@ -31,6 +35,8 @@ export default function SettingsPage() {
   useEffect(() => {
     if (activeTab === 'billing') {
       fetchSubscription();
+    } else if (activeTab === 'integrations') {
+      fetchCustomDomain();
     }
   }, [activeTab]);
 
@@ -79,6 +85,78 @@ export default function SettingsPage() {
     } catch (error) {
       console.error('Portal error:', error);
       alert('Failed to open billing portal');
+    }
+  };
+
+  const fetchCustomDomain = async () => {
+    try {
+      const res = await fetch('/api/custom-domain');
+      const data = await res.json();
+      if (data.customDomain) {
+        setCustomDomain(data.customDomain);
+      }
+    } catch (error) {
+      console.error('Failed to fetch custom domain:', error);
+    }
+  };
+
+  const handleCustomDomainUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCustomDomainError('');
+    setCustomDomainSuccess('');
+    setCustomDomainLoading(true);
+
+    try {
+      const res = await fetch('/api/custom-domain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customDomain }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setCustomDomainError(data.error || 'Failed to update custom domain');
+      } else {
+        setCustomDomainSuccess(data.message || 'Custom domain updated successfully');
+        setTimeout(() => setCustomDomainSuccess(''), 3000);
+      }
+    } catch (error) {
+      console.error('Custom domain error:', error);
+      setCustomDomainError('Failed to update custom domain');
+    } finally {
+      setCustomDomainLoading(false);
+    }
+  };
+
+  const handleCustomDomainRemove = async () => {
+    if (!confirm('Are you sure you want to remove your custom domain?')) {
+      return;
+    }
+
+    setCustomDomainError('');
+    setCustomDomainSuccess('');
+    setCustomDomainLoading(true);
+
+    try {
+      const res = await fetch('/api/custom-domain', {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setCustomDomainError(data.error || 'Failed to remove custom domain');
+      } else {
+        setCustomDomain('');
+        setCustomDomainSuccess('Custom domain removed');
+        setTimeout(() => setCustomDomainSuccess(''), 3000);
+      }
+    } catch (error) {
+      console.error('Custom domain remove error:', error);
+      setCustomDomainError('Failed to remove custom domain');
+    } finally {
+      setCustomDomainLoading(false);
     }
   };
 
@@ -320,7 +398,7 @@ export default function SettingsPage() {
 
           {/* Custom Domain */}
           <div className="p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-blue-900/30 rounded-full flex items-center justify-center">
                   <HiGlobe className="h-5 w-5 text-blue-400" />
@@ -330,15 +408,70 @@ export default function SettingsPage() {
                   <p className="text-sm text-slate-400">Use your own domain name</p>
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-900/50 text-purple-300 mr-3">
+            </div>
+            
+            {(session?.user as any)?.subscriptionTier === 'paid' ? (
+              <div>
+                <form onSubmit={handleCustomDomainUpdate} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Domain
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="example.com"
+                      value={customDomain}
+                      onChange={(e) => setCustomDomain(e.target.value.toLowerCase())}
+                      className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    />
+                    <p className="text-xs text-slate-400 mt-1">
+                      Point your domain DNS records to: <code className="bg-slate-900 px-2 py-1 rounded">pholio.link</code>
+                    </p>
+                  </div>
+
+                  {customDomainError && (
+                    <div className="text-sm text-red-400 bg-red-900/20 p-3 rounded">
+                      {customDomainError}
+                    </div>
+                  )}
+
+                  {customDomainSuccess && (
+                    <div className="text-sm text-green-400 bg-green-900/20 p-3 rounded">
+                      {customDomainSuccess}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      disabled={customDomainLoading || !customDomain}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-slate-600 disabled:to-slate-600 text-white rounded-lg font-medium text-sm transition-colors"
+                    >
+                      {customDomainLoading ? 'Saving...' : 'Save Domain'}
+                    </button>
+                    {customDomain && (
+                      <button
+                        type="button"
+                        onClick={handleCustomDomainRemove}
+                        disabled={customDomainLoading}
+                        className="px-4 py-2 border border-red-600/50 hover:bg-red-900/20 text-red-400 rounded-lg font-medium text-sm transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-900/50 text-purple-300">
                   PRO
                 </span>
-                <button className="text-slate-500 text-sm font-medium cursor-not-allowed">
-                  Upgrade Required
-                </button>
+                <span className="text-slate-500 text-sm font-medium">
+                  Upgrade to Pro to use a custom domain
+                </span>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Email Capture */}
