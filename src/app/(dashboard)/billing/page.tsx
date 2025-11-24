@@ -55,6 +55,7 @@ export default function BillingPage() {
     try {
       const res = await fetch('/api/billing/subscription');
       const data = await res.json();
+      console.log('Subscription data:', data);
       setSubscription(data);
     } catch (error) {
       console.error('Failed to fetch subscription:', error);

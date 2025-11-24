@@ -163,11 +163,14 @@ export default function SettingsPage() {
         <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <div className="text-center py-8">
             <HiCreditCard className="mx-auto h-12 w-12 text-gray-500" />
-            <h4 className="mt-2 text-sm font-medium text-white">No payment method</h4>
-            <p className="mt-1 text-sm text-gray-400">Add a payment method to upgrade to Pro</p>
-            <button className="mt-4 inline-flex items-center px-4 py-2 border border-slate-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-slate-700 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+            <h4 className="mt-2 text-sm font-medium text-white">Manage your billing</h4>
+            <p className="mt-1 text-sm text-gray-400">View plans, upgrade, and manage your subscription</p>
+            <button 
+              onClick={() => window.location.href = '/billing'}
+              className="mt-4 inline-flex items-center px-4 py-2 border border-slate-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-slate-700 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            >
               <FaStripe className="h-4 w-4 mr-2 text-purple-400" />
-              Add Payment Method
+              Go to Billing
             </button>
           </div>
         </div>

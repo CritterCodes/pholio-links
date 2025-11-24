@@ -1,3 +1,5 @@
+'use server';
+
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import Image from 'next/image';
