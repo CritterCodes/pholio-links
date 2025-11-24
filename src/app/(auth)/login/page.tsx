@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 function LoginForm() {
@@ -13,6 +14,7 @@ function LoginForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
 
   useEffect(() => {
     const message = searchParams.get('message');
@@ -36,7 +38,19 @@ function LoginForm() {
       if (result?.error) {
         setError('Invalid credentials. Please try again.');
       } else if (result?.ok) {
-        router.push('/dashboard');
+        // Get the updated session with username
+        const response = await fetch('/api/auth/session');
+        const sessionData = await response.json();
+        
+        if (sessionData?.user?.username) {
+          // Redirect to subdomain dashboard
+          const protocol = window.location.protocol;
+          const host = window.location.host;
+          const dashboardUrl = `${protocol}//${sessionData.user.username}.pholio.link/dashboard`;
+          window.location.href = dashboardUrl;
+        } else {
+          router.push('/dashboard');
+        }
       }
     } catch {
       setError('An error occurred. Please try again.');
