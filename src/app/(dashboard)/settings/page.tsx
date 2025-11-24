@@ -449,54 +449,105 @@ export default function SettingsPage() {
                           <strong>Step 2:</strong> Find the DNS or Domain Settings section
                         </p>
                         <p className="text-xs text-slate-300">
-                          <strong>Step 3:</strong> Add a <span className="bg-slate-800 px-1 py-0.5 rounded text-purple-300 font-mono text-xs">CNAME</span> record with these details:
+                          <strong>Step 3:</strong> Add <span className="bg-slate-800 px-1 py-0.5 rounded text-green-300 font-mono text-xs">A records</span> for your domain and subdomains
                         </p>
                       </div>
 
-                      <div className="bg-slate-800 rounded p-3 space-y-2 text-xs font-mono">
+                      <div className="space-y-3">
+                        {/* Root domain */}
                         <div>
-                          <span className="text-slate-400">Name/Host:</span>
-                          <span className="text-white ml-2">@</span>
-                          <span className="text-slate-500 ml-2">(or subdomain like "links")</span>
+                          <p className="text-xs text-slate-400 mb-2"><strong>For root domain (crittercodes.dev):</strong></p>
+                          <div className="bg-slate-800 rounded p-3 space-y-2 text-xs font-mono ml-2">
+                            <div>
+                              <span className="text-slate-400">Type:</span>
+                              <span className="text-green-300 ml-2 font-semibold">A Record</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Name/Host:</span>
+                              <span className="text-white ml-2">@</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Value/Points to:</span>
+                              <span className="text-yellow-300 ml-2 font-semibold">65.21.227.202</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">TTL:</span>
+                              <span className="text-white ml-2">3600</span>
+                              <span className="text-slate-500 ml-2">(or auto)</span>
+                            </div>
+                          </div>
                         </div>
+
+                        {/* Wildcard for all subdomains */}
                         <div>
-                          <span className="text-slate-400">Type:</span>
-                          <span className="text-purple-300 ml-2 font-semibold">CNAME</span>
+                          <p className="text-xs text-slate-400 mb-2"><strong>For all subdomains (*.crittercodes.dev):</strong></p>
+                          <div className="bg-slate-800 rounded p-3 space-y-2 text-xs font-mono ml-2">
+                            <div>
+                              <span className="text-slate-400">Type:</span>
+                              <span className="text-green-300 ml-2 font-semibold">A Record</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Name/Host:</span>
+                              <span className="text-white ml-2">*</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Value/Points to:</span>
+                              <span className="text-yellow-300 ml-2 font-semibold">65.21.227.202</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">TTL:</span>
+                              <span className="text-white ml-2">3600</span>
+                              <span className="text-slate-500 ml-2">(or auto)</span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-slate-400">Value/Target:</span>
-                          <span className="text-green-300 ml-2">pholio.link</span>
-                        </div>
-                        <div>
-                          <span className="text-slate-400">TTL:</span>
-                          <span className="text-white ml-2">3600</span>
-                          <span className="text-slate-500 ml-2">(default is fine)</span>
-                        </div>
+                      </div>
+
+                      <div className="bg-blue-900/30 border border-blue-700/50 rounded p-3">
+                        <p className="text-xs text-blue-300 mb-2">
+                          <strong>💡 Tip:</strong> By adding both <code className="bg-slate-800 px-1.5 py-0.5 rounded text-blue-300 font-mono">@</code> (root) and <code className="bg-slate-800 px-1.5 py-0.5 rounded text-blue-300 font-mono">*</code> (wildcard) records, you enable:
+                        </p>
+                        <ul className="text-xs text-blue-300 space-y-1 ml-4">
+                          <li>✓ <code className="bg-slate-800 px-1.5 py-0.5 rounded">crittercodes.dev</code> - Works</li>
+                          <li>✓ <code className="bg-slate-800 px-1.5 py-0.5 rounded">links.crittercodes.dev</code> - Works</li>
+                          <li>✓ <code className="bg-slate-800 px-1.5 py-0.5 rounded">portfolio.crittercodes.dev</code> - Works</li>
+                          <li>✓ <code className="bg-slate-800 px-1.5 py-0.5 rounded">any-subdomain.crittercodes.dev</code> - Works</li>
+                        </ul>
+                        <p className="text-xs text-blue-300 mt-2">
+                          All subdomains automatically route to your Pholio profile!
+                        </p>
                       </div>
 
                       <div className="bg-purple-900/30 border border-purple-700/50 rounded p-3">
                         <p className="text-xs text-purple-300 mb-2">
-                          <strong>Example:</strong> You can register <code className="bg-slate-800 px-2 py-1 rounded text-purple-200">crittercodes.dev</code> and use it with subdomains:
+                          <strong>Alternative:</strong> If you prefer CNAME records (only works for subdomains, not root):
                         </p>
-                        <ul className="text-xs text-purple-300 space-y-1 ml-4">
-                          <li>• <code className="bg-slate-800 px-2 py-1 rounded">crittercodes.dev</code> - Your profile</li>
-                          <li>• <code className="bg-slate-800 px-2 py-1 rounded">links.crittercodes.dev</code> - Also your profile</li>
-                          <li>• <code className="bg-slate-800 px-2 py-1 rounded">portfolio.crittercodes.dev</code> - Also your profile</li>
-                        </ul>
-                        <p className="text-xs text-purple-300 mt-2">
-                          All subdomains will automatically route to your Pholio profile!
-                        </p>
-                      </div>
-
-                      <div className="bg-blue-900/30 border border-blue-700/50 rounded p-3">
-                        <p className="text-xs text-blue-300">
-                          <strong>Note:</strong> Some registrars don't allow CNAME records on root domains. If that's the case, use an <span className="bg-slate-800 px-1 py-0.5 rounded text-blue-300 font-mono text-xs">A record</span> pointing to <span className="font-mono">65.21.227.202</span> instead.
-                        </p>
+                        <div className="bg-slate-800 rounded p-2 text-xs font-mono ml-2 space-y-1">
+                          <div>
+                            <span className="text-slate-400">Name:</span>
+                            <span className="text-white ml-2">links</span>
+                            <span className="text-slate-500 ml-2">(or any subdomain)</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-400">Type:</span>
+                            <span className="text-purple-300 ml-2">CNAME</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-400">Value:</span>
+                            <span className="text-green-300 ml-2">pholio.link</span>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="bg-amber-900/30 border border-amber-700/50 rounded p-3">
                         <p className="text-xs text-amber-300">
-                          <strong>DNS Propagation:</strong> Changes can take 24-48 hours to propagate globally. You can verify your DNS at <span className="font-mono text-amber-200">dnschecker.org</span>
+                          <strong>⏱️ DNS Propagation:</strong> Changes can take 24-48 hours globally. Check status at <span className="font-mono text-amber-200 bg-slate-800 px-1 py-0.5 rounded">dnschecker.org</span> or <span className="font-mono text-amber-200 bg-slate-800 px-1 py-0.5 rounded">mxtoolbox.com</span>
+                        </p>
+                      </div>
+
+                      <div className="bg-green-900/30 border border-green-700/50 rounded p-3">
+                        <p className="text-xs text-green-300">
+                          <strong>✅ Quick test:</strong> After DNS updates propagate, try accessing <code className="bg-slate-800 px-1.5 py-0.5 rounded">your-domain.com</code> - you should see your Pholio profile!
                         </p>
                       </div>
                     </div>
