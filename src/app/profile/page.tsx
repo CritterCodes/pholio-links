@@ -36,51 +36,66 @@ interface UserProfile {
 const rootDomain = 'pholio.link';
 
 function extractSubdomain(hostname: string): string | null {
+  console.log(`[PROFILE] extractSubdomain called with hostname: "${hostname}"`);
+  
   const parts = hostname.split(':')[0].split('.');
+  console.log(`[PROFILE] hostname parts:`, parts);
   
   // localhost with subdomain: subdomain.localhost
   if (hostname.includes('localhost')) {
-    return parts.length > 1 && parts[0] !== 'localhost' ? parts[0] : null;
+    console.log(`[PROFILE] Detected localhost`);
+    const result = parts.length > 1 && parts[0] !== 'localhost' ? parts[0] : null;
+    console.log(`[PROFILE] localhost subdomain result:`, result);
+    return result;
   }
 
   // Production: subdomain.pholio.link
   if (parts.length > 2) {
+    console.log(`[PROFILE] parts.length > 2, returning first part:`, parts[0]);
     return parts[0]; // subdomain
   }
   
   if (parts.length === 2 && parts[0] !== 'www') {
+    console.log(`[PROFILE] parts.length === 2 and not www, returning:`, parts[0]);
     return parts[0]; // subdomain.pholio.link where subdomain is not www
   }
 
+  console.log(`[PROFILE] No subdomain detected`);
   return null;
 }
 
 async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
   try {
-    console.log(`[PROFILE PAGE] Fetching profile for subdomain: "${subdomain}"`);
+    console.log(`[PROFILE] getUserProfile called with subdomain: "${subdomain}"`);
 
     // Use absolute URL for server-side fetch
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const vercelUrl = process.env.VERCEL_URL;
+    const nextAuthUrl = process.env.NEXTAUTH_URL;
+    const baseUrl = vercelUrl 
+      ? `https://${vercelUrl}`
+      : nextAuthUrl || 'http://localhost:3000';
+    
+    console.log(`[PROFILE] VERCEL_URL: ${vercelUrl}`);
+    console.log(`[PROFILE] NEXTAUTH_URL: ${nextAuthUrl}`);
+    console.log(`[PROFILE] baseUrl: ${baseUrl}`);
     
     const url = `${baseUrl}/api/profile?username=${subdomain}`;
-    console.log(`[PROFILE PAGE] Fetch URL: ${url}`);
+    console.log(`[PROFILE] Fetch URL: ${url}`);
 
     const response = await fetch(url, {
       cache: 'no-store',
     });
 
-    console.log(`[PROFILE PAGE] Response status: ${response.status}`);
+    console.log(`[PROFILE] Response status: ${response.status}`);
 
     if (!response.ok) {
       const text = await response.text();
-      console.log(`[PROFILE PAGE] Profile not found. Response: ${text}`);
+      console.log(`[PROFILE] Profile fetch failed. Status: ${response.status}, Response: ${text}`);
       return null;
     }
 
     const data = await response.json();
-    console.log(`[PROFILE PAGE] Profile loaded successfully. Data:`, data);
+    console.log(`[PROFILE] Profile data received:`, JSON.stringify(data, null, 2));
 
     return {
       name: data.displayName || data.name || '',
@@ -101,118 +116,131 @@ async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
       },
     };
   } catch (error) {
-    console.error(`[PROFILE PAGE] Failed to fetch profile:`, error);
+    console.error(`[PROFILE] Error in getUserProfile:`, error);
     return null;
   }
 }
 
 export default async function ProfilePage() {
-  const headersList = await headers();
-  const host = headersList.get('host') || '';
-  
-  console.log(`[PROFILE PAGE] Host header: ${host}`);
+  try {
+    console.log(`[PROFILE] ProfilePage component rendered`);
+    
+    const headersList = await headers();
+    const host = headersList.get('host') || '';
+    
+    console.log(`[PROFILE] Host header: "${host}"`);
+    console.log(`[PROFILE] All headers:`, Object.fromEntries(headersList));
 
-  const subdomain = extractSubdomain(host);
-  
-  if (!subdomain) {
-    // No subdomain - not accessible on root domain
-    notFound();
-  }
-
-  const profile = await getUserProfile(subdomain);
-
-  if (!profile) {
-    notFound();
-  }
-
-  const getBackgroundStyle = () => {
-    if (profile.theme.backgroundType === 'gradient') {
-      return {
-        background: `linear-gradient(135deg, ${profile.theme.gradientFrom}, ${profile.theme.gradientTo})`,
-      };
+    const subdomain = extractSubdomain(host);
+    console.log(`[PROFILE] Extracted subdomain: "${subdomain}"`);
+    
+    if (!subdomain) {
+      console.log(`[PROFILE] No subdomain found, showing notFound`);
+      notFound();
     }
-    return { backgroundColor: profile.theme.backgroundColor };
-  };
 
-  return (
-    <div style={getBackgroundStyle()} className="min-h-screen">
-      {/* Hero Image Section */}
-      {profile.heroImage && (
-        <div className="relative w-full h-48 md:h-64 lg:h-80 overflow-hidden">
-          <Image
-            src={profile.heroImage}
-            alt="Hero"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
+    console.log(`[PROFILE] Calling getUserProfile for subdomain: "${subdomain}"`);
+    const profile = await getUserProfile(subdomain);
 
-      {/* Main Content */}
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Profile Image */}
-        <div className={profile.heroImage ? '-mt-20 mb-8 relative z-10' : 'mb-8'}>
-          {profile.profileImage ? (
-            <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mx-auto">
-              <Image
-                src={profile.profileImage}
-                alt={profile.name}
-                width={128}
-                height={128}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 mx-auto flex items-center justify-center">
-              <ImageIcon className="w-16 h-16 text-gray-400" />
-            </div>
-          )}
-        </div>
+    if (!profile) {
+      console.log(`[PROFILE] Profile is null, showing notFound`);
+      notFound();
+    }
 
-        {/* Profile Info */}
-        <div className="text-center mb-8">
-          <h1 style={{ color: profile.theme.textColor }} className="text-4xl font-bold mb-2">
-            {profile.name || 'No Name'}
-          </h1>
-          {profile.subtitle && (
-            <p style={{ color: profile.theme.textColor }} className="text-lg opacity-90 mb-4">
-              {profile.subtitle}
-            </p>
-          )}
-          {profile.bio && (
-            <p style={{ color: profile.theme.textColor }} className="text-base opacity-75 max-w-md mx-auto">
-              {profile.bio}
-            </p>
-          )}
-        </div>
+    console.log(`[PROFILE] Profile loaded successfully:`, JSON.stringify(profile, null, 2));
 
-        {/* Blocks */}
-        {profile.blocks && profile.blocks.length > 0 && (
-          <div className="space-y-4">
-            {profile.blocks
-              .filter((block) => block.enabled)
-              .sort((a, b) => a.order - b.order)
-              .map((block) => (
-                <PreviewBlock
-                  key={block._id}
-                  block={{
-                    ...block,
-                    content: block.content as Record<string, string>,
-                  }}
-                  theme={profile.theme}
+    const getBackgroundStyle = () => {
+      if (profile.theme.backgroundType === 'gradient') {
+        return {
+          background: `linear-gradient(135deg, ${profile.theme.gradientFrom}, ${profile.theme.gradientTo})`,
+        };
+      }
+      return { backgroundColor: profile.theme.backgroundColor };
+    };
+
+    return (
+      <div style={getBackgroundStyle()} className="min-h-screen">
+        {/* Hero Image Section */}
+        {profile.heroImage && (
+          <div className="relative w-full h-48 md:h-64 lg:h-80 overflow-hidden">
+            <Image
+              src={profile.heroImage}
+              alt="Hero"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div className="max-w-2xl mx-auto px-4 py-8">
+          {/* Profile Image */}
+          <div className={profile.heroImage ? '-mt-20 mb-8 relative z-10' : 'mb-8'}>
+            {profile.profileImage ? (
+              <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mx-auto">
+                <Image
+                  src={profile.profileImage}
+                  alt={profile.name}
+                  width={128}
+                  height={128}
+                  className="w-full h-full object-cover"
                 />
-              ))}
+              </div>
+            ) : (
+              <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 mx-auto flex items-center justify-center">
+                <ImageIcon className="w-16 h-16 text-gray-400" />
+              </div>
+            )}
           </div>
-        )}
 
-        {/* Empty State */}
-        {(!profile.blocks || profile.blocks.length === 0) && (
-          <div style={{ color: profile.theme.textColor }} className="text-center py-12 opacity-50">
-            <p>No content yet</p>
+          {/* Profile Info */}
+          <div className="text-center mb-8">
+            <h1 style={{ color: profile.theme.textColor }} className="text-4xl font-bold mb-2">
+              {profile.name || 'No Name'}
+            </h1>
+            {profile.subtitle && (
+              <p style={{ color: profile.theme.textColor }} className="text-lg opacity-90 mb-4">
+                {profile.subtitle}
+              </p>
+            )}
+            {profile.bio && (
+              <p style={{ color: profile.theme.textColor }} className="text-base opacity-75 max-w-md mx-auto">
+                {profile.bio}
+              </p>
+            )}
           </div>
-        )}
+
+          {/* Blocks */}
+          {profile.blocks && profile.blocks.length > 0 && (
+            <div className="space-y-4">
+              {profile.blocks
+                .filter((block) => block.enabled)
+                .sort((a, b) => a.order - b.order)
+                .map((block) => (
+                  <PreviewBlock
+                    key={block._id}
+                    block={{
+                      ...block,
+                      content: block.content as Record<string, string>,
+                    }}
+                    theme={profile.theme}
+                  />
+                ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {(!profile.blocks || profile.blocks.length === 0) && (
+            <div style={{ color: profile.theme.textColor }} className="text-center py-12 opacity-50">
+              <p>No content yet</p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error(`[PROFILE] Unexpected error in ProfilePage:`, error);
+    notFound();
+  }
 }
