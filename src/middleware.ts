@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUsersCollection } from '@/lib/mongodb';
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -7,27 +6,29 @@ export async function middleware(request: NextRequest) {
   const pathname = url.pathname;
   
   // Skip API routes and static files
-  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.startsWith('/static')) {
+  if (pathname.startsWith('/api') || 
+      pathname.startsWith('/_next') || 
+      pathname.startsWith('/static') ||
+      pathname.startsWith('/images') ||
+      pathname.endsWith('.ico') ||
+      pathname.endsWith('.json')) {
     return NextResponse.next();
   }
 
   // Parse hostname parts
   const parts = hostname.split('.');
   let subdomain = null;
-  let isDevelopment = false;
-  let isPholia = false;
   let isLocalhost = hostname.includes('localhost');
+  let isPholia = hostname.includes('pholio.link');
   
   // Detect environment and extract subdomain
   if (isLocalhost) {
-    isDevelopment = true;
     // For development (user.localhost:3000)
     if (parts.length > 1 && parts[0] !== 'localhost') {
       subdomain = parts[0];
     }
   } else {
     // For production (user.pholio.links)
-    isPholia = hostname.includes('pholio.link');
     if (isPholia && parts.length >= 3 && parts[1] === 'pholio' && parts[2] === 'links') {
       subdomain = parts[0];
     }
@@ -42,14 +43,21 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Check for custom domain with optional subdomain
-  // This handles: example.com, subdomain.example.com, links.crittercodes.dev, etc.
-  if (!isPholia && !isLocalhost) {
+  // Check for custom domain (only for root path requests to minimize database queries)
+  // Only attempt custom domain lookup if:
+  // 1. Not pholio.link domain
+  // 2. Not localhost
+  // 3. Is a root path request (/)
+  // 4. Has no subdomain already
+  if (!isPholia && !isLocalhost && pathname === '/' && !subdomain) {
     try {
+      // Lazy load the database module only when needed
+      const { getUsersCollection } = await import('@/lib/mongodb');
       const usersCollection = await getUsersCollection();
+      
       let user = null;
 
-      // Strategy 1: Try exact domain match (e.g., crittercodes.dev or links.crittercodes.dev)
+      // Strategy 1: Try exact domain match (e.g., crittercodes.dev)
       user = await usersCollection.findOne({
         'profile.customDomain': hostname.toLowerCase(),
       });
@@ -63,29 +71,15 @@ export async function middleware(request: NextRequest) {
         });
       }
 
-      // If we found a user with this custom domain
+      // If we found a user with this custom domain, rewrite the request
       if (user) {
-        // For root path requests, rewrite to the user's profile
-        if (pathname === '/') {
-          url.pathname = `/${user.username}`;
-          return NextResponse.rewrite(url);
-        }
-        
-        // For other paths, still show the user's profile but preserve the path
-        // This allows direct access to /profile, /links, etc. on custom domains
-        if (pathname.startsWith('/profile') || pathname.startsWith('/links') || pathname.startsWith('/gallery')) {
-          // Keep the pathname as is, but the request is authenticated to this user
-          // The profile page will handle showing the correct user
-          return NextResponse.next();
-        }
-
-        // For any other path on the custom domain, show the profile
         url.pathname = `/${user.username}`;
         return NextResponse.rewrite(url);
       }
     } catch (error) {
       console.error('Error checking custom domain in middleware:', error);
-      // If database error, continue to normal flow
+      // If database error, continue to normal flow - don't crash
+      // This prevents middleware from breaking the entire app
     }
   }
   
