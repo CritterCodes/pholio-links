@@ -3,51 +3,46 @@ import { type NextRequest, NextResponse } from 'next/server';
 const rootDomain = 'pholio.link';
 
 function extractSubdomain(request: NextRequest): string | null {
-  const url = request.url;
   const host = request.headers.get('host') || '';
   const hostname = host.split(':')[0];
+  
+  console.log('[MIDDLEWARE_EXTRACT] Host header:', host);
+  console.log('[MIDDLEWARE_EXTRACT] Hostname:', hostname);
+  console.log('[MIDDLEWARE_EXTRACT] Root domain:', rootDomain);
 
   // Local development
-  if (url.includes('localhost') || url.includes('127.0.0.1')) {
-    const fullUrlMatch = url.match(/http:\/\/([^.]+)\.localhost/);
-    if (fullUrlMatch && fullUrlMatch[1]) {
-      return fullUrlMatch[1];
+  if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
+    const parts = hostname.split('.');
+    if (parts.length > 1) {
+      return parts[0];
     }
-
-    if (hostname.includes('.localhost')) {
-      return hostname.split('.')[0];
-    }
-
     return null;
   }
 
-  // Production environment
-  const rootDomainFormatted = rootDomain.split(':')[0];
-
-  // Handle Vercel preview deployments
-  if (hostname.includes('---') && hostname.endsWith('.vercel.app')) {
-    const parts = hostname.split('---');
-    return parts.length > 0 ? parts[0] : null;
+  // Check if it's a subdomain of pholio.link
+  if (hostname.endsWith(rootDomain)) {
+    const subdomain = hostname.replace(`.${rootDomain}`, '');
+    console.log('[MIDDLEWARE_EXTRACT] Extracted subdomain:', subdomain);
+    
+    // Make sure it's not the root domain or www
+    if (subdomain && subdomain !== rootDomain && subdomain !== 'www') {
+      return subdomain;
+    }
   }
 
-  // Regular subdomain detection
-  const isSubdomain =
-    hostname !== rootDomainFormatted &&
-    hostname !== `www.${rootDomainFormatted}` &&
-    hostname.endsWith(`.${rootDomainFormatted}`);
-
-  return isSubdomain ? hostname.replace(`.${rootDomainFormatted}`, '') : null;
+  console.log('[MIDDLEWARE_EXTRACT] No subdomain found');
+  return null;
 }
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const host = request.headers.get('host') || '';
   const subdomain = extractSubdomain(request);
 
-  console.log('[MIDDLEWARE] Host:', host, 'Pathname:', pathname, 'Subdomain:', subdomain);
+  console.log('[MIDDLEWARE] Full path:', request.nextUrl.toString());
+  console.log('[MIDDLEWARE] Pathname:', pathname, 'Subdomain:', subdomain);
 
   if (subdomain) {
-    console.log('[MIDDLEWARE] Subdomain detected:', subdomain);
+    console.log('[MIDDLEWARE] Processing subdomain:', subdomain);
     
     // Block access to auth pages from subdomains
     if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
@@ -57,11 +52,14 @@ export function middleware(request: NextRequest) {
 
     // For the root path on a subdomain, redirect to /profile
     if (pathname === '/') {
-      console.log('[MIDDLEWARE] Root path on subdomain - redirecting to /profile');
+      console.log('[MIDDLEWARE] Root path detected - redirecting to /profile');
       const url = request.nextUrl.clone();
       url.pathname = '/profile';
+      console.log('[MIDDLEWARE] Redirect URL:', url.toString());
       return NextResponse.redirect(url);
     }
+  } else {
+    console.log('[MIDDLEWARE] No subdomain - passing through');
   }
 
   return NextResponse.next();
