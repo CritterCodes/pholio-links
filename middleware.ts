@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Extract subdomain from hostname
-  // Format: subdomain.pholio.link or localhost:3000
+  // Format: subdomain.pholio.link
   const parts = hostname.split('.');
   let subdomain: string | null = null;
 
@@ -22,10 +22,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const pathname = request.nextUrl.pathname;
+
   // Route root domain and www to landing page
   if (!subdomain || subdomain === 'www') {
-    const pathname = request.nextUrl.pathname;
-    
     // API routes pass through
     if (pathname.startsWith('/api')) {
       return NextResponse.next();
@@ -36,25 +36,23 @@ export function middleware(request: NextRequest) {
       return NextResponse.next();
     }
     
-    // Root path and everything else on root/www goes to landing page
+    // Everything on root/www domain shows landing page (already handled by root page.tsx)
     return NextResponse.next();
   }
 
   // If we have a subdomain (and it's not www), route to the public profile
   if (subdomain && subdomain !== 'www' && subdomain !== 'dashboard') {
-    const pathname = request.nextUrl.pathname;
-    
-    // If it's a dashboard path, keep it as is but mark it as a user profile request
+    // If it's a dashboard path, rewrite with username parameter
     if (pathname.startsWith('/dashboard')) {
-      // Rewrite to /dashboard but keep subdomain context
       return NextResponse.rewrite(
         new URL(`/dashboard?username=${subdomain}${pathname.substring(10)}`, request.url)
       );
     }
     
-    // Otherwise, show the public profile for this username
+    // For any other path on username subdomain, rewrite to /{username}
+    // This matches the (public)/[username]/page.tsx route
     return NextResponse.rewrite(
-      new URL(`/${subdomain}`, request.url)
+      new URL(`/${subdomain}${pathname}`, request.url)
     );
   }
 
