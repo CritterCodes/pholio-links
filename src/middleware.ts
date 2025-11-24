@@ -77,9 +77,9 @@ export async function middleware(request: NextRequest) {
       url.pathname = `/${subdomain}/profile`;
       return NextResponse.rewrite(url);
     }
-    // For other paths, prepend username but keep the original path
-    url.pathname = `/${subdomain}${pathname}`;
-    return NextResponse.rewrite(url);
+    // For dashboard/authenticated routes, let them pass through normally
+    // Users should access dashboard at username.pholio.link/dashboard, not as /username/dashboard
+    return NextResponse.next();
   }
 
   // Check for custom domain - handle gracefully with caching
