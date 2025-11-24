@@ -45,7 +45,7 @@ export function middleware(request: NextRequest) {
 
   // Debug logging
   const host = request.headers.get('host') || 'unknown';
-  console.log(`[MW] host=${host} path=${pathname} subdomain=${subdomain}`);
+  console.log(`[MW] host=${host} path=${pathname} subdomain=${subdomain} [v2]`);
 
   if (subdomain) {
     // Block access to auth pages from subdomains
