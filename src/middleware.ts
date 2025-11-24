@@ -77,7 +77,8 @@ export async function middleware(request: NextRequest) {
       url.pathname = `/${subdomain}/profile`;
       return NextResponse.rewrite(url);
     }
-    url.pathname = `/${subdomain}/profile`;
+    // For other paths, prepend username but keep the original path
+    url.pathname = `/${subdomain}${pathname}`;
     return NextResponse.rewrite(url);
   }
 
