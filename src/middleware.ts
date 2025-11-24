@@ -91,22 +91,31 @@ export async function middleware(request: NextRequest) {
 
       let user = null;
 
-      // Strategy 1: Try exact domain match (e.g., crittercodes.dev)
+      // Strategy 1: Try exact domain match (e.g., links.crittercodes.dev)
       user = await getCachedUser(hostname, usersCollection);
+      if (user) {
+        console.log(`[Custom Domain] Exact match: ${hostname} -> ${user.username}`);
+      }
 
-      // Strategy 2: If no exact match and hostname has multiple parts, try root domain
-      // This allows links.crittercodes.dev to work if crittercodes.dev is registered
+      // Strategy 2: If no exact match and hostname has multiple parts (subdomain), try root domain
+      // This allows subdomain.links.crittercodes.dev to work if links.crittercodes.dev is registered
       if (!user && parts.length > 2) {
         const rootDomain = parts.slice(1).join('.');
         user = await getCachedUser(rootDomain, usersCollection);
+        if (user) {
+          console.log(`[Custom Domain] Root domain fallback: ${hostname} -> ${rootDomain} -> ${user.username}`);
+        }
       }
 
-      // If we found a user with this custom domain, redirect to /profile
+      // If we found a user with this custom domain, rewrite the request
       if (user) {
         if (pathname === '/' || pathname === '/profile') {
           url.pathname = `/${user.username}/profile`;
+          console.log(`[Custom Domain] Rewriting ${hostname}${pathname} to ${url.pathname}`);
           return NextResponse.rewrite(url);
         }
+      } else {
+        console.log(`[Custom Domain] No user found for ${hostname}`);
       }
     } catch (error) {
       console.error('Error checking custom domain in middleware:', error);
