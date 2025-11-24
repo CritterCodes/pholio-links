@@ -168,7 +168,13 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold mb-2">Pro</h3>
               <p className="text-gray-400 mb-6">For growing brands</p>
-              <p className="text-4xl font-bold mb-6">$9<span className="text-lg text-gray-400">/mo</span></p>
+              <div className="mb-6">
+                <div className="flex items-baseline gap-2 mb-2">
+                  <span className="text-4xl font-bold">$7</span>
+                  <span className="text-lg text-gray-400">/mo</span>
+                </div>
+                <p className="text-sm text-gray-400">or $60/year (save 29%)</p>
+              </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2">
                   <Check className="w-5 h-5 text-green-400" />
