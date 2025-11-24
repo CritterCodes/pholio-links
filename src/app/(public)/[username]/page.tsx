@@ -41,16 +41,22 @@ interface UserProfile {
 // Fetch user profile from API
 async function getUserProfile(username: string): Promise<UserProfile | null> {
   try {
+    console.log(`[PROFILE PAGE] Fetching profile for username: "${username}"`);
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    console.log(`[PROFILE PAGE] Base URL: ${baseUrl}`);
     const response = await fetch(`${baseUrl}/api/profile?username=${username}`, {
       cache: 'no-store',
     });
 
+    console.log(`[PROFILE PAGE] Response status: ${response.status}`);
+
     if (!response.ok) {
+      console.log(`[PROFILE PAGE] Profile not found for username: "${username}"`);
       return null;
     }
 
     const data = await response.json();
+    console.log(`[PROFILE PAGE] Profile loaded successfully for: "${username}"`);
 
     return {
       name: data.displayName || data.name || '',
@@ -71,18 +77,22 @@ async function getUserProfile(username: string): Promise<UserProfile | null> {
       },
     };
   } catch (error) {
-    console.error('Failed to fetch profile:', error);
+    console.error(`[PROFILE PAGE] Failed to fetch profile for "${username}":`, error);
     return null;
   }
 }
 
 export default async function UserProfilePage({ params }: UserProfilePageProps) {
   const resolvedParams = await params;
+  console.log(`[PROFILE PAGE] Page rendered for username: "${resolvedParams.username}"`);
   const profile = await getUserProfile(resolvedParams.username);
 
   if (!profile) {
+    console.log(`[PROFILE PAGE] Profile is null, showing notFound()`);
     notFound();
   }
+
+  console.log(`[PROFILE PAGE] Rendering profile page for: "${resolvedParams.username}"`);
 
   const getBackgroundStyle = () => {
     if (profile.theme.backgroundType === 'gradient') {
