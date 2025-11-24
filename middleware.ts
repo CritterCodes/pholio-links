@@ -1,76 +1,92 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  const hostname = request.headers.get('host') || '';
-  const pathname = request.nextUrl.pathname;
-  const url = request.nextUrl.clone();
-  
-  console.log(`\n[MIDDLEWARE START] =========================================`);
-  console.log(`[MIDDLEWARE] Full URL: ${request.url}`);
-  console.log(`[MIDDLEWARE] Hostname: ${hostname}`);
-  console.log(`[MIDDLEWARE] Pathname: ${pathname}`);
+const rootDomain = 'pholio.link';
 
-  // Don't process localhost
-  if (hostname.includes('localhost')) {
-    console.log(`[MIDDLEWARE] → localhost detected, skipping`);
-    return NextResponse.next();
+function extractSubdomain(request: NextRequest): string | null {
+  const url = request.url;
+  const host = request.headers.get('host') || '';
+  const hostname = host.split(':')[0];
+
+  console.log(`[MIDDLEWARE] hostname="${hostname}", url="${url}"`);
+
+  // Local development environment
+  if (url.includes('localhost') || url.includes('127.0.0.1')) {
+    console.log('[MIDDLEWARE] Localhost detected');
+    // Try to extract subdomain from the full URL
+    const fullUrlMatch = url.match(/http:\/\/([^.]+)\.localhost/);
+    if (fullUrlMatch && fullUrlMatch[1]) {
+      console.log(`[MIDDLEWARE] Localhost subdomain: ${fullUrlMatch[1]}`);
+      return fullUrlMatch[1];
+    }
+    return null;
   }
 
-  // Check if this is pholio.link domain
-  if (!hostname.includes('pholio.link')) {
-    console.log(`[MIDDLEWARE] → not pholio.link domain, skipping`);
-    return NextResponse.next();
+  // Production environment
+  const rootDomainFormatted = rootDomain.split(':')[0];
+  console.log(`[MIDDLEWARE] rootDomain="${rootDomainFormatted}"`);
+
+  // Handle preview deployment URLs (tenant---branch-name.vercel.app)
+  if (hostname.includes('---') && hostname.endsWith('.vercel.app')) {
+    const parts = hostname.split('---');
+    const subdomain = parts[0];
+    console.log(`[MIDDLEWARE] Vercel preview subdomain: ${subdomain}`);
+    return subdomain;
   }
 
-  // Skip API and other special paths
-  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.startsWith('/static') || pathname === '/favicon.ico') {
-    console.log(`[MIDDLEWARE] → special path (${pathname}), skipping`);
-    return NextResponse.next();
+  // Regular subdomain detection
+  const isSubdomain =
+    hostname !== rootDomainFormatted &&
+    hostname !== `www.${rootDomainFormatted}` &&
+    hostname.endsWith(`.${rootDomainFormatted}`);
+
+  if (isSubdomain) {
+    const subdomain = hostname.replace(`.${rootDomainFormatted}`, '');
+    console.log(`[MIDDLEWARE] ✓ Subdomain detected: "${subdomain}"`);
+    return subdomain;
   }
 
-  // Split hostname to get subdomain
-  const parts = hostname.split('.');
-  console.log(`[MIDDLEWARE] Hostname parts: ${JSON.stringify(parts)}`);
-  
-  const subdomain = parts[0];
-  console.log(`[MIDDLEWARE] Extracted subdomain: "${subdomain}"`);
+  console.log('[MIDDLEWARE] No subdomain detected');
+  return null;
+}
 
-  // Skip if no subdomain or if it's root domain
-  if (subdomain === 'pholio') {
-    console.log(`[MIDDLEWARE] → root domain (pholio.link), skipping`);
-    return NextResponse.next();
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const subdomain = extractSubdomain(request);
+
+  console.log(`[MIDDLEWARE] pathname="${pathname}", subdomain="${subdomain}"`);
+
+  if (subdomain) {
+    // Block access to certain admin paths from subdomains
+    if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
+      console.log(`[MIDDLEWARE] Blocking auth page on subdomain`);
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    // For the root path on a subdomain, rewrite to the subdomain page
+    if (pathname === '/') {
+      console.log(`[MIDDLEWARE] Root path on subdomain, rewriting to /s/${subdomain}`);
+      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
+    }
+
+    // For other paths on subdomain, rewrite them to /s/subdomain/path
+    console.log(`[MIDDLEWARE] Rewriting ${pathname} to /s/${subdomain}${pathname}`);
+    return NextResponse.rewrite(new URL(`/s/${subdomain}${pathname}`, request.url));
   }
 
-  // Skip if www
-  if (subdomain === 'www') {
-    console.log(`[MIDDLEWARE] → www subdomain, skipping`);
-    return NextResponse.next();
-  }
-
-  // This is a username subdomain
-  console.log(`[MIDDLEWARE] ✓ Username subdomain: "${subdomain}"`);
-  
-  // For dashboard paths, rewrite with username param
-  if (pathname.startsWith('/dashboard')) {
-    console.log(`[MIDDLEWARE] Dashboard detected, rewriting to /dashboard?username=${subdomain}`);
-    const rewriteUrl = new URL(`/dashboard?username=${subdomain}`, request.url);
-    console.log(`[MIDDLEWARE] Rewrite URL: ${rewriteUrl.toString()}`);
-    return NextResponse.rewrite(rewriteUrl);
-  }
-
-  // For root or any other path, rewrite to /{username}{pathname}
-  const rewritePath = `/${subdomain}${pathname}`;
-  console.log(`[MIDDLEWARE] Rewriting to: ${rewritePath}`);
-  const rewriteUrl = new URL(rewritePath, request.url);
-  console.log(`[MIDDLEWARE] Full rewrite URL: ${rewriteUrl.toString()}`);
-  console.log(`[MIDDLEWARE END] =========================================\n`);
-  
-  return NextResponse.rewrite(rewriteUrl);
+  // On the root domain, allow normal access
+  console.log('[MIDDLEWARE] Root domain, allowing normal access');
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    /*
+     * Match all paths except for:
+     * 1. /api routes
+     * 2. /_next (Next.js internals)
+     * 3. all root files inside /public
+     */
+    '/((?!api|_next|[\\w-]+\\.\\w+).*)',
   ],
 };
 
