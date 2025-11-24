@@ -22,7 +22,22 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If we have a subdomain, route to the public profile
+  // Route root domain and www to landing page
+  if (!subdomain || subdomain === 'www') {
+    const pathname = request.nextUrl.pathname;
+    
+    // Keep dashboard and auth routes accessible
+    if (pathname.startsWith('/dashboard') || pathname.startsWith('/auth') || pathname.startsWith('/api')) {
+      return NextResponse.next();
+    }
+    
+    // Everything else on root/www goes to landing page
+    return NextResponse.rewrite(
+      new URL('/landing', request.url)
+    );
+  }
+
+  // If we have a subdomain (and it's not www), route to the public profile
   if (subdomain && subdomain !== 'www' && subdomain !== 'dashboard') {
     const pathname = request.nextUrl.pathname;
     
@@ -55,3 +70,4 @@ export const config = {
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
+
