@@ -466,6 +466,21 @@ export default function FlexibleDesignDashboard() {
         </div>
       )}
 
+      {/* Header with View Profile Button */}
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Design Dashboard</h1>
+        {session?.user && (session.user as any).username && (
+          <a
+            href={`https://${(session.user as any).username}.pholio.link`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition"
+          >
+            View Profile →
+          </a>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Editor Panel */}
         <div className="space-y-6 lg:pr-4">

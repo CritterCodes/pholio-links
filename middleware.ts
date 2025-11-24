@@ -49,8 +49,16 @@ export function middleware(request: NextRequest) {
       );
     }
     
-    // For any other path on username subdomain, rewrite to /{username}
-    // This matches the (public)/[username]/page.tsx route
+    // For root path on username subdomain, show the profile
+    // We'll handle this by setting a header so the root page can check it
+    if (pathname === '/' || pathname === '') {
+      // Rewrite to the username route
+      return NextResponse.rewrite(
+        new URL(`/${subdomain}`, request.url)
+      );
+    }
+    
+    // For other paths on username subdomain, rewrite to username-prefixed path
     return NextResponse.rewrite(
       new URL(`/${subdomain}${pathname}`, request.url)
     );
