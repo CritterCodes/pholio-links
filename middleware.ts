@@ -41,16 +41,23 @@ function extractSubdomain(request: NextRequest): string | null {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get('host') || '';
   const subdomain = extractSubdomain(request);
 
+  console.log('[MIDDLEWARE] Host:', host, 'Pathname:', pathname, 'Subdomain:', subdomain);
+
   if (subdomain) {
+    console.log('[MIDDLEWARE] Subdomain detected:', subdomain);
+    
     // Block access to auth pages from subdomains
     if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
+      console.log('[MIDDLEWARE] Blocking auth page access from subdomain');
       return NextResponse.redirect(new URL('/', request.url));
     }
 
     // For the root path on a subdomain, redirect to /profile
     if (pathname === '/') {
+      console.log('[MIDDLEWARE] Root path on subdomain - redirecting to /profile');
       const url = request.nextUrl.clone();
       url.pathname = '/profile';
       return NextResponse.redirect(url);
