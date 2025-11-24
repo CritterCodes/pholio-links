@@ -5,17 +5,15 @@ const rootDomain = 'pholio.link';
 function extractSubdomain(request: NextRequest): string | null {
   const url = request.url;
   const host = request.headers.get('host') || '';
-  const hostname = host.split(':')[0]; // Remove port if present
+  const hostname = host.split(':')[0];
 
   // Local development
   if (url.includes('localhost') || url.includes('127.0.0.1')) {
-    // Try to extract subdomain from the full URL
     const fullUrlMatch = url.match(/http:\/\/([^.]+)\.localhost/);
     if (fullUrlMatch && fullUrlMatch[1]) {
       return fullUrlMatch[1];
     }
 
-    // Fallback to host header approach
     if (hostname.includes('.localhost')) {
       return hostname.split('.')[0];
     }
@@ -26,7 +24,7 @@ function extractSubdomain(request: NextRequest): string | null {
   // Production environment
   const rootDomainFormatted = rootDomain.split(':')[0];
 
-  // Handle Vercel preview deployments (subdomain---branch.vercel.app)
+  // Handle Vercel preview deployments
   if (hostname.includes('---') && hostname.endsWith('.vercel.app')) {
     const parts = hostname.split('---');
     return parts.length > 0 ? parts[0] : null;
@@ -64,18 +62,12 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // On the root domain, allow normal access
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all paths except for:
-     * 1. /api routes
-     * 2. /_next (Next.js internals)
-     * 3. all root files inside /public (e.g. /favicon.ico)
-     */
-    '/((?!api|_next|[\\w-]+\\.\\w+).*)',
+    // Match all paths
+    '/:path*',
   ],
 };
