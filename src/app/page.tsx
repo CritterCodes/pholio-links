@@ -1,9 +1,28 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check, Sparkles, Users, Zap } from 'lucide-react';
 
 export default function Home() {
+  // Check if we're on a subdomain (other than www)
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    console.log(`[HOME PAGE] hostname: ${hostname}`);
+    
+    const parts = hostname.split('.');
+    
+    // If we have a subdomain that's not www or localhost
+    if (parts.length > 2 && !hostname.includes('localhost')) {
+      const subdomain = parts[0];
+      if (subdomain !== 'www') {
+        console.log(`[HOME PAGE] Subdomain detected: ${subdomain}, redirecting to /${subdomain}`);
+        // Redirect to the profile page
+        window.location.href = `/${subdomain}`;
+      }
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       {/* Navigation */}

@@ -3,72 +3,73 @@ import { NextRequest, NextResponse } from 'next/server';
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const pathname = request.nextUrl.pathname;
+  const url = request.nextUrl.clone();
   
-  console.log(`[MIDDLEWARE] hostname="${hostname}", pathname="${pathname}"`);
+  console.log(`\n[MIDDLEWARE START] =========================================`);
+  console.log(`[MIDDLEWARE] Full URL: ${request.url}`);
+  console.log(`[MIDDLEWARE] Hostname: ${hostname}`);
+  console.log(`[MIDDLEWARE] Pathname: ${pathname}`);
 
   // Don't process localhost
   if (hostname.includes('localhost')) {
+    console.log(`[MIDDLEWARE] → localhost detected, skipping`);
     return NextResponse.next();
   }
 
   // Check if this is pholio.link domain
   if (!hostname.includes('pholio.link')) {
-    return NextResponse.next();
-  }
-
-  // Split hostname to get subdomain
-  // crittercodes.pholio.link -> subdomain = "crittercodes"
-  // www.pholio.link -> subdomain = "www"  
-  // pholio.link -> no subdomain
-  const subdomain = hostname.split('.')[0];
-  
-  console.log(`[MIDDLEWARE] subdomain="${subdomain}"`);
-
-  // Skip if no subdomain or if it's root domain
-  if (subdomain === 'pholio') {
-    console.log(`[MIDDLEWARE] Root domain, skipping`);
-    return NextResponse.next();
-  }
-
-  // Skip if www or other common subdomains
-  if (subdomain === 'www') {
-    console.log(`[MIDDLEWARE] www subdomain, skipping`);
+    console.log(`[MIDDLEWARE] → not pholio.link domain, skipping`);
     return NextResponse.next();
   }
 
   // Skip API and other special paths
-  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.startsWith('/static')) {
-    console.log(`[MIDDLEWARE] Special path, passing through`);
+  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.startsWith('/static') || pathname === '/favicon.ico') {
+    console.log(`[MIDDLEWARE] → special path (${pathname}), skipping`);
     return NextResponse.next();
   }
 
-  // This is a username subdomain (e.g., crittercodes.pholio.link)
-  console.log(`[MIDDLEWARE] Username subdomain detected: ${subdomain}`);
+  // Split hostname to get subdomain
+  const parts = hostname.split('.');
+  console.log(`[MIDDLEWARE] Hostname parts: ${JSON.stringify(parts)}`);
   
-  // For dashboard paths, keep them but add username param
-  if (pathname.startsWith('/dashboard')) {
-    console.log(`[MIDDLEWARE] Rewriting /dashboard to /dashboard?username=${subdomain}`);
-    return NextResponse.rewrite(
-      new URL(`/dashboard?username=${subdomain}`, request.url)
-    );
+  const subdomain = parts[0];
+  console.log(`[MIDDLEWARE] Extracted subdomain: "${subdomain}"`);
+
+  // Skip if no subdomain or if it's root domain
+  if (subdomain === 'pholio') {
+    console.log(`[MIDDLEWARE] → root domain (pholio.link), skipping`);
+    return NextResponse.next();
   }
 
-  // For root or any other path, rewrite to /{username}
-  console.log(`[MIDDLEWARE] Rewriting to /${subdomain}${pathname}`);
-  return NextResponse.rewrite(
-    new URL(`/${subdomain}${pathname}`, request.url)
-  );
+  // Skip if www
+  if (subdomain === 'www') {
+    console.log(`[MIDDLEWARE] → www subdomain, skipping`);
+    return NextResponse.next();
+  }
+
+  // This is a username subdomain
+  console.log(`[MIDDLEWARE] ✓ Username subdomain: "${subdomain}"`);
+  
+  // For dashboard paths, rewrite with username param
+  if (pathname.startsWith('/dashboard')) {
+    console.log(`[MIDDLEWARE] Dashboard detected, rewriting to /dashboard?username=${subdomain}`);
+    const rewriteUrl = new URL(`/dashboard?username=${subdomain}`, request.url);
+    console.log(`[MIDDLEWARE] Rewrite URL: ${rewriteUrl.toString()}`);
+    return NextResponse.rewrite(rewriteUrl);
+  }
+
+  // For root or any other path, rewrite to /{username}{pathname}
+  const rewritePath = `/${subdomain}${pathname}`;
+  console.log(`[MIDDLEWARE] Rewriting to: ${rewritePath}`);
+  const rewriteUrl = new URL(rewritePath, request.url);
+  console.log(`[MIDDLEWARE] Full rewrite URL: ${rewriteUrl.toString()}`);
+  console.log(`[MIDDLEWARE END] =========================================\n`);
+  
+  return NextResponse.rewrite(rewriteUrl);
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
