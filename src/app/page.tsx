@@ -1,9 +1,54 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowRight, Check, Sparkles, Users, Zap } from 'lucide-react';
 
+function extractSubdomainFromHost(): string | null {
+  if (typeof window === 'undefined') return null;
+  
+  const hostname = window.location.hostname;
+  const parts = hostname.split('.');
+  
+  // localhost or IP
+  if (parts.length === 1 || hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
+    return null;
+  }
+  
+  // Check if it's a subdomain of pholio.link
+  if (hostname.endsWith('pholio.link') && hostname !== 'pholio.link' && hostname !== 'www.pholio.link') {
+    return parts[0];
+  }
+  
+  return null;
+}
+
 export default function Home() {
+  const router = useRouter();
+  const subdomain = extractSubdomainFromHost();
+
+  useEffect(() => {
+    if (subdomain) {
+      console.log('[HOME] Detected subdomain:', subdomain, '- redirecting to /profile');
+      router.push('/profile');
+    }
+  }, [subdomain, router]);
+
+  // Show loading state while redirecting
+  if (subdomain) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block mb-4">
+            <div className="w-12 h-12 border-4 border-purple-500 border-t-pink-600 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-gray-300">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       {/* Navigation */}

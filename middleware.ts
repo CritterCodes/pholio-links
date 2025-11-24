@@ -50,16 +50,16 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // For the root path on a subdomain, redirect to /profile
+    // For the root path on a subdomain, rewrite to /profile  
+    // Using rewrite instead of redirect to avoid caching issues
     if (pathname === '/') {
-      console.log('[MIDDLEWARE] Root path detected - redirecting to /profile');
+      console.log('[MIDDLEWARE] Root path on subdomain - rewriting to /profile');
       const url = request.nextUrl.clone();
       url.pathname = '/profile';
-      console.log('[MIDDLEWARE] Redirect URL:', url.toString());
-      return NextResponse.redirect(url);
+      return NextResponse.rewrite(url);
     }
   } else {
-    console.log('[MIDDLEWARE] No subdomain - passing through');
+    console.log('[MIDDLEWARE] No subdomain detected');
   }
 
   return NextResponse.next();
