@@ -36,18 +36,8 @@ export function middleware(request: NextRequest) {
       return NextResponse.next();
     }
     
-    // Root path goes to landing
-    if (pathname === '/') {
-      return NextResponse.redirect(new URL('/landing', request.url));
-    }
-    
-    // Already on landing page
-    if (pathname === '/landing') {
-      return NextResponse.next();
-    }
-    
-    // Everything else on root/www goes to landing page
-    return NextResponse.redirect(new URL('/landing', request.url));
+    // Root path and everything else on root/www goes to landing page
+    return NextResponse.next();
   }
 
   // If we have a subdomain (and it's not www), route to the public profile
