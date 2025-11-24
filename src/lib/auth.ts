@@ -65,6 +65,18 @@ export const authOptions = {
         token.id = user.id;
         token.username = (user as AuthUser).username;
         token.subscriptionTier = (user as AuthUser).subscriptionTier;
+        token.email = user.email;
+      } else if (token.email) {
+        // Refresh subscription tier from database on every token refresh
+        try {
+          const usersCollection = await getUsersCollection();
+          const dbUser = await usersCollection.findOne({ email: token.email });
+          if (dbUser) {
+            token.subscriptionTier = dbUser.subscriptionTier || 'free';
+          }
+        } catch (error) {
+          console.error('Error refreshing subscription tier:', error);
+        }
       }
       return token;
     },
