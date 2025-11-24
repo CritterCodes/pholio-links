@@ -1,3 +1,16 @@
+# Pholio Links
+
+A modern multi-tenant "link in bio" platform built with Next.js, TypeScript, and Tailwind CSS.
+
+## Features
+
+- **Multi-tenant architecture** with subdomain routing (`user.pholio.links`)
+- **User authentication** - Login with email or username
+- **Two subscription tiers**: Free (profile + links) and Paid (+ gallery + custom domain)
+- **Responsive design** optimized for mobile
+- **Real-time profile management** with image uploads
+- **Custom splash screens** for each user
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
