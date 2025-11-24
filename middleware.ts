@@ -45,7 +45,7 @@ export function middleware(request: NextRequest) {
 
   // Debug logging
   const host = request.headers.get('host') || 'unknown';
-  console.log(`[MW] host=${host} path=${pathname} subdomain=${subdomain} [v2]`);
+  console.log(`[MW] host=${host} path=${pathname} subdomain=${subdomain} [v3]`);
 
   if (subdomain) {
     // Block access to auth pages from subdomains
@@ -53,9 +53,11 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // For the root path on a subdomain, rewrite to the subdomain page
+    // For the root path on a subdomain, redirect to www with /s/[subdomain]
     if (pathname === '/') {
-      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
+      const redirectUrl = `https://www.pholio.link/s/${subdomain}`;
+      console.log(`[MW] Redirecting to ${redirectUrl}`);
+      return NextResponse.redirect(redirectUrl);
     }
   }
 
