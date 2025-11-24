@@ -438,7 +438,7 @@ export default function SettingsPage() {
 
                   {/* DNS Instructions */}
                   {showDnsInstructions && (
-                    <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-4 space-y-3">
+                    <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-4 space-y-4">
                       <h4 className="text-sm font-semibold text-white mb-3">How to Point Your Domain</h4>
                       
                       <div className="space-y-2">
@@ -457,7 +457,7 @@ export default function SettingsPage() {
                         <div>
                           <span className="text-slate-400">Name/Host:</span>
                           <span className="text-white ml-2">@</span>
-                          <span className="text-slate-500 ml-2">(or leave blank for root domain)</span>
+                          <span className="text-slate-500 ml-2">(or subdomain like "links")</span>
                         </div>
                         <div>
                           <span className="text-slate-400">Type:</span>
@@ -472,6 +472,20 @@ export default function SettingsPage() {
                           <span className="text-white ml-2">3600</span>
                           <span className="text-slate-500 ml-2">(default is fine)</span>
                         </div>
+                      </div>
+
+                      <div className="bg-purple-900/30 border border-purple-700/50 rounded p-3">
+                        <p className="text-xs text-purple-300 mb-2">
+                          <strong>Example:</strong> You can register <code className="bg-slate-800 px-2 py-1 rounded text-purple-200">crittercodes.dev</code> and use it with subdomains:
+                        </p>
+                        <ul className="text-xs text-purple-300 space-y-1 ml-4">
+                          <li>• <code className="bg-slate-800 px-2 py-1 rounded">crittercodes.dev</code> - Your profile</li>
+                          <li>• <code className="bg-slate-800 px-2 py-1 rounded">links.crittercodes.dev</code> - Also your profile</li>
+                          <li>• <code className="bg-slate-800 px-2 py-1 rounded">portfolio.crittercodes.dev</code> - Also your profile</li>
+                        </ul>
+                        <p className="text-xs text-purple-300 mt-2">
+                          All subdomains will automatically route to your Pholio profile!
+                        </p>
                       </div>
 
                       <div className="bg-blue-900/30 border border-blue-700/50 rounded p-3">
