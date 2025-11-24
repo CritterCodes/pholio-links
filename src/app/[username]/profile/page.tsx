@@ -42,7 +42,8 @@ interface UserProfile {
 async function getUserProfile(username: string): Promise<UserProfile | null> {
   try {
     console.log(`[USERNAME PROFILE] Fetching profile for username: "${username}"`);
-    const url = `/api/profile?username=${username}`;
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const url = `${baseUrl}/api/profile?username=${username}`;
     console.log(`[USERNAME PROFILE] Full fetch URL: ${url}`);
     
     const response = await fetch(url, {

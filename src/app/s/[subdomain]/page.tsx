@@ -42,7 +42,8 @@ interface UserProfile {
 async function getUserProfile(subdomain: string): Promise<UserProfile | null> {
   try {
     console.log(`[SUBDOMAIN PAGE] Fetching profile for subdomain: "${subdomain}"`);
-    const url = `/api/profile?username=${subdomain}`;
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const url = `${baseUrl}/api/profile?username=${subdomain}`;
     console.log(`[SUBDOMAIN PAGE] Full fetch URL: ${url}`);
     
     const response = await fetch(url, {
