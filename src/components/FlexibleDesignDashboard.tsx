@@ -471,7 +471,7 @@ export default function FlexibleDesignDashboard() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Design Dashboard</h1>
         {session?.user && (session.user as any).username && (
           <a
-            href={`https://${(session.user as any).username}.pholio.link`}
+            href={`https://${(session.user as any).username}.pholio.link/profile`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition"
