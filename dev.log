@@ -1171,3 +1171,5 @@ Error:   [31mx[0m You're importing a component that needs "next/headers". That
 Import trace for requested module:
 ./src/app/profile/page.tsx
  POST /api/billing/checkout 500 in 2.2s (compile: 2.1s, proxy.ts: 17ms, render: 37ms)
+ POST /api/billing/checkout 401 in 317ms (compile: 237ms, proxy.ts: 19ms, render: 61ms)
+ POST /api/billing/checkout 401 in 33ms (compile: 4ms, proxy.ts: 8ms, render: 20ms)

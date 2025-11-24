@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { 
@@ -16,6 +16,9 @@ import { FaStripe } from 'react-icons/fa';
 export default function SettingsPage() {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('account');
+  const [subscription, setSubscription] = useState<any>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   const tabs = [
     { id: 'account', name: 'Account', icon: HiUser },
@@ -23,6 +26,61 @@ export default function SettingsPage() {
     { id: 'integrations', name: 'Integrations', icon: HiGlobe },
     { id: 'security', name: 'Security', icon: HiShieldCheck },
   ];
+
+  // Fetch subscription on component mount
+  useEffect(() => {
+    if (activeTab === 'billing') {
+      fetchSubscription();
+    }
+  }, [activeTab]);
+
+  const fetchSubscription = async () => {
+    try {
+      const res = await fetch('/api/billing/subscription');
+      const data = await res.json();
+      setSubscription(data);
+    } catch (error) {
+      console.error('Failed to fetch subscription:', error);
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
+
+  const handleCheckout = async (plan: 'pro_monthly' | 'pro_yearly') => {
+    setCheckoutLoading(plan);
+    try {
+      const res = await fetch('/api/billing/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
+      });
+
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to start checkout');
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
+  const handlePortal = async () => {
+    try {
+      const res = await fetch('/api/billing/customer-portal', { method: 'POST' });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Portal error:', error);
+      alert('Failed to open billing portal');
+    }
+  };
 
   const renderAccountSettings = () => (
     <div className="space-y-6">
@@ -102,81 +160,140 @@ export default function SettingsPage() {
     </div>
   );
 
-  const renderBillingSettings = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium text-white mb-4">Current Plan</h3>
-        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-lg font-semibold text-white">Free Plan</h4>
-              <p className="text-sm text-gray-400">Perfect for getting started</p>
-              <ul className="mt-3 text-sm text-gray-300 space-y-1">
-                <li>• Unlimited links</li>
-                <li>• Basic themes</li>
-                <li>• Analytics</li>
-              </ul>
-            </div>
-            <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors">
-              Upgrade to Pro
-            </button>
-          </div>
-        </div>
-      </div>
+  const renderBillingSettings = () => {
+    const FEATURES = {
+      free: [
+        'Unlimited profile links',
+        'Basic customization',
+        'Link analytics (basic)',
+      ],
+      pro: [
+        'Everything in Free',
+        'Advanced customization',
+        'Detailed analytics',
+        'Custom domain',
+        'Link groups & collections',
+        'Priority support',
+      ],
+    };
 
-      <div>
-        <h3 className="text-lg font-medium text-white mb-4">Pro Features</h3>
-        <div className="bg-gradient-to-br from-purple-900/40 to-slate-800 rounded-lg border border-purple-700/50 p-6">
-          <div className="flex items-center mb-4">
-            <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-              PRO
-            </div>
-            <span className="ml-3 text-lg font-semibold text-white">$7/month or $60/year</span>
-          </div>
-          <ul className="space-y-2 text-sm text-gray-300">
-            <li className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-              Advanced themes and customization
-            </li>
-            <li className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-              Custom domains
-            </li>
-            <li className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-              Photo galleries
-            </li>
-            <li className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-              Detailed analytics
-            </li>
-            <li className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-              Priority support
-            </li>
-          </ul>
+    if (subscriptionLoading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-slate-400">Loading subscription details...</div>
         </div>
-      </div>
+      );
+    }
 
-      <div>
-        <h3 className="text-lg font-medium text-white mb-4">Payment Method</h3>
-        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
-          <div className="text-center py-8">
-            <HiCreditCard className="mx-auto h-12 w-12 text-gray-500" />
-            <h4 className="mt-2 text-sm font-medium text-white">Manage your billing</h4>
-            <p className="mt-1 text-sm text-gray-400">View plans, upgrade, and manage your subscription</p>
-            <button 
-              onClick={() => window.location.href = '/billing'}
-              className="mt-4 inline-flex items-center px-4 py-2 border border-slate-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-slate-700 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-            >
-              <FaStripe className="h-4 w-4 mr-2 text-purple-400" />
-              Go to Billing
-            </button>
+    return (
+      <div className="space-y-6">
+        {/* Current Plan */}
+        {subscription && (
+          <div>
+            <h3 className="text-lg font-medium text-white mb-4">Current Plan</h3>
+            <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    {subscription.tier === 'paid' ? 'Pro Plan' : 'Free Plan'}
+                  </h2>
+                  <p className="text-slate-400">
+                    {subscription.tier === 'paid' && subscription.currentPeriodEnd
+                      ? `Renews on ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`
+                      : 'Upgrade to unlock premium features'}
+                  </p>
+                </div>
+                {subscription.tier === 'paid' && (
+                  <button
+                    onClick={handlePortal}
+                    className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition"
+                  >
+                    Manage Subscription
+                  </button>
+                )}
+              </div>
+
+              {/* Features */}
+              <div className="mt-6">
+                <h3 className="text-sm font-semibold text-slate-300 uppercase mb-4">Included features:</h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {(subscription.tier === 'paid' ? FEATURES.pro : FEATURES.free).map((feature) => (
+                    <li key={feature} className="flex items-center text-slate-300">
+                      <span className="w-5 h-5 mr-3 text-purple-500">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Upgrade Plans - Only show for free tier */}
+        {subscription?.tier === 'free' && (
+          <div>
+            <h3 className="text-lg font-medium text-white mb-4">Upgrade to Pro</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Monthly Plan */}
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-purple-500 transition">
+                <h4 className="text-xl font-bold text-white mb-2">Pro Monthly</h4>
+                <p className="text-slate-400 mb-6">Perfect for getting started</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-white">$7</span>
+                  <span className="text-slate-400">/month</span>
+                </div>
+                <button
+                  onClick={() => handleCheckout('pro_monthly')}
+                  disabled={checkoutLoading === 'pro_monthly'}
+                  className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-slate-600 disabled:to-slate-600 text-white rounded-lg font-semibold transition"
+                >
+                  {checkoutLoading === 'pro_monthly' ? 'Processing...' : 'Upgrade Now'}
+                </button>
+                <ul className="mt-6 space-y-2">
+                  {FEATURES.pro.map((feature) => (
+                    <li key={feature} className="flex items-center text-sm text-slate-300">
+                      <span className="w-4 h-4 mr-2 text-purple-500">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Yearly Plan */}
+              <div className="bg-slate-800 border-2 border-purple-500 rounded-lg p-6 relative">
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                    Save 29%
+                  </span>
+                </div>
+                <h4 className="text-xl font-bold text-white mb-2">Pro Yearly</h4>
+                <p className="text-slate-400 mb-6">Best value for annual commitment</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-white">$60</span>
+                  <span className="text-slate-400">/year</span>
+                </div>
+                <button
+                  onClick={() => handleCheckout('pro_yearly')}
+                  disabled={checkoutLoading === 'pro_yearly'}
+                  className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-slate-600 disabled:to-slate-600 text-white rounded-lg font-semibold transition"
+                >
+                  {checkoutLoading === 'pro_yearly' ? 'Processing...' : 'Upgrade Now'}
+                </button>
+                <ul className="mt-6 space-y-2">
+                  {FEATURES.pro.map((feature) => (
+                    <li key={feature} className="flex items-center text-sm text-slate-300">
+                      <span className="w-4 h-4 mr-2 text-purple-500">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderIntegrationsSettings = () => (
     <div className="space-y-6">
