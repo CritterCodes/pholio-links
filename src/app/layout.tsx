@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   description: 'Create your personalized link in bio page with Pholio.Links',
 };
 
+// Force dynamic rendering so middleware can execute on all requests
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({
   children,
 }: Readonly<{
