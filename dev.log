@@ -25,3 +25,5 @@
 [PROFILE PAGE] Profile not found for username: "profile"
 [PROFILE PAGE] Profile is null, showing notFound()
  GET /profile 404 in 6.6s (compile: 3.2s, proxy.ts: 116ms, render: 3.3s)
+ GET /profile 200 in 824ms (compile: 671ms, proxy.ts: 18ms, render: 136ms)
+ GET /profile 200 in 34ms (compile: 4ms, proxy.ts: 8ms, render: 22ms)
