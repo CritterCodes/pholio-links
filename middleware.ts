@@ -1,79 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const hostname = request.headers.get('host');
+  const hostname = request.headers.get('host') || '';
   const pathname = request.nextUrl.pathname;
   
-  console.log(`[MIDDLEWARE] Request to: ${hostname}${pathname}`);
+  console.log(`[MIDDLEWARE] hostname="${hostname}", pathname="${pathname}"`);
+
+  // Don't process localhost
+  if (hostname.includes('localhost')) {
+    return NextResponse.next();
+  }
+
+  // Check if this is pholio.link domain
+  if (!hostname.includes('pholio.link')) {
+    return NextResponse.next();
+  }
+
+  // Split hostname to get subdomain
+  // crittercodes.pholio.link -> subdomain = "crittercodes"
+  // www.pholio.link -> subdomain = "www"  
+  // pholio.link -> no subdomain
+  const subdomain = hostname.split('.')[0];
   
-  if (!hostname) {
-    console.log('[MIDDLEWARE] No hostname detected');
+  console.log(`[MIDDLEWARE] subdomain="${subdomain}"`);
+
+  // Skip if no subdomain or if it's root domain
+  if (subdomain === 'pholio') {
+    console.log(`[MIDDLEWARE] Root domain, skipping`);
     return NextResponse.next();
   }
 
-  // Extract subdomain from hostname
-  // Format: subdomain.pholio.link
-  const parts = hostname.split('.');
-  let subdomain: string | null = null;
-
-  console.log(`[MIDDLEWARE] Hostname: ${hostname}, Parts:`, parts);
-
-  if (hostname.includes('pholio.link')) {
-    // Production: subdomain.pholio.link
-    if (parts.length > 2) {
-      subdomain = parts[0];
-      console.log(`[MIDDLEWARE] ✓ Subdomain detected: "${subdomain}"`);
-    } else {
-      console.log(`[MIDDLEWARE] Root or www domain (parts.length=${parts.length})`);
-    }
-  } else if (hostname.startsWith('localhost') || hostname.startsWith('127.0.0.1')) {
-    // Local development: localhost:3000 - no subdomain routing
-    console.log('[MIDDLEWARE] Localhost detected, skipping subdomain routing');
+  // Skip if www or other common subdomains
+  if (subdomain === 'www') {
+    console.log(`[MIDDLEWARE] www subdomain, skipping`);
     return NextResponse.next();
   }
 
-  // Route root domain and www to landing page
-  if (!subdomain || subdomain === 'www') {
-    console.log('[MIDDLEWARE] No subdomain or www detected');
-    // API routes pass through
-    if (pathname.startsWith('/api')) {
-      console.log('[MIDDLEWARE] → API route, passing through');
-      return NextResponse.next();
-    }
-    
-    // Auth routes pass through
-    if (pathname.startsWith('/auth') || pathname.startsWith('/login') || pathname.startsWith('/register')) {
-      console.log('[MIDDLEWARE] → Auth route, passing through');
-      return NextResponse.next();
-    }
-    
-    // Everything on root/www domain shows landing page
-    console.log('[MIDDLEWARE] → Landing page');
+  // Skip API and other special paths
+  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.startsWith('/static')) {
+    console.log(`[MIDDLEWARE] Special path, passing through`);
     return NextResponse.next();
   }
 
-  // If we have a subdomain (and it's not www), route to the public profile
-  if (subdomain && subdomain !== 'www' && subdomain !== 'dashboard') {
-    console.log(`[MIDDLEWARE] ✓ Username subdomain: "${subdomain}"`);
-    
-    // If it's a dashboard path, rewrite with username parameter
-    if (pathname.startsWith('/dashboard')) {
-      console.log(`[MIDDLEWARE] → Dashboard path, rewriting to /dashboard?username=${subdomain}`);
-      return NextResponse.rewrite(
-        new URL(`/dashboard?username=${subdomain}${pathname.substring(10)}`, request.url)
-      );
-    }
-    
-    // For any path on username subdomain, redirect to the profile route
-    // This is more reliable than rewrites on Vercel
-    console.log(`[MIDDLEWARE] → Redirecting to /${subdomain}${pathname}`);
-    return NextResponse.redirect(
-      new URL(`https://pholio.link/${subdomain}${pathname}`, request.url)
+  // This is a username subdomain (e.g., crittercodes.pholio.link)
+  console.log(`[MIDDLEWARE] Username subdomain detected: ${subdomain}`);
+  
+  // For dashboard paths, keep them but add username param
+  if (pathname.startsWith('/dashboard')) {
+    console.log(`[MIDDLEWARE] Rewriting /dashboard to /dashboard?username=${subdomain}`);
+    return NextResponse.rewrite(
+      new URL(`/dashboard?username=${subdomain}`, request.url)
     );
   }
 
-  console.log('[MIDDLEWARE] No special routing matched');
-  return NextResponse.next();
+  // For root or any other path, rewrite to /{username}
+  console.log(`[MIDDLEWARE] Rewriting to /${subdomain}${pathname}`);
+  return NextResponse.rewrite(
+    new URL(`/${subdomain}${pathname}`, request.url)
+  );
 }
 
 export const config = {
