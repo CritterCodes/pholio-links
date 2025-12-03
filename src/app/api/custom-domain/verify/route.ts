@@ -2,7 +2,8 @@
  * API endpoint to verify DNS record for custom domain
  * POST /api/custom-domain/verify
  *
- * Checks if the domain's A record points to our server IP (65.21.227.202)
+ * Checks if the domain's A record points to our server IP (23.94.251.158)
+ * Updated: Force rebuild to clear cache
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -13,7 +14,7 @@ import { promisify } from 'util';
 
 const resolve4 = promisify(dns.resolve4);
 
-const SERVER_IP = '65.21.227.202';
+const SERVER_IP = '23.94.251.158';
 
 export async function POST(request: NextRequest) {
   try {
