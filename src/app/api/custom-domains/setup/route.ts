@@ -140,6 +140,7 @@ export async function POST(request: NextRequest) {
     if (setupResult.success) {
       // Send webhook back to Vercel app to mark domain as active
       try {
+        const DOMAIN_SETUP_SECRET = process.env.DOMAIN_SETUP_SECRET || 'your-secret-key-change-in-production';
         const webhookSignature = crypto
           .createHmac('sha256', DOMAIN_SETUP_SECRET)
           .update(JSON.stringify({ userId, domain, status: 'active' }))
