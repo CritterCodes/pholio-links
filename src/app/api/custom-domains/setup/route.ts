@@ -1,6 +1,6 @@
 /**
  * Server-side API to set up custom domains
- * This runs on the user's private server (65.21.227.202)
+ * This runs on the user's private server (23.94.251.158)
  * Called from the Vercel app to programmatically:
  * 1. Create nginx config for the domain
  * 2. Generate SSL certificate via certbot

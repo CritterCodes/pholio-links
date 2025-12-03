@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs'; // Use Node.js runtime for MongoDB support
+
 // Cache for custom domain lookups (in-memory, 1 hour TTL)
 const domainCache = new Map<string, { username: string; timestamp: number } | null>();
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour

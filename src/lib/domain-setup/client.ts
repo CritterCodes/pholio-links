@@ -33,7 +33,8 @@ export class DomainSetupClient {
     webhookUrl: string
   ): Promise<SetupDomainResponse> {
     const body = { domain, userId, webhookUrl };
-    const signature = this.createSignature(body);
+    const bodyString = JSON.stringify(body);
+    const signature = this.createSignature(bodyString);
 
     const response = await fetch(`${this.serverUrl}/api/domains/setup`, {
       method: 'POST',
@@ -41,7 +42,7 @@ export class DomainSetupClient {
         'Content-Type': 'application/json',
         'X-Signature': signature,
       },
-      body: JSON.stringify(body),
+      body: bodyString,
     });
 
     if (!response.ok) {

@@ -17,7 +17,7 @@ import { DomainSetupClient } from '@/lib/domain-setup/client';
 import { validateDomain, checkBlacklist } from '@/lib/domain-setup/validation';
 
 const client = new DomainSetupClient(
-  process.env.DOMAIN_SETUP_SERVER_URL || 'https://65.21.227.202:3001',
+  process.env.DOMAIN_SETUP_SERVER_URL || 'https://domains.crittercodes.dev',
   process.env.DOMAIN_SETUP_SECRET || 'change-this-secret'
 );
 
