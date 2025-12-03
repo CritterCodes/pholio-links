@@ -42,6 +42,10 @@ export class DomainSetupClient {
         'X-Signature': signature,
       },
       body: JSON.stringify(body),
+      // Allow self-signed certificates until proper cert is obtained
+      // Once domains.crittercodes.dev A record is configured, we can use certbot
+      // @ts-ignore
+      rejectUnauthorized: false,
     });
 
     if (!response.ok) {
@@ -54,7 +58,10 @@ export class DomainSetupClient {
 
   async checkStatus(domain: string) {
     const response = await fetch(
-      `${this.serverUrl}/api/domains/${domain}/status`
+      `${this.serverUrl}/api/domains/${domain}/status`,
+      // Allow self-signed certificates until proper cert is obtained
+      // @ts-ignore
+      { rejectUnauthorized: false }
     );
 
     if (!response.ok) {
@@ -65,7 +72,11 @@ export class DomainSetupClient {
   }
 
   async health() {
-    const response = await fetch(`${this.serverUrl}/health`);
+    const response = await fetch(`${this.serverUrl}/health`, {
+      // Allow self-signed certificates until proper cert is obtained
+      // @ts-ignore
+      rejectUnauthorized: false,
+    });
 
     if (!response.ok) {
       throw new Error('Service unavailable');
