@@ -125,7 +125,7 @@ export default function SettingsPage() {
 
       if (!res.ok) {
         setCustomDomainError(
-          data.error || 'DNS record not found. Make sure you\'ve added the A record to 65.21.227.202'
+          data.error || 'DNS record not found. Make sure you\'ve added the A record to 23.94.251.158'
         );
         setDnsVerified(false);
       } else {
@@ -537,7 +537,7 @@ export default function SettingsPage() {
                             </div>
                             <div>
                               <span className="text-slate-400">Value/Points to:</span>
-                              <span className="text-yellow-300 ml-2 font-semibold">65.21.227.202</span>
+                              <span className="text-yellow-300 ml-2 font-semibold">23.94.251.158</span>
                             </div>
                             <div>
                               <span className="text-slate-400">TTL:</span>
@@ -561,7 +561,7 @@ export default function SettingsPage() {
                             </div>
                             <div>
                               <span className="text-slate-400">Value/Points to:</span>
-                              <span className="text-yellow-300 ml-2 font-semibold">65.21.227.202</span>
+                              <span className="text-yellow-300 ml-2 font-semibold">23.94.251.158</span>
                             </div>
                             <div>
                               <span className="text-slate-400">TTL:</span>
@@ -582,7 +582,7 @@ export default function SettingsPage() {
                         <ul className="text-xs text-blue-300 space-y-1 ml-4">
                           <li>• <strong>Name:</strong> <code className="bg-slate-800 px-1.5 py-0.5 rounded">@</code> (for root domain)</li>
                           <li>• <strong>Type:</strong> <code className="bg-slate-800 px-1.5 py-0.5 rounded">A</code></li>
-                          <li>• <strong>Value:</strong> <code className="bg-slate-800 px-1.5 py-0.5 rounded">65.21.227.202</code></li>
+                          <li>• <strong>Value:</strong> <code className="bg-slate-800 px-1.5 py-0.5 rounded">23.94.251.158</code></li>
                         </ul>
                         <p className="text-xs text-blue-300 mt-2">
                           Then click "Activate Domain" below and we'll automatically set up SSL and everything else!
