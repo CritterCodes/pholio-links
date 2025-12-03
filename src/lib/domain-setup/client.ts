@@ -42,8 +42,6 @@ export class DomainSetupClient {
         'X-Signature': signature,
       },
       body: JSON.stringify(body),
-      // @ts-ignore - Allow self-signed certificates for internal service
-      rejectUnauthorized: false,
     });
 
     if (!response.ok) {
@@ -56,9 +54,7 @@ export class DomainSetupClient {
 
   async checkStatus(domain: string) {
     const response = await fetch(
-      `${this.serverUrl}/api/domains/${domain}/status`,
-      // @ts-ignore - Allow self-signed certificates for internal service
-      { rejectUnauthorized: false }
+      `${this.serverUrl}/api/domains/${domain}/status`
     );
 
     if (!response.ok) {
@@ -69,10 +65,7 @@ export class DomainSetupClient {
   }
 
   async health() {
-    const response = await fetch(`${this.serverUrl}/health`, {
-      // @ts-ignore - Allow self-signed certificates for internal service
-      rejectUnauthorized: false,
-    });
+    const response = await fetch(`${this.serverUrl}/health`);
 
     if (!response.ok) {
       throw new Error('Service unavailable');
