@@ -36,6 +36,12 @@ export class DomainSetupClient {
     const bodyString = JSON.stringify(body);
     const signature = this.createSignature(bodyString);
 
+    // Debug logging
+    console.log('[DomainSetupClient] Sending request to:', `${this.serverUrl}/api/domains/setup`);
+    console.log('[DomainSetupClient] Body:', bodyString);
+    console.log('[DomainSetupClient] Signature:', signature);
+    console.log('[DomainSetupClient] Secret:', this.secret);
+
     const response = await fetch(`${this.serverUrl}/api/domains/setup`, {
       method: 'POST',
       headers: {

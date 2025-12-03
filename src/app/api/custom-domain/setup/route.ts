@@ -16,13 +16,14 @@ import { authOptions } from '@/lib/auth';
 import { DomainSetupClient } from '@/lib/domain-setup/client';
 import { validateDomain, checkBlacklist } from '@/lib/domain-setup/validation';
 
-const client = new DomainSetupClient(
-  process.env.DOMAIN_SETUP_SERVER_URL || 'https://domains.crittercodes.dev',
-  process.env.DOMAIN_SETUP_SECRET || 'change-this-secret'
-);
-
 export async function POST(request: NextRequest) {
   try {
+    // Create client with env variables loaded at request time
+    const client = new DomainSetupClient(
+      process.env.DOMAIN_SETUP_SERVER_URL || 'https://domains.crittercodes.dev',
+      process.env.DOMAIN_SETUP_SECRET || 'change-this-secret'
+    );
+
     const authSession = await getServerSession(authOptions);
 
     if (!authSession?.user?.email) {

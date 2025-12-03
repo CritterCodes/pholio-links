@@ -11,9 +11,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 
-// Validate request signature from Vercel app
-const DOMAIN_SETUP_SECRET = process.env.DOMAIN_SETUP_SECRET || 'your-secret-key-change-in-production';
-
 interface DomainSetupRequest {
   domain: string;
   userId: string;
@@ -22,6 +19,8 @@ interface DomainSetupRequest {
 }
 
 function verifySignature(body: string, signature: string): boolean {
+  // Load secret at request time to ensure env vars are available
+  const DOMAIN_SETUP_SECRET = process.env.DOMAIN_SETUP_SECRET || 'your-secret-key-change-in-production';
   const hash = crypto
     .createHmac('sha256', DOMAIN_SETUP_SECRET)
     .update(body)
