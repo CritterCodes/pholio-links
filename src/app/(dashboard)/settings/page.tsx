@@ -574,49 +574,30 @@ export default function SettingsPage() {
 
                       <div className="bg-blue-900/30 border border-blue-700/50 rounded p-3">
                         <p className="text-xs text-blue-300 mb-2">
-                          <strong>💡 Tip:</strong> By adding both <code className="bg-slate-800 px-1.5 py-0.5 rounded text-blue-300 font-mono">@</code> (root) and <code className="bg-slate-800 px-1.5 py-0.5 rounded text-blue-300 font-mono">*</code> (wildcard) records, you enable:
+                          <strong>📋 Simple Setup:</strong> Point any domain you own to your Pholio profile!
+                        </p>
+                        <p className="text-xs text-blue-300 mb-2">
+                          Just add an <strong>A record</strong> in your domain registrar:
                         </p>
                         <ul className="text-xs text-blue-300 space-y-1 ml-4">
-                          <li>✓ <code className="bg-slate-800 px-1.5 py-0.5 rounded">crittercodes.dev</code> - Works</li>
-                          <li>✓ <code className="bg-slate-800 px-1.5 py-0.5 rounded">links.crittercodes.dev</code> - Works</li>
-                          <li>✓ <code className="bg-slate-800 px-1.5 py-0.5 rounded">portfolio.crittercodes.dev</code> - Works</li>
-                          <li>✓ <code className="bg-slate-800 px-1.5 py-0.5 rounded">any-subdomain.crittercodes.dev</code> - Works</li>
+                          <li>• <strong>Name:</strong> <code className="bg-slate-800 px-1.5 py-0.5 rounded">@</code> (for root domain)</li>
+                          <li>• <strong>Type:</strong> <code className="bg-slate-800 px-1.5 py-0.5 rounded">A</code></li>
+                          <li>• <strong>Value:</strong> <code className="bg-slate-800 px-1.5 py-0.5 rounded">65.21.227.202</code></li>
                         </ul>
                         <p className="text-xs text-blue-300 mt-2">
-                          All subdomains automatically route to your Pholio profile!
+                          Then click "Activate Domain" below and we'll automatically set up SSL and everything else!
                         </p>
-                      </div>
-
-                      <div className="bg-purple-900/30 border border-purple-700/50 rounded p-3">
-                        <p className="text-xs text-purple-300 mb-2">
-                          <strong>Alternative:</strong> If you prefer CNAME records (only works for subdomains, not root):
-                        </p>
-                        <div className="bg-slate-800 rounded p-2 text-xs font-mono ml-2 space-y-1">
-                          <div>
-                            <span className="text-slate-400">Name:</span>
-                            <span className="text-white ml-2">links</span>
-                            <span className="text-slate-500 ml-2">(or any subdomain)</span>
-                          </div>
-                          <div>
-                            <span className="text-slate-400">Type:</span>
-                            <span className="text-purple-300 ml-2">CNAME</span>
-                          </div>
-                          <div>
-                            <span className="text-slate-400">Value:</span>
-                            <span className="text-green-300 ml-2">pholio.link</span>
-                          </div>
-                        </div>
                       </div>
 
                       <div className="bg-amber-900/30 border border-amber-700/50 rounded p-3">
                         <p className="text-xs text-amber-300">
-                          <strong>⏱️ DNS Propagation:</strong> Changes can take 24-48 hours globally. Check status at <span className="font-mono text-amber-200 bg-slate-800 px-1 py-0.5 rounded">dnschecker.org</span> or <span className="font-mono text-amber-200 bg-slate-800 px-1 py-0.5 rounded">mxtoolbox.com</span>
+                          <strong>⏱️ DNS Propagation:</strong> DNS changes can take a few minutes to a few hours. After updating your DNS records, click "Verify DNS" to check if they've propagated.
                         </p>
                       </div>
 
                       <div className="bg-green-900/30 border border-green-700/50 rounded p-3">
                         <p className="text-xs text-green-300">
-                          <strong>✅ Quick test:</strong> After DNS updates propagate, try accessing <code className="bg-slate-800 px-1.5 py-0.5 rounded">your-domain.com</code> - you should see your Pholio profile!
+                          <strong>✅ Then what?</strong> Once DNS is verified and you click "Activate Domain", we automatically set up SSL certificates and everything else. Your domain will work immediately!
                         </p>
                       </div>
                     </div>
