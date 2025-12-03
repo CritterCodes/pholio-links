@@ -24,6 +24,8 @@ export default function SettingsPage() {
   const [customDomainError, setCustomDomainError] = useState<string>('');
   const [customDomainSuccess, setCustomDomainSuccess] = useState<string>('');
   const [showDnsInstructions, setShowDnsInstructions] = useState(false);
+  const [dnsVerifying, setDnsVerifying] = useState(false);
+  const [dnsVerified, setDnsVerified] = useState(false);
 
   const tabs = [
     { id: 'account', name: 'Account', icon: HiUser },
@@ -101,30 +103,91 @@ export default function SettingsPage() {
     }
   };
 
-  const handleCustomDomainUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const verifyDnsRecord = async () => {
+    if (!customDomain) {
+      setCustomDomainError('Please enter a domain first');
+      return;
+    }
+
+    setDnsVerifying(true);
     setCustomDomainError('');
-    setCustomDomainSuccess('');
-    setCustomDomainLoading(true);
+    setDnsVerified(false);
 
     try {
-      const res = await fetch('/api/custom-domain', {
+      // Call our API to verify DNS
+      const res = await fetch('/api/custom-domain/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customDomain }),
+        body: JSON.stringify({ domain: customDomain }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setCustomDomainError(data.error || 'Failed to update custom domain');
+        setCustomDomainError(
+          data.error || 'DNS record not found. Make sure you\'ve added the A record to 65.21.227.202'
+        );
+        setDnsVerified(false);
       } else {
-        setCustomDomainSuccess(data.message || 'Custom domain updated successfully');
-        setTimeout(() => setCustomDomainSuccess(''), 3000);
+        setDnsVerified(true);
+        setCustomDomainSuccess('✓ DNS record verified! Click "Activate Domain" to complete setup.');
       }
     } catch (error) {
-      console.error('Custom domain error:', error);
-      setCustomDomainError('Failed to update custom domain');
+      console.error('DNS verification error:', error);
+      setCustomDomainError('Failed to verify DNS record');
+      setDnsVerified(false);
+    } finally {
+      setDnsVerifying(false);
+    }
+  };
+
+  const handleCustomDomainActivate = async () => {
+    if (!dnsVerified) {
+      setCustomDomainError('Please verify your DNS record first');
+      return;
+    }
+
+    setCustomDomainLoading(true);
+    setCustomDomainError('');
+    setCustomDomainSuccess('');
+
+    try {
+      // Step 1: Save domain to database (marks as pending)
+      const saveRes = await fetch('/api/custom-domain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customDomain }),
+      });
+
+      if (!saveRes.ok) {
+        const data = await saveRes.json();
+        setCustomDomainError(data.error || 'Failed to save domain');
+        setCustomDomainLoading(false);
+        return;
+      }
+
+      // Step 2: Trigger domain setup on server (nginx + certbot)
+      const setupRes = await fetch('/api/custom-domain/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain: customDomain }),
+      });
+
+      const setupData = await setupRes.json();
+
+      if (!setupRes.ok) {
+        setCustomDomainError(
+          setupData.error || 'Failed to activate domain. Please try again.'
+        );
+      } else {
+        setCustomDomainSuccess(
+          'Domain activation started! Your SSL certificate is being generated. This usually takes 1-2 minutes.'
+        );
+        setDnsVerified(false);
+      }
+    } catch (error) {
+      console.error('Domain activation error:', error);
+      setCustomDomainError('Failed to activate domain');
     } finally {
       setCustomDomainLoading(false);
     }
@@ -413,7 +476,7 @@ export default function SettingsPage() {
             
             {(session?.user as any)?.subscriptionTier === 'paid' ? (
               <div>
-                <form onSubmit={handleCustomDomainUpdate} className="space-y-4">
+                <form className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                       Domain
@@ -422,9 +485,15 @@ export default function SettingsPage() {
                       type="text"
                       placeholder="example.com"
                       value={customDomain}
-                      onChange={(e) => setCustomDomain(e.target.value.toLowerCase())}
+                      onChange={(e) => {
+                        setCustomDomain(e.target.value.toLowerCase());
+                        setDnsVerified(false); // Reset verification when input changes
+                      }}
                       className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     />
+                    <p className="text-xs text-slate-400 mt-1">
+                      Enter your custom domain (e.g., example.com or links.example.com)
+                    </p>
                   </div>
 
                   {/* DNS Instructions Toggle */}
@@ -565,13 +634,22 @@ export default function SettingsPage() {
                     </div>
                   )}
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <button
-                      type="submit"
-                      disabled={customDomainLoading || !customDomain}
+                      type="button"
+                      onClick={verifyDnsRecord}
+                      disabled={dnsVerifying || !customDomain}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 text-white rounded-lg font-medium text-sm transition-colors"
+                    >
+                      {dnsVerifying ? 'Verifying DNS...' : dnsVerified ? '✓ DNS Verified' : 'Verify DNS'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCustomDomainActivate}
+                      disabled={customDomainLoading || !dnsVerified}
                       className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-slate-600 disabled:to-slate-600 text-white rounded-lg font-medium text-sm transition-colors"
                     >
-                      {customDomainLoading ? 'Saving...' : 'Save Domain'}
+                      {customDomainLoading ? 'Activating...' : 'Activate Domain'}
                     </button>
                     {customDomain && (
                       <button
