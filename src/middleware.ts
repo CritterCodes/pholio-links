@@ -102,11 +102,15 @@ export async function middleware(request: NextRequest) {
     // Redirect root to /profile
     if (pathname === '/') {
       url.pathname = `/${subdomain}/profile`;
-      return NextResponse.rewrite(url);
+      const response = NextResponse.rewrite(url);
+      response.cookies.set('debug-hostname', hostname, { path: '/', maxAge: 60 });
+      return response;
     }
     // For dashboard/authenticated routes, let them pass through normally
     // Users should access dashboard at username.pholio.link/dashboard, not as /username/dashboard
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.cookies.set('debug-hostname', hostname, { path: '/', maxAge: 60 });
+    return response;
   }
 
   // Check for custom domain - handle gracefully with caching
@@ -142,6 +146,7 @@ export async function middleware(request: NextRequest) {
           response.headers.set('X-Custom-Domain-User', user.username);
           // Set a cookie for client-side debugging
           response.cookies.set('debug-custom-domain', `User found: ${user.username}`, { path: '/', maxAge: 10 });
+          response.cookies.set('debug-hostname', hostname, { path: '/', maxAge: 60 });
           return response;
         }
       } else {
@@ -150,6 +155,7 @@ export async function middleware(request: NextRequest) {
         response.headers.set('X-Custom-Domain-Debug', `No user found for ${hostname}`);
         // Set a cookie for client-side debugging
         response.cookies.set('debug-custom-domain', `No user found for ${hostname}`, { path: '/', maxAge: 10 });
+        response.cookies.set('debug-hostname', hostname, { path: '/', maxAge: 60 });
         return response;
       }
     } catch (error) {
@@ -158,11 +164,14 @@ export async function middleware(request: NextRequest) {
       const response = NextResponse.next();
       response.headers.set('X-Custom-Domain-Error', 'Internal Error');
       response.cookies.set('debug-custom-domain', `Error: ${error instanceof Error ? error.message : String(error)}`, { path: '/', maxAge: 10 });
+      response.cookies.set('debug-hostname', hostname, { path: '/', maxAge: 60 });
       return response;
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.cookies.set('debug-hostname', hostname, { path: '/', maxAge: 60 });
+  return response;
 }
 
 export const config = {

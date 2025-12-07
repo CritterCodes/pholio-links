@@ -29,16 +29,22 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const debugCookie = cookieStore.get('debug-custom-domain');
+  const hostnameCookie = cookieStore.get('debug-hostname');
 
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {debugCookie && (
+        {(debugCookie || hostnameCookie) && (
           <script
             dangerouslySetInnerHTML={{
-              __html: `console.log("%c[Custom Domain Debug] ${debugCookie.value}", "background: #222; color: #bada55; font-size: 14px; padding: 4px; border-radius: 4px;");`
+              __html: `
+                console.group("%c[Middleware Debug]", "background: #222; color: #bada55; font-size: 12px; padding: 2px; border-radius: 2px;");
+                console.log("Hostname:", "${hostnameCookie?.value || 'unknown'}");
+                console.log("Status:", "${debugCookie?.value || 'no status'}");
+                console.groupEnd();
+              `
             }}
           />
         )}
