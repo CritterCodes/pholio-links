@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'nodejs'; // Use Node.js runtime for MongoDB support
-
 // Cache for custom domain lookups (in-memory, 1 hour TTL)
 const domainCache = new Map<string, { username: string; timestamp: number } | null>();
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 async function getCachedUser(
   domain: string,
-  usersCollection: any
+  origin: string
 ): Promise<{ username: string } | null> {
   const cached = domainCache.get(domain);
   const now = Date.now();
@@ -23,17 +21,39 @@ async function getCachedUser(
     return null;
   }
 
-  // Query database
-  const user = await usersCollection.findOne({
-    'profile.customDomain': domain.toLowerCase(),
-  });
+  // Query API instead of database directly
+  try {
+    // Construct absolute URL for the API call
+    // We use the request origin to ensure we hit the same environment
+    const apiUrl = new URL('/api/internal/lookup-domain', origin);
+    apiUrl.searchParams.set('domain', domain);
 
-  // Cache the result
-  if (user) {
-    domainCache.set(domain, { username: user.username, timestamp: now });
-    return { username: user.username };
-  } else {
+    const response = await fetch(apiUrl.toString(), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Cache the fetch result for 60 seconds at the edge
+      next: { revalidate: 60 }
+    });
+
+    if (!response.ok) {
+      // If 404, cache null
+      if (response.status === 404) {
+        domainCache.set(domain, null);
+      }
+      return null;
+    }
+
+    const data = await response.json();
+    if (data.username) {
+      domainCache.set(domain, { username: data.username, timestamp: now });
+      return { username: data.username };
+    }
+    
     domainCache.set(domain, null);
+    return null;
+  } catch (error) {
+    console.error('Error fetching domain info:', error);
     return null;
   }
 }
@@ -94,14 +114,11 @@ export async function middleware(request: NextRequest) {
   // Check for custom domain - handle gracefully with caching
   if (!isPholia && !isLocalhost && !subdomain) {
     try {
-      // Lazy load the database module only when needed
-      const { getUsersCollection } = await import('@/lib/mongodb');
-      const usersCollection = await getUsersCollection();
-
       let user = null;
+      const origin = request.nextUrl.origin;
 
       // Strategy 1: Try exact domain match (e.g., links.crittercodes.dev)
-      user = await getCachedUser(hostname, usersCollection);
+      user = await getCachedUser(hostname, origin);
       if (user) {
         console.log(`[Custom Domain] Exact match: ${hostname} -> ${user.username}`);
       }
@@ -110,7 +127,7 @@ export async function middleware(request: NextRequest) {
       // This allows subdomain.links.crittercodes.dev to work if links.crittercodes.dev is registered
       if (!user && parts.length > 2) {
         const rootDomain = parts.slice(1).join('.');
-        user = await getCachedUser(rootDomain, usersCollection);
+        user = await getCachedUser(rootDomain, origin);
         if (user) {
           console.log(`[Custom Domain] Root domain fallback: ${hostname} -> ${rootDomain} -> ${user.username}`);
         }
