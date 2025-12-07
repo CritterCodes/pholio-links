@@ -40,7 +40,14 @@ async function getCachedUser(
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
-  const hostname = request.headers.get('host') || '';
+  // Check X-Forwarded-Host first (for proxy support), then fall back to Host
+  let hostname = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
+  
+  // Handle multiple values in X-Forwarded-Host (take the first one)
+  if (hostname.includes(',')) {
+    hostname = hostname.split(',')[0].trim();
+  }
+
   const pathname = url.pathname;
 
   // Skip API routes and static files
