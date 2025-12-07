@@ -40,7 +40,35 @@ export async function GET() {
     }
 
     // Get subscriptions from Stripe
-    const subscription = await getSubscriptionsByCustomer(user.stripeCustomerId);
+    let subscription;
+    try {
+      subscription = await getSubscriptionsByCustomer(user.stripeCustomerId);
+    } catch (error: any) {
+      // Handle "No such customer" error (e.g. switching between test/live mode)
+      if (error?.code === 'resource_missing' && error?.param === 'customer') {
+        console.warn(`Stripe customer ${user.stripeCustomerId} missing. Resetting user record.`);
+        
+        // Remove invalid customer ID from user record
+        await usersCollection.updateOne(
+          { _id: user._id },
+          { 
+            $unset: { stripeCustomerId: "" },
+            $set: { subscriptionTier: "free" }
+          }
+        );
+        
+        // Return free tier response
+        return NextResponse.json({
+          tier: 'free',
+          plan: null,
+          active: false,
+          currentPeriodStart: null,
+          currentPeriodEnd: null,
+          price: 0,
+        });
+      }
+      throw error;
+    }
 
     if (!subscription) {
       return NextResponse.json({

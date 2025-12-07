@@ -66,15 +66,45 @@ export async function POST(request: NextRequest) {
     const baseUrl = `${protocol}://${host}`;
 
     // Create checkout session
-    const checkoutSession = await createCheckoutSession(
-      stripeCustomerId,
-      priceId,
-      `${baseUrl}/settings?tab=billing&session_id={CHECKOUT_SESSION_ID}`,
-      `${baseUrl}/settings?tab=billing`,
-      { username: user.username, plan },
-      true, // Allow promotion codes
-      (selectedPlan as any).trialPeriodDays // Pass trial period if defined in plan
-    );
+    let checkoutSession;
+    try {
+      checkoutSession = await createCheckoutSession(
+        stripeCustomerId,
+        priceId,
+        `${baseUrl}/settings?tab=billing&session_id={CHECKOUT_SESSION_ID}`,
+        `${baseUrl}/settings?tab=billing`,
+        { username: user.username, plan },
+        true, // Allow promotion codes
+        (selectedPlan as any).trialPeriodDays // Pass trial period if defined in plan
+      );
+    } catch (error: any) {
+      // Handle invalid customer ID (e.g. from sandbox/live switch)
+      if (error?.code === 'resource_missing' && error?.param === 'customer') {
+        console.warn(`Stripe customer ${stripeCustomerId} missing during checkout. Creating new customer.`);
+        
+        const customer = await createCustomer(user.email, user.username);
+        stripeCustomerId = customer.id;
+        
+        // Update user with new Stripe customer ID
+        await usersCollection.updateOne(
+          { _id: user._id },
+          { $set: { stripeCustomerId } }
+        );
+        
+        // Retry checkout with new customer ID
+        checkoutSession = await createCheckoutSession(
+          stripeCustomerId,
+          priceId,
+          `${baseUrl}/settings?tab=billing&session_id={CHECKOUT_SESSION_ID}`,
+          `${baseUrl}/settings?tab=billing`,
+          { username: user.username, plan },
+          true,
+          (selectedPlan as any).trialPeriodDays
+        );
+      } else {
+        throw error;
+      }
+    }
 
     return NextResponse.json({ 
       sessionId: checkoutSession.id,
