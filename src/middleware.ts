@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Cache for custom domain lookups (in-memory, 1 hour TTL)
-const domainCache = new Map<string, { username: string; timestamp: number } | null>();
-const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+// Cache for custom domain lookups (in-memory, 1 minute TTL)
+const domainCache = new Map<string, { username: string | null; timestamp: number }>();
+const CACHE_TTL = 60 * 1000; // 1 minute
 
 async function getCachedUser(
   domain: string,
@@ -12,12 +12,10 @@ async function getCachedUser(
   const now = Date.now();
 
   // Return cached result if still valid
-  if (cached && typeof cached === 'object' && 'timestamp' in cached && now - cached.timestamp < CACHE_TTL) {
-    return { username: cached.username };
-  }
-
-  // If we have a cached null marker, return null
-  if (cached === null) {
+  if (cached && now - cached.timestamp < CACHE_TTL) {
+    if (cached.username) {
+      return { username: cached.username };
+    }
     return null;
   }
 
@@ -37,9 +35,9 @@ async function getCachedUser(
     });
 
     if (!response.ok) {
-      // If 404, cache null
+      // If 404, cache null result
       if (response.status === 404) {
-        domainCache.set(domain, null);
+        domainCache.set(domain, { username: null, timestamp: now });
       }
       return null;
     }
@@ -50,7 +48,7 @@ async function getCachedUser(
       return { username: data.username };
     }
     
-    domainCache.set(domain, null);
+    domainCache.set(domain, { username: null, timestamp: now });
     return null;
   } catch (error) {
     console.error('Error fetching domain info:', error);
