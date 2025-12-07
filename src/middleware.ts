@@ -140,12 +140,16 @@ export async function middleware(request: NextRequest) {
           console.log(`[Custom Domain] Rewriting ${hostname}${pathname} to ${url.pathname}`);
           const response = NextResponse.rewrite(url);
           response.headers.set('X-Custom-Domain-User', user.username);
+          // Set a cookie for client-side debugging
+          response.cookies.set('debug-custom-domain', `User found: ${user.username}`, { path: '/', maxAge: 10 });
           return response;
         }
       } else {
         console.log(`[Custom Domain] No user found for ${hostname}`);
         const response = NextResponse.next();
         response.headers.set('X-Custom-Domain-Debug', `No user found for ${hostname}`);
+        // Set a cookie for client-side debugging
+        response.cookies.set('debug-custom-domain', `No user found for ${hostname}`, { path: '/', maxAge: 10 });
         return response;
       }
     } catch (error) {
@@ -153,6 +157,7 @@ export async function middleware(request: NextRequest) {
       // Continue to normal flow - don't crash
       const response = NextResponse.next();
       response.headers.set('X-Custom-Domain-Error', 'Internal Error');
+      response.cookies.set('debug-custom-domain', `Error: ${error instanceof Error ? error.message : String(error)}`, { path: '/', maxAge: 10 });
       return response;
     }
   }
