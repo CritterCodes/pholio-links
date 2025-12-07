@@ -72,7 +72,8 @@ export async function POST(request: NextRequest) {
       `${baseUrl}/settings?tab=billing&session_id={CHECKOUT_SESSION_ID}`,
       `${baseUrl}/settings?tab=billing`,
       { username: user.username, plan },
-      true // Allow promotion codes
+      true, // Allow promotion codes
+      (selectedPlan as any).trialPeriodDays // Pass trial period if defined in plan
     );
 
     return NextResponse.json({ 

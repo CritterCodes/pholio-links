@@ -33,6 +33,7 @@ export const SUBSCRIPTION_PLANS = {
     monthlyPrice: 7.00,
     yearlyPrice: null,
     priceId: process.env.STRIPE_PRICE_ID_MONTHLY || 'price_pro_monthly', // Update with your Stripe price ID
+    trialPeriodDays: undefined, // Set to e.g. 14 or 30 to enable free trial
     features: [
       'Everything in Free',
       'Unlimited links',
@@ -50,6 +51,7 @@ export const SUBSCRIPTION_PLANS = {
     monthlyPrice: 5.00,
     yearlyPrice: 60.00,
     priceId: process.env.STRIPE_PRICE_ID_YEARLY || 'price_pro_yearly', // Update with your Stripe price ID
+    trialPeriodDays: undefined, // Set to e.g. 14 or 30 to enable free trial
     features: [
       'Everything in Free',
       'Unlimited links',
@@ -91,10 +93,11 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string,
   metadata?: Record<string, string>,
-  allowPromotionCodes: boolean = false
+  allowPromotionCodes: boolean = false,
+  trialPeriodDays?: number
 ) {
   try {
-    return await stripe.checkout.sessions.create({
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [
@@ -108,7 +111,15 @@ export async function createCheckoutSession(
       cancel_url: cancelUrl,
       metadata: metadata || {},
       allow_promotion_codes: allowPromotionCodes,
-    });
+    };
+
+    if (trialPeriodDays) {
+      sessionConfig.subscription_data = {
+        trial_period_days: trialPeriodDays,
+      };
+    }
+
+    return await stripe.checkout.sessions.create(sessionConfig);
   } catch (error) {
     console.error('Error creating checkout session:', error);
     throw error;
