@@ -115,7 +115,9 @@ export async function middleware(request: NextRequest) {
   if (!isPholia && !isLocalhost && !subdomain) {
     try {
       let user = null;
-      const origin = request.nextUrl.origin;
+      // Use a hardcoded origin for internal API calls to avoid loop issues or invalid origins
+      // In production, this should be the main domain
+      const origin = 'https://pholio.link';
 
       // Strategy 1: Try exact domain match (e.g., links.crittercodes.dev)
       user = await getCachedUser(hostname, origin);
