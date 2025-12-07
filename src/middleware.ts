@@ -58,10 +58,12 @@ async function getCachedUser(
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
-  // Check X-Forwarded-Host first (for proxy support), then fall back to Host
-  let hostname = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
+  // Check X-Pholio-Custom-Domain first (explicit override), then X-Forwarded-Host, then Host
+  let hostname = request.headers.get('x-pholio-custom-domain') || 
+                 request.headers.get('x-forwarded-host') || 
+                 request.headers.get('host') || '';
   
-  // Handle multiple values in X-Forwarded-Host (take the first one)
+  // Handle multiple values in headers (take the first one)
   if (hostname.includes(',')) {
     hostname = hostname.split(',')[0].trim();
   }
