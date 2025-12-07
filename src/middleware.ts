@@ -115,7 +115,7 @@ export async function middleware(request: NextRequest) {
       let user = null;
       // Use a hardcoded origin for internal API calls to avoid loop issues or invalid origins
       // In production, this should be the main domain
-      const origin = 'https://pholio.link';
+      const origin = 'https://www.pholio.link';
 
       // Strategy 1: Try exact domain match (e.g., links.crittercodes.dev)
       user = await getCachedUser(hostname, origin);
@@ -138,14 +138,22 @@ export async function middleware(request: NextRequest) {
         if (pathname === '/' || pathname === '/profile') {
           url.pathname = `/${user.username}/profile`;
           console.log(`[Custom Domain] Rewriting ${hostname}${pathname} to ${url.pathname}`);
-          return NextResponse.rewrite(url);
+          const response = NextResponse.rewrite(url);
+          response.headers.set('X-Custom-Domain-User', user.username);
+          return response;
         }
       } else {
         console.log(`[Custom Domain] No user found for ${hostname}`);
+        const response = NextResponse.next();
+        response.headers.set('X-Custom-Domain-Debug', `No user found for ${hostname}`);
+        return response;
       }
     } catch (error) {
       console.error('Error checking custom domain in middleware:', error);
       // Continue to normal flow - don't crash
+      const response = NextResponse.next();
+      response.headers.set('X-Custom-Domain-Error', 'Internal Error');
+      return response;
     }
   }
 
