@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { getUsersCollection } from '@/lib/mongodb';
 import { getSubscriptionsByCustomer } from '@/lib/stripe';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const authSession = await getServerSession(authOptions);
