@@ -66,7 +66,9 @@ export async function GET() {
     }
 
     // Update user's subscription tier if needed
-    const expectedTier = subscription.status === 'active' ? 'paid' : 'free';
+    const isActive = subscription.status === 'active' || subscription.status === 'trialing';
+    const expectedTier = isActive ? 'paid' : 'free';
+    
     if (user.subscriptionTier !== expectedTier) {
       await usersCollection.updateOne(
         { _id: user._id },
@@ -78,7 +80,7 @@ export async function GET() {
     return NextResponse.json({
       tier: expectedTier,
       plan,
-      active: subscription.status === 'active',
+      active: isActive,
       currentPeriodStart: new Date(subData.current_period_start * 1000),
       currentPeriodEnd: new Date(subData.current_period_end * 1000),
       price,

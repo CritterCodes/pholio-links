@@ -151,10 +151,14 @@ export async function getSubscriptionsByCustomer(customerId: string) {
   try {
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
-      status: 'active',
-      limit: 1,
+      status: 'all',
+      limit: 10,
     });
-    return subscriptions.data[0] || null;
+    
+    // Return the first active or trialing subscription
+    return subscriptions.data.find(sub => 
+      sub.status === 'active' || sub.status === 'trialing'
+    ) || null;
   } catch (error) {
     console.error('Error retrieving customer subscriptions:', error);
     throw error;

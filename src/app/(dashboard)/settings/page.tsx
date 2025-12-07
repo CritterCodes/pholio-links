@@ -337,11 +337,13 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-2">
-                    {subscription.tier === 'paid' ? 'Pro Plan' : 'Free Plan'}
+                    {subscription.tier === 'paid' 
+                      ? (subscription.status === 'trialing' ? 'Pro Plan (Trial)' : 'Pro Plan') 
+                      : 'Free Plan'}
                   </h2>
                   <p className="text-slate-400">
                     {subscription.tier === 'paid' && subscription.currentPeriodEnd
-                      ? `Renews on ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`
+                      ? `${subscription.status === 'trialing' ? 'Trial ends' : 'Renews'} on ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`
                       : 'Upgrade to unlock premium features'}
                   </p>
                 </div>
