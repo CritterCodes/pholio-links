@@ -91,7 +91,7 @@ export async function GET() {
   } catch (error) {
     console.error('Subscription fetch error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch subscription' },
+      { error: `Failed to fetch subscription: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     );
   }

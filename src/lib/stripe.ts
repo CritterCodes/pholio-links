@@ -149,16 +149,22 @@ export async function getSubscription(subscriptionId: string) {
 
 export async function getSubscriptionsByCustomer(customerId: string) {
   try {
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: 'all',
-      limit: 10,
-    });
+    // Fetch active and trialing subscriptions separately to ensure we get them
+    // regardless of API version defaults or 'all' support
+    const [activeSubs, trialingSubs] = await Promise.all([
+      stripe.subscriptions.list({
+        customer: customerId,
+        status: 'active',
+        limit: 1,
+      }),
+      stripe.subscriptions.list({
+        customer: customerId,
+        status: 'trialing',
+        limit: 1,
+      })
+    ]);
     
-    // Return the first active or trialing subscription
-    return subscriptions.data.find(sub => 
-      sub.status === 'active' || sub.status === 'trialing'
-    ) || null;
+    return activeSubs.data[0] || trialingSubs.data[0] || null;
   } catch (error) {
     console.error('Error retrieving customer subscriptions:', error);
     throw error;
