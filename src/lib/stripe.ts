@@ -33,7 +33,7 @@ export const SUBSCRIPTION_PLANS = {
     monthlyPrice: 7.00,
     yearlyPrice: null,
     priceId: process.env.STRIPE_PRICE_ID_MONTHLY || 'price_pro_monthly', // Update with your Stripe price ID
-    trialPeriodDays: undefined, // Set to e.g. 14 or 30 to enable free trial
+    trialPeriodDays: 30, // 30-day free trial
     features: [
       'Everything in Free',
       'Unlimited links',
@@ -51,7 +51,7 @@ export const SUBSCRIPTION_PLANS = {
     monthlyPrice: 5.00,
     yearlyPrice: 60.00,
     priceId: process.env.STRIPE_PRICE_ID_YEARLY || 'price_pro_yearly', // Update with your Stripe price ID
-    trialPeriodDays: undefined, // Set to e.g. 14 or 30 to enable free trial
+    trialPeriodDays: 30, // 30-day free trial
     features: [
       'Everything in Free',
       'Unlimited links',
