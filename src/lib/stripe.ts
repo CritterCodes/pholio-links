@@ -90,7 +90,8 @@ export async function createCheckoutSession(
   priceId: string,
   successUrl: string,
   cancelUrl: string,
-  metadata?: Record<string, string>
+  metadata?: Record<string, string>,
+  allowPromotionCodes: boolean = false
 ) {
   try {
     return await stripe.checkout.sessions.create({
@@ -106,6 +107,7 @@ export async function createCheckoutSession(
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: metadata || {},
+      allow_promotion_codes: allowPromotionCodes,
     });
   } catch (error) {
     console.error('Error creating checkout session:', error);

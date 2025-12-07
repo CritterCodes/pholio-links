@@ -71,7 +71,8 @@ export async function POST(request: NextRequest) {
       priceId,
       `${baseUrl}/settings?tab=billing&session_id={CHECKOUT_SESSION_ID}`,
       `${baseUrl}/settings?tab=billing`,
-      { username: user.username, plan }
+      { username: user.username, plan },
+      true // Allow promotion codes
     );
 
     return NextResponse.json({ 
