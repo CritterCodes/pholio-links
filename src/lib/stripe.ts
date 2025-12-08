@@ -142,7 +142,35 @@ export async function getSubscription(subscriptionId: string) {
   try {
     return await stripe.subscriptions.retrieve(subscriptionId);
   } catch (error) {
-    console.error('Error retrieving subscription:', error);
+    console.error('Error retrieving customer:', error);
+    throw error;
+  }
+}
+
+export async function createPromotionCode(
+  code: string,
+  percentOff: number,
+  duration: 'once' | 'repeating' | 'forever',
+  durationInMonths?: number
+) {
+  try {
+    // 1. Create a Coupon
+    const coupon = await stripe.coupons.create({
+      percent_off: percentOff,
+      duration: duration,
+      duration_in_months: duration === 'repeating' ? durationInMonths : undefined,
+      name: `${percentOff}% OFF (${code})`,
+    });
+
+    // 2. Create a Promotion Code linked to the Coupon
+    const promotionCode = await stripe.promotionCodes.create({
+      coupon: coupon.id,
+      code: code,
+    } as any);
+
+    return promotionCode;
+  } catch (error) {
+    console.error('Error creating Stripe promotion code:', error);
     throw error;
   }
 }

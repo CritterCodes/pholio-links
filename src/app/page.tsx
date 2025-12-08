@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowRight, Check, Sparkles, Users, Zap } from 'lucide-react';
+import CampaignBanner from '@/components/CampaignBanner';
 
 function extractSubdomainFromHost(): string | null {
   if (typeof window === 'undefined') return null;
@@ -50,9 +51,11 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-white">
+      <CampaignBanner />
+      
       {/* Navigation */}
-      <nav className="fixed w-full top-0 z-50 bg-black/30 backdrop-blur-md border-b border-white/10">
+      <nav className="border-b border-white/10 bg-slate-900/50 backdrop-blur-xl fixed w-full z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
             Pholio

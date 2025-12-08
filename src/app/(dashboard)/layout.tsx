@@ -6,6 +6,7 @@ import { useSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Header } from '@/components/ui/Header';
+import CampaignBanner from '@/components/CampaignBanner';
 import { 
   HiUser, 
   HiColorSwatch,
@@ -36,6 +37,9 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      {/* Campaign Banner */}
+      <CampaignBanner />
+      
       {/* Global Header */}
       <Header />
       

@@ -54,6 +54,11 @@ export async function getSettingsCollection() {
   return db.collection('settings');
 }
 
+export async function getCampaignsCollection() {
+  const db = await getDatabase();
+  return db.collection('campaigns');
+}
+
 // Database initialization function
 export async function initializeDatabase() {
   const db = await getDatabase();

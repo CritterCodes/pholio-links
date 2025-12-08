@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { HiChartPie, HiLightBulb, HiCog, HiHome } from 'react-icons/hi';
+import { HiChartPie, HiLightBulb, HiCog, HiHome, HiTag } from 'react-icons/hi';
 
 export default function AdminLayout({
   children,
@@ -36,6 +36,7 @@ export default function AdminLayout({
 
   const navigation = [
     { name: 'Overview', href: '/admin', icon: HiChartPie },
+    { name: 'Campaigns', href: '/admin/campaigns', icon: HiTag },
     { name: 'Feature Requests', href: '/admin/features', icon: HiLightBulb },
     { name: 'Settings', href: '/admin/settings', icon: HiCog },
   ];
