@@ -4,6 +4,7 @@ import { ImageIcon } from 'lucide-react';
 import { PreviewBlock } from '@/components/preview/PreviewBlock';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import { EmailCaptureBlock } from '@/components/profile/EmailCaptureBlock';
+import { StatusBubble } from '@/components/profile/StatusBubble';
 
 interface UserProfilePageProps {
   params: Promise<{
@@ -168,43 +169,12 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
 
             {/* Status Bubble */}
             {profile.status && (
-              <div className="absolute -top-16 left-1/2 -translate-x-1/2 md:left-24 md:translate-x-0 z-20 w-max max-w-[200px]">
-                <div 
-                  className={`relative px-4 py-2 shadow-xl border border-gray-200 dark:border-gray-700 ${
-                    profile.theme.statusButtonStyle === 'pill' ? 'rounded-full' : 'rounded-2xl'
-                  }`}
-                  style={{
-                    backgroundColor: (profile.theme as any).statusBackgroundColor || (isDark ? '#1f2937' : '#ffffff'),
-                    color: (profile.theme as any).statusTextColor || (isDark ? '#ffffff' : '#111827')
-                  }}
-                >
-                  <p className="text-sm font-medium leading-snug">
-                    <span className="mr-1">{profile.status.emoji}</span>
-                    {profile.status.message}
-                  </p>
-                  
-                  {/* Bubble Tail */}
-                  {(profile.theme.statusButtonStyle === 'thought' || !profile.theme.statusButtonStyle) && (
-                    <>
-                      <div 
-                        className="absolute -bottom-1 left-4 md:left-4 w-3 h-3 rounded-full border border-gray-200 dark:border-gray-700"
-                        style={{ backgroundColor: (profile.theme as any).statusBackgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
-                      ></div>
-                      <div 
-                        className="absolute -bottom-3 left-2 md:left-2 w-1.5 h-1.5 rounded-full border border-gray-200 dark:border-gray-700"
-                        style={{ backgroundColor: (profile.theme as any).statusBackgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
-                      ></div>
-                    </>
-                  )}
-                  
-                  {profile.theme.statusButtonStyle === 'speech' && (
-                    <div 
-                      className="absolute -bottom-1.5 left-4 md:left-4 w-3 h-3 border-r border-b border-gray-200 dark:border-gray-700 transform rotate-45"
-                      style={{ backgroundColor: (profile.theme as any).statusBackgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
-                    ></div>
-                  )}
-                </div>
-              </div>
+              <StatusBubble 
+                status={profile.status}
+                theme={profile.theme}
+                isDark={isDark}
+                className="absolute -top-16 left-1/2 -translate-x-1/2 md:left-24 md:translate-x-0"
+              />
             )}
           </div>
         </div>

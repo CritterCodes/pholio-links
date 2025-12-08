@@ -86,7 +86,7 @@ export function StatusSetter() {
         className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm font-medium text-gray-700 dark:text-gray-200"
       >
         <span className="text-lg">{status?.emoji || '💭'}</span>
-        <span className="max-w-[100px] truncate hidden sm:inline">
+        <span className="max-w-[100px] truncate inline">
           {status?.message || 'Set Status'}
         </span>
       </button>
@@ -124,13 +124,23 @@ export function StatusSetter() {
 
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <div className="relative">
+                  <div className="relative group">
                     <button
                       className="w-12 h-12 flex items-center justify-center text-2xl bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
                     >
                       {emoji}
                     </button>
-                    {/* Emoji picker could go here */}
+                    <div className="absolute top-full left-0 mt-2 p-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 grid grid-cols-4 gap-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                      {['👋', '💻', '🌴', '☕', '🚀', '😴', '🎉', '🤔'].map(e => (
+                        <button
+                          key={e}
+                          onClick={() => setEmoji(e)}
+                          className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                        >
+                          {e}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex-1">
                     <input

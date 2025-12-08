@@ -3,6 +3,7 @@
 import { ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { PreviewBlock } from './PreviewBlock';
+import { StatusBubble } from '@/components/profile/StatusBubble';
 
 interface Block {
   _id: string;
@@ -139,28 +140,12 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
 
                     {/* Status Bubble */}
                     {formData.status && (
-                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 w-max max-w-[150px]">
-                        <div className={`relative bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 shadow-xl border border-gray-200 dark:border-gray-700 ${
-                          theme?.statusButtonStyle === 'pill' ? 'rounded-full' : 'rounded-2xl'
-                        }`}>
-                          <p className="text-xs font-medium leading-snug break-words whitespace-normal">
-                            <span className="mr-1">{formData.status.emoji}</span>
-                            {formData.status.message}
-                          </p>
-                          
-                          {/* Bubble Tail */}
-                          {(theme?.statusButtonStyle === 'thought' || !theme?.statusButtonStyle) && (
-                            <>
-                              <div className="absolute -bottom-1 left-3 w-2 h-2 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
-                              <div className="absolute -bottom-2.5 left-1.5 w-1 h-1 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
-                            </>
-                          )}
-                          
-                          {theme?.statusButtonStyle === 'speech' && (
-                            <div className="absolute -bottom-1.5 left-4 w-3 h-3 bg-white dark:bg-gray-800 border-r border-b border-gray-200 dark:border-gray-700 transform rotate-45"></div>
-                          )}
-                        </div>
-                      </div>
+                      <StatusBubble 
+                        status={formData.status}
+                        theme={theme}
+                        isDark={isDark}
+                        className="absolute -top-12 left-1/2 -translate-x-1/2"
+                      />
                     )}
                   </div>
                 </div>
