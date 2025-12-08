@@ -296,15 +296,17 @@ export default function BusinessCardDesigner() {
                 />
                 Show Subtitle
               </label>
-              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={config.showQr}
-                  onChange={(e) => setConfig({ ...config, showQr: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                Show QR Code
-              </label>
+              {config.layout !== 'classic' && (
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={config.showQr}
+                    onChange={(e) => setConfig({ ...config, showQr: e.target.checked })}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Show QR Code
+                </label>
+              )}
             </div>
           </div>
 
@@ -625,7 +627,7 @@ export default function BusinessCardDesigner() {
               config.layout === 'minimal' 
                 ? `items-center gap-6 ${config.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
                 : config.layout === 'classic'
-                  ? 'flex-col items-center justify-center text-center gap-1'
+                  ? 'flex-col items-center justify-center text-center gap-4'
                   : 'items-center gap-6'
             } relative z-10`}>
               
@@ -678,20 +680,20 @@ export default function BusinessCardDesigner() {
                   <div className="w-12 h-px bg-current opacity-30 mx-auto mb-2"></div>
                 )}
                 
-                {/* URL Display - Only show here if QR is hidden */}
-                {!config.showQr && (
-                  <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${config.layout === 'minimal' ? '' : ''}`}>
+                {/* URL Display - Only show here if QR is hidden or layout is classic */}
+                {(!config.showQr || config.layout === 'classic') && (
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${config.layout === 'minimal' ? '' : ''}`}>
                     <span className="truncate">{displayUrl}</span>
                   </div>
                 )}
 
                 {/* Contact Details */}
                 {(config.showPhone || config.showEmail || config.showWebsite) && (
-                  <div className={`mt-2 space-y-1.5 ${
+                  <div className={`mt-4 space-y-1.5 ${
                     config.layout === 'minimal' 
                       ? (config.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') 
                       : config.layout === 'classic'
-                        ? 'flex flex-row flex-wrap justify-center gap-x-6 gap-y-2'
+                        ? 'flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2'
                         : ''
                   }`}>
                     {config.showPhone && config.phoneNumber && (
@@ -717,12 +719,12 @@ export default function BusinessCardDesigner() {
               </div>
 
               {/* QR Code */}
-              {config.showQr && (
-                <div className={`flex flex-col items-center gap-2 shrink-0 ${config.layout === 'classic' ? 'mt-1' : ''}`}>
+              {config.showQr && config.layout !== 'classic' && (
+                <div className="flex flex-col items-center gap-2 shrink-0">
                   <div className="bg-white p-1.5 rounded-lg shadow-sm">
                     <QRCodeCanvas
                       value={profileUrl || 'https://pholio.links'}
-                      size={config.layout === 'classic' ? 48 : 64}
+                      size={64}
                       level={"M"}
                     />
                   </div>

@@ -286,7 +286,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                       cardConfig.layout === 'minimal' 
                         ? `items-center gap-6 ${cardConfig.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
                         : cardConfig.layout === 'classic'
-                          ? 'flex-col items-center justify-center text-center gap-1'
+                          ? 'flex-col items-center justify-center text-center gap-4'
                           : 'items-center gap-6'
                     } relative z-10`}>
                       {/* Profile Image */}
@@ -339,20 +339,20 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                           <div className="w-12 h-px bg-current opacity-30 mx-auto mb-2"></div>
                         )}
                         
-                        {/* URL Display - Only show here if QR is hidden */}
-                        {!cardConfig.showQr && (
-                          <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'minimal' ? '' : ''}`}>
+                        {/* URL Display - Only show here if QR is hidden or layout is classic */}
+                        {(!cardConfig.showQr || cardConfig.layout === 'classic') && (
+                          <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'minimal' ? '' : ''}`}>
                             <span className="truncate">{displayUrl}</span>
                           </div>
                         )}
 
                         {/* Contact Details */}
                         {(cardConfig.showPhone || cardConfig.showEmail || cardConfig.showWebsite) && (
-                          <div className={`mt-2 space-y-1.5 ${
+                          <div className={`mt-4 space-y-1.5 ${
                             cardConfig.layout === 'minimal' 
                               ? (cardConfig.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') 
                               : cardConfig.layout === 'classic'
-                                ? 'flex flex-row flex-wrap justify-center gap-x-6 gap-y-2'
+                                ? 'flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2'
                                 : ''
                           }`}>
                             {cardConfig.showPhone && cardConfig.phoneNumber && (
@@ -378,12 +378,12 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                       </div>
 
                       {/* QR Code */}
-                      {cardConfig.showQr && (
-                        <div className={`flex flex-col items-center gap-2 shrink-0 ${cardConfig.layout === 'classic' ? 'mt-1' : ''}`}>
+                      {cardConfig.showQr && cardConfig.layout !== 'classic' && (
+                        <div className="flex flex-col items-center gap-2 shrink-0">
                           <div className="bg-white p-1.5 rounded-lg shadow-sm">
                             <QRCodeCanvas
                               value={profileUrl}
-                              size={cardConfig.layout === 'classic' ? 48 : 64}
+                              size={64}
                               level={"M"}
                             />
                           </div>
