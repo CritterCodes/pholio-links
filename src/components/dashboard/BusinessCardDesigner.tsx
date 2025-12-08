@@ -5,7 +5,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { Save, Layout, Type, Palette, Image as ImageIcon, Check, Phone, Mail, Globe, Trash2, Download } from 'lucide-react';
 import Image from 'next/image';
 import FileUpload from '@/components/FileUpload';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 
 interface BusinessCardConfig {
   layout: 'classic' | 'modern';
@@ -174,18 +174,15 @@ export default function BusinessCardDesigner() {
         // Wait a moment for any images to be ready
         await new Promise(resolve => setTimeout(resolve, 100));
         
-        const canvas = await html2canvas(cardRef.current, {
-          scale: 2,
-          backgroundColor: null,
-          useCORS: true,
-          allowTaint: true,
-          logging: true,
+        const dataUrl = await toPng(cardRef.current, {
+          cacheBust: true,
+          pixelRatio: 2,
+          backgroundColor: 'transparent',
         });
         
-        const image = canvas.toDataURL('image/png');
         const link = document.createElement('a');
-        link.href = image;
         link.download = `${profile?.username || 'card'}-business-card.png`;
+        link.href = dataUrl;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

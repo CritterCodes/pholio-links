@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
       return new NextResponse('User not found', { status: 404 });
     }
 
-    // Check if user is Pro
-    if (user.subscriptionTier !== 'paid') {
+    // Check if user is Pro or Admin
+    if (user.subscriptionTier !== 'paid' && !user.isAdmin) {
       return new NextResponse('Upgrade required', { status: 403 });
     }
 
