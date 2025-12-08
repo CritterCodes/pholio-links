@@ -6,7 +6,7 @@ import { Upload, X } from 'lucide-react';
 
 interface FileUploadProps {
   onUpload: (url: string) => void;
-  folder: 'profiles' | 'gallery' | 'splash' | 'heroes' | 'business-cards';
+  folder: 'profiles' | 'gallery' | 'splash' | 'heroes' | 'business-cards' | 'bug-reports';
   currentImage?: string;
   className?: string;
   accept?: string;

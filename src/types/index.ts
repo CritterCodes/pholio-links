@@ -218,3 +218,15 @@ export interface FormSubmission {
   submittedAt: Date;
   viewed: boolean;
 }
+
+export interface BugReport {
+  _id?: ObjectId;
+  userId?: ObjectId;
+  email?: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  status: 'open' | 'in-progress' | 'resolved' | 'closed';
+  createdAt: Date;
+  updatedAt: Date;
+}

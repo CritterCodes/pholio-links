@@ -19,7 +19,8 @@ import {
   HiShieldCheck,
   HiUserGroup,
   HiIdentification,
-  HiClipboardList
+  HiClipboardList,
+  HiQuestionMarkCircle
 } from 'react-icons/hi';
 
 const navigation = [
@@ -31,6 +32,7 @@ const navigation = [
   { name: 'Analytics', href: '/analytics', icon: HiChartBar, premium: true },
   { name: 'Fans', href: '/fans', icon: HiUserGroup },
   { name: 'Settings', href: '/settings', icon: HiCog },
+  { name: 'Support', href: '/support', icon: HiQuestionMarkCircle },
 ];
 
 export default function DashboardLayout({

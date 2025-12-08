@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { HiChartPie, HiLightBulb, HiCog, HiHome, HiTag } from 'react-icons/hi';
+import { HiChartPie, HiLightBulb, HiCog, HiHome, HiTag, HiQuestionMarkCircle } from 'react-icons/hi';
 
 export default function AdminLayout({
   children,
@@ -38,6 +38,7 @@ export default function AdminLayout({
     { name: 'Overview', href: '/admin', icon: HiChartPie },
     { name: 'Campaigns', href: '/admin/campaigns', icon: HiTag },
     { name: 'Feature Requests', href: '/admin/features', icon: HiLightBulb },
+    { name: 'Support', href: '/admin/support', icon: HiQuestionMarkCircle },
     { name: 'Settings', href: '/admin/settings', icon: HiCog },
   ];
 
