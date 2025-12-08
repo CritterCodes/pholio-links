@@ -243,19 +243,16 @@ export function PreviewBlock({ block, theme, username }: PreviewBlockProps) {
       return (
         <a
           href={formUrl}
-          className={getLinkButtonClass()}
+          className={`${getLinkButtonClass()} flex items-center justify-center gap-2`}
           style={{ 
             backgroundColor: theme?.linkColor || '#3b82f6',
             color: '#ffffff',
-            display: 'block',
             textDecoration: 'none',
             marginBottom: '1rem'
           }}
         >
-          <div className="flex items-center justify-center gap-2">
-            <span className="font-medium">{formData.buttonText || 'Fill out form'}</span>
-            <ClipboardList className="w-4 h-4 opacity-70" />
-          </div>
+          <span className="font-medium">{formData.buttonText || 'Fill out form'}</span>
+          <ClipboardList className="w-4 h-4 opacity-70" />
         </a>
       );
 
