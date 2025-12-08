@@ -47,6 +47,10 @@ interface FormData {
     enabled: boolean;
   }[];
   blocks: Block[];
+  status?: {
+    message: string;
+    emoji?: string;
+  };
 }
 
 const defaultFormData: FormData = {
@@ -57,7 +61,7 @@ const defaultFormData: FormData = {
   bio: '',
   links: [],
   socialLinks: [],
-  blocks: []
+  blocks: [],
 };
 
 const presetThemes = [
@@ -160,7 +164,8 @@ export default function ThemePage() {
           bio: userData.bio || '',
           links: userData.links || [],
           socialLinks: userData.socialLinks || [],
-          blocks: userData.blocks || []
+          blocks: userData.blocks || [],
+          status: userData.status,
         };
         setFormData(loadedData);
         

@@ -120,6 +120,9 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
     return { backgroundColor: profile.theme.backgroundColor };
   };
 
+  // Determine if theme is dark for contrast
+  const isDark = profile.theme.backgroundColor === '#000000' || profile.theme.textColor === '#ffffff';
+
   return (
     <div style={getBackgroundStyle()} className="min-h-screen">
       <AnalyticsTracker username={resolvedParams.username} />
@@ -165,9 +168,15 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
 
           {/* Status Badge */}
           {profile.status && (
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/5 backdrop-blur-sm border border-black/10 dark:bg-white/10 dark:border-white/20 mb-4 mx-auto max-w-full">
-              <span className="text-lg flex-shrink-0">{profile.status.emoji || '💭'}</span>
-              <span style={{ color: profile.theme.textColor }} className="text-sm font-medium truncate">
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md border mb-6 mx-auto max-w-full shadow-sm transition-transform hover:scale-105"
+              style={{
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.85)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)',
+              }}
+            >
+              <span className="text-xl flex-shrink-0 leading-none">{profile.status.emoji || '💭'}</span>
+              <span style={{ color: isDark ? '#ffffff' : '#000000' }} className="text-sm font-medium truncate">
                 {profile.status.message}
               </span>
             </div>

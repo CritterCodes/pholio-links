@@ -58,6 +58,10 @@ interface FormData {
   links: Link[];
   socialLinks: SocialLink[];
   blocks: Block[];
+  status?: {
+    message: string;
+    emoji?: string;
+  };
 }
 
 const defaultFormData: FormData = {
@@ -68,7 +72,7 @@ const defaultFormData: FormData = {
   bio: '',
   links: [],
   socialLinks: [], // Start with empty array, only add platforms when user explicitly adds them
-  blocks: []
+  blocks: [],
 };
 
 export default function FlexibleDesignDashboard() {
@@ -130,7 +134,8 @@ export default function FlexibleDesignDashboard() {
           bio: userData.bio || '',
           links: userData.links || [],
           socialLinks: activeSocialLinks, // Only load active social links
-          blocks: userData.blocks || []
+          blocks: userData.blocks || [],
+          status: userData.status,
         };
         setFormData(loadedData);
         setOriginalFormData(loadedData); // Set original data for comparison

@@ -18,6 +18,10 @@ interface FormData {
   heroImage: string;
   subtitle: string;
   blocks: Block[];
+  status?: {
+    message: string;
+    emoji?: string;
+  };
 }
 
 interface ThemeData {
@@ -59,6 +63,10 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
       fontFamily: theme.font,
     };
   };
+
+  // Determine if theme is dark for contrast
+  const isDark = theme?.backgroundColor === '#000000' || theme?.textColor === '#ffffff';
+
   if (previewMode === 'mobile') {
     return (
       // Mobile phone container
@@ -133,6 +141,22 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
                     <h3 className="text-lg font-bold text-gray-400 dark:text-gray-500 mb-1">
                       Your Name
                     </h3>
+                  )}
+
+                  {/* Status Badge */}
+                  {formData.status && (
+                    <div 
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border mb-2 mx-auto max-w-full shadow-sm"
+                      style={{
+                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.85)',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)',
+                      }}
+                    >
+                      <span className="text-base flex-shrink-0 leading-none">{formData.status.emoji || '💭'}</span>
+                      <span style={{ color: isDark ? '#ffffff' : '#000000' }} className="text-xs font-medium truncate">
+                        {formData.status.message}
+                      </span>
+                    </div>
                   )}
                   
                   {formData.subtitle && (
