@@ -11,6 +11,7 @@ import {
   HiUser, 
   HiColorSwatch,
   HiPhotograph, 
+  HiChartBar,
   HiCog, 
   HiLogout,
   HiShieldCheck
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Design', href: '/dashboard', icon: HiUser },
   { name: 'Theme', href: '/theme', icon: HiColorSwatch },
   { name: 'Gallery', href: '/gallery', icon: HiPhotograph, premium: true },
+  { name: 'Analytics', href: '/analytics', icon: HiChartBar, premium: true },
   { name: 'Settings', href: '/settings', icon: HiCog },
 ];
 

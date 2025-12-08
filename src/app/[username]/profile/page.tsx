@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import { PreviewBlock } from '@/components/preview/PreviewBlock';
+import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 
 interface UserProfilePageProps {
   params: Promise<{
@@ -108,6 +109,7 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
 
   return (
     <div style={getBackgroundStyle()} className="min-h-screen">
+      <AnalyticsTracker username={resolvedParams.username} />
       {/* Hero Image Section */}
       {profile.heroImage && (
         <div className="relative w-full h-48 md:h-64 lg:h-80 overflow-hidden">
@@ -173,6 +175,7 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
                     content: block.content as Record<string, string>,
                   }}
                   theme={profile.theme}
+                  username={resolvedParams.username}
                 />
               ))}
           </div>

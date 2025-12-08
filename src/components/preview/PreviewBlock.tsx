@@ -1,6 +1,7 @@
 'use client';
 
 import { Instagram, Twitter, Facebook, Youtube, Linkedin, Github, Globe, ImageIcon, ExternalLink, Phone, Mail, MapPin } from 'lucide-react';
+import { trackLinkClick } from '@/components/AnalyticsTracker';
 
 interface Block {
   _id: string;
@@ -24,9 +25,16 @@ interface ThemeData {
 interface PreviewBlockProps {
   block: Block;
   theme?: ThemeData;
+  username?: string;
 }
 
-export function PreviewBlock({ block, theme }: PreviewBlockProps) {
+export function PreviewBlock({ block, theme, username }: PreviewBlockProps) {
+  const handleLinkClick = () => {
+    if (username && block.type === 'link') {
+      trackLinkClick(username, block._id);
+    }
+  };
+
   const getLinkButtonClass = () => {
     const baseClass = "w-full px-4 py-3 text-center font-medium transition-all duration-200 hover:opacity-90";
     let styleClass = '';
@@ -58,6 +66,31 @@ export function PreviewBlock({ block, theme }: PreviewBlockProps) {
           {subtitle}
         </h3>
       ) : null;
+
+    case 'link':
+      const linkData = block.content as { title?: string; url?: string; description?: string; icon?: string };
+      if (!linkData.url) return null;
+
+      return (
+        <a
+          href={linkData.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleLinkClick}
+          className={getLinkButtonClass()}
+          style={{ 
+            backgroundColor: theme?.linkColor || '#3b82f6',
+            color: '#ffffff',
+            display: 'block',
+            textDecoration: 'none'
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="flex-1 text-center font-medium">{linkData.title || linkData.url}</span>
+            <ExternalLink className="w-4 h-4 opacity-70" />
+          </div>
+        </a>
+      );
 
     case 'links':
       const links = (block.content as { links?: Array<{ id: string; title: string; url: string; description?: string; color?: string }> })?.links || [];

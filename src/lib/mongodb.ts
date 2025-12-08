@@ -59,6 +59,11 @@ export async function getCampaignsCollection() {
   return db.collection('campaigns');
 }
 
+export async function getAnalyticsCollection() {
+  const db = await getDatabase();
+  return db.collection('analytics');
+}
+
 // Database initialization function
 export async function initializeDatabase() {
   const db = await getDatabase();
