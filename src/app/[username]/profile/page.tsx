@@ -110,6 +110,11 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
   }
 
   console.log(`[USERNAME PROFILE] Rendering profile page for: "${resolvedParams.username}"`);
+  if (profile.status) {
+    console.log(`[USERNAME PROFILE] Status found:`, profile.status);
+  } else {
+    console.log(`[USERNAME PROFILE] No status found.`);
+  }
 
   const getBackgroundStyle = () => {
     if (profile.theme.backgroundType === 'gradient') {
@@ -162,15 +167,15 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
 
             {/* Status Thought Bubble */}
             {profile.status && (
-              <div className="absolute -top-12 left-24 z-20 w-max max-w-[200px]">
+              <div className="absolute -top-16 left-1/2 -translate-x-1/2 md:left-24 md:translate-x-0 z-20 w-max max-w-[200px]">
                 <div className="relative bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
                   <p className="text-sm font-medium leading-snug">
                     <span className="mr-1">{profile.status.emoji}</span>
                     {profile.status.message}
                   </p>
                   {/* Thought bubble circles */}
-                  <div className="absolute -bottom-1 left-4 w-3 h-3 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
-                  <div className="absolute -bottom-3 left-2 w-1.5 h-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
+                  <div className="absolute -bottom-1 left-4 md:left-4 w-3 h-3 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
+                  <div className="absolute -bottom-3 left-2 md:left-2 w-1.5 h-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
                 </div>
               </div>
             )}

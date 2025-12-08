@@ -131,7 +131,7 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
 
                     {/* Status Thought Bubble */}
                     {formData.status && (
-                      <div className="absolute -top-8 left-16 z-20 w-max max-w-[150px]">
+                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 w-max max-w-[150px]">
                         <div className="relative bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
                           <p className="text-xs font-medium leading-snug">
                             <span className="mr-1">{formData.status.emoji}</span>
