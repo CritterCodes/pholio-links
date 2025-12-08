@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
       phoneNumber: '',
       email: '',
       website: '',
+      backgroundImage: '',
       theme: 'default',
       customColors: {
         background: '#ffffff',

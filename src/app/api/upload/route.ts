@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const folder = formData.get('folder') as 'profiles' | 'gallery' | 'splash' | 'heroes';
+    const folder = formData.get('folder') as 'profiles' | 'gallery' | 'splash' | 'heroes' | 'business-cards';
 
     if (!file) {
       return NextResponse.json(
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!folder || !['profiles', 'gallery', 'splash', 'heroes'].includes(folder)) {
+    if (!folder || !['profiles', 'gallery', 'splash', 'heroes', 'business-cards'].includes(folder)) {
       return NextResponse.json(
         { message: 'Invalid folder specified' },
         { status: 400 }

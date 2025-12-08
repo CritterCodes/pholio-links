@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { Save, Layout, Type, Palette, Image as ImageIcon, Check, Phone, Mail, Globe } from 'lucide-react';
+import { Save, Layout, Type, Palette, Image as ImageIcon, Check, Phone, Mail, Globe, Trash2 } from 'lucide-react';
 import Image from 'next/image';
+import FileUpload from '@/components/FileUpload';
 
 interface BusinessCardConfig {
   layout: 'classic' | 'modern' | 'minimal';
@@ -16,6 +17,7 @@ interface BusinessCardConfig {
   phoneNumber: string;
   email: string;
   website: string;
+  backgroundImage?: string;
   theme: 'default' | 'custom';
   customColors: {
     background: string;
@@ -29,6 +31,11 @@ interface ProfileData {
   subtitle: string;
   profileImage: string;
   username: string;
+  customDomain?: string;
+  blocks?: Array<{
+    type: string;
+    content: any;
+  }>;
   theme: {
     backgroundColor: string;
     textColor: string;
@@ -48,6 +55,7 @@ export default function BusinessCardDesigner() {
     phoneNumber: '',
     email: '',
     website: '',
+    backgroundImage: '',
     theme: 'default',
     customColors: {
       background: '#ffffff',
@@ -71,19 +79,51 @@ export default function BusinessCardDesigner() {
         fetch('/api/business-card')
       ]);
 
+      let profileData: ProfileData | null = null;
+      let configData: Partial<BusinessCardConfig> | null = null;
+
       if (profileRes.ok) {
-        const data = await profileRes.json();
-        // We need the username for the QR code URL, but api/profile might not return it directly if it's the logged in user's profile endpoint
-        // Let's assume the profile endpoint returns enough info or we can get it from session if needed.
-        // Actually api/profile returns the profile object. We might need to fetch user to get username if not in profile.
-        // Let's check what api/profile returns.
-        setProfile(data);
+        profileData = await profileRes.json();
+        setProfile(profileData);
       }
 
       if (configRes.ok) {
-        const data = await configRes.json();
-        setConfig(prev => ({ ...prev, ...data }));
+        configData = await configRes.json();
       }
+
+      // Merge logic:
+      // If config exists, use it.
+      // If config is missing contact info, try to pull from profile blocks.
+      
+      const newConfig = { ...config, ...configData };
+
+      if (profileData?.blocks) {
+        const contactBlock = profileData.blocks.find((b: any) => b.type === 'contact');
+        if (contactBlock && contactBlock.content && contactBlock.content.contacts) {
+          const contacts = contactBlock.content.contacts;
+          
+          // Only auto-fill if the config doesn't have values yet (or if it's a fresh load and we want to be smart)
+          // But we should respect if user cleared them. 
+          // Let's only fill if the config was empty/default for these fields.
+          // Actually, if we just loaded configData, we should check if IT has values.
+          
+          const phoneContact = contacts.find((c: any) => c.type === 'phone' && c.enabled);
+          const emailContact = contacts.find((c: any) => c.type === 'email' && c.enabled);
+          
+          if (phoneContact && !newConfig.phoneNumber) {
+            newConfig.phoneNumber = phoneContact.value;
+            newConfig.showPhone = true;
+          }
+          
+          if (emailContact && !newConfig.email) {
+            newConfig.email = emailContact.value;
+            newConfig.showEmail = true;
+          }
+        }
+      }
+
+      setConfig(newConfig);
+
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -129,7 +169,11 @@ export default function BusinessCardDesigner() {
     accent: profile.theme.linkColor
   } : config.customColors;
 
-  const profileUrl = typeof window !== 'undefined' ? `${window.location.origin}/${profile.username || ''}` : '';
+  const profileUrl = profile.customDomain 
+    ? `https://${profile.customDomain}`
+    : (typeof window !== 'undefined' ? `${window.location.origin}/${profile.username || ''}` : '');
+
+  const displayUrl = profile.customDomain || `pholio.links/${profile.username || 'username'}`;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -272,8 +316,30 @@ export default function BusinessCardDesigner() {
           {/* Theme */}
           <div>
             <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-              <Palette className="w-4 h-4" /> Colors
+              <Palette className="w-4 h-4" /> Colors & Background
             </h3>
+            
+            {/* Background Image Upload */}
+            <div className="mb-6">
+              <label className="text-xs text-gray-500 block mb-2">Card Background Image</label>
+              <div className="space-y-2">
+                <FileUpload
+                  folder="business-cards"
+                  onUpload={(url) => setConfig({ ...config, backgroundImage: url })}
+                  currentImage={config.backgroundImage}
+                  className="w-full"
+                />
+                {config.backgroundImage && (
+                  <button
+                    onClick={() => setConfig({ ...config, backgroundImage: '' })}
+                    className="text-xs text-red-500 flex items-center gap-1 hover:text-red-600"
+                  >
+                    <Trash2 className="w-3 h-3" /> Remove Background Image
+                  </button>
+                )}
+              </div>
+            </div>
+
             <div className="flex gap-2 mb-4">
               <button
                 onClick={() => setConfig({ ...config, theme: 'default' })}
@@ -372,20 +438,27 @@ export default function BusinessCardDesigner() {
       <div className="lg:col-span-2">
         <div className="bg-gray-100 dark:bg-gray-900 rounded-xl p-8 flex items-center justify-center min-h-[400px] border border-gray-200 dark:border-gray-800">
           <div 
-            className="w-full max-w-md aspect-[1.586/1] rounded-xl shadow-2xl overflow-hidden relative flex flex-col transition-all duration-300"
+            className="w-full max-w-md aspect-[1.75/1] rounded-xl shadow-2xl overflow-hidden relative flex flex-col transition-all duration-300"
             style={{
-              background: config.layout === 'modern' 
-                ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
-                : colors.background,
+              background: config.backgroundImage 
+                ? `url(${config.backgroundImage}) center/cover no-repeat`
+                : config.layout === 'modern' 
+                  ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
+                  : colors.background,
               color: colors.text
             }}
           >
+            {/* Overlay for readability if background image is present */}
+            {config.backgroundImage && (
+              <div className="absolute inset-0 bg-black/30 z-0"></div>
+            )}
+
             {/* Decorative Elements based on layout */}
-            {config.layout === 'modern' && (
+            {config.layout === 'modern' && !config.backgroundImage && (
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
             )}
             {config.layout === 'classic' && (
-              <div className="absolute top-0 left-0 w-full h-2" style={{ backgroundColor: colors.accent }}></div>
+              <div className="absolute top-0 left-0 w-full h-2 z-10" style={{ backgroundColor: colors.accent }}></div>
             )}
 
             <div className={`flex-1 p-6 flex ${config.layout === 'minimal' ? 'flex-col items-center text-center justify-center' : 'items-center'} gap-6 relative z-10`}>
@@ -419,7 +492,7 @@ export default function BusinessCardDesigner() {
                   </p>
                 )}
                 <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${config.layout === 'minimal' ? 'mx-auto' : ''}`}>
-                  <span className="truncate">pholio.links/{profile.username || 'username'}</span>
+                  <span className="truncate">{displayUrl}</span>
                 </div>
 
                 {/* Contact Details */}
@@ -457,12 +530,6 @@ export default function BusinessCardDesigner() {
                   />
                 </div>
               )}
-            </div>
-
-            {/* Footer Branding */}
-            <div className="px-6 py-2 bg-black/5 dark:bg-white/5 flex items-center justify-between text-[10px] font-medium opacity-60">
-              <span>Pholio.Links</span>
-              <span>Scan to connect</span>
             </div>
           </div>
         </div>

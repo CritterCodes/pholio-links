@@ -17,6 +17,7 @@ interface ProfileData {
   displayName: string;
   subtitle: string;
   profileImage: string;
+  customDomain?: string;
   theme: {
     backgroundColor: string;
     textColor: string;
@@ -33,6 +34,7 @@ interface ProfileData {
     phoneNumber: string;
     email: string;
     website: string;
+    backgroundImage?: string;
     theme: 'default' | 'custom';
     customColors: {
       background: string;
@@ -64,6 +66,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
           displayName: data.displayName || data.name || username,
           subtitle: data.subtitle || '',
           profileImage: data.profileImage || '',
+          customDomain: data.customDomain,
           theme: data.theme || {
             backgroundColor: '#ffffff',
             textColor: '#000000',
@@ -128,6 +131,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
     phoneNumber: '',
     email: '',
     website: '',
+    backgroundImage: '',
     theme: 'default',
     customColors: { background: '#ffffff', text: '#000000', accent: '#3b82f6' }
   };
@@ -137,6 +141,8 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
     text: profileData.theme.textColor,
     accent: profileData.theme.linkColor
   } : cardConfig.customColors;
+
+  const displayUrl = profileData?.customDomain || profileUrl.replace(/^https?:\/\//, '');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -226,20 +232,27 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                   {/* Card Preview */}
                   <div 
                     ref={cardRef}
-                    className="w-full aspect-[1.586/1] bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col"
+                    className="w-full aspect-[1.75/1] bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col"
                     style={{
-                      background: cardConfig.layout === 'modern' 
-                        ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
-                        : colors.background,
+                      background: cardConfig.backgroundImage 
+                        ? `url(${cardConfig.backgroundImage}) center/cover no-repeat`
+                        : cardConfig.layout === 'modern' 
+                          ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
+                          : colors.background,
                       color: colors.text
                     }}
                   >
+                    {/* Overlay for readability if background image is present */}
+                    {cardConfig.backgroundImage && (
+                      <div className="absolute inset-0 bg-black/30 z-0"></div>
+                    )}
+
                     {/* Decorative Elements */}
-                    {cardConfig.layout === 'modern' && (
+                    {cardConfig.layout === 'modern' && !cardConfig.backgroundImage && (
                       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
                     )}
                     {cardConfig.layout === 'classic' && (
-                      <div className="absolute top-0 left-0 w-full h-2" style={{ backgroundColor: colors.accent }}></div>
+                      <div className="absolute top-0 left-0 w-full h-2 z-10" style={{ backgroundColor: colors.accent }}></div>
                     )}
                     
                     <div className={`flex-1 p-6 flex ${cardConfig.layout === 'minimal' ? 'flex-col items-center text-center justify-center' : 'items-center'} gap-6 relative z-10`}>
@@ -273,7 +286,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                           </p>
                         )}
                         <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'minimal' ? 'mx-auto' : ''}`}>
-                          <span className="truncate">{profileUrl.replace('https://', '')}</span>
+                          <span className="truncate">{displayUrl}</span>
                         </div>
 
                         {/* Contact Details */}
@@ -311,12 +324,6 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                           />
                         </div>
                       )}
-                    </div>
-
-                    {/* Footer Branding */}
-                    <div className="px-6 py-2 bg-black/5 dark:bg-white/5 flex items-center justify-between text-[10px] font-medium opacity-60">
-                      <span>Pholio.Links</span>
-                      <span>Scan to connect</span>
                     </div>
                   </div>
 
