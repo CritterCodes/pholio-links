@@ -278,14 +278,17 @@ export function PreviewBlock({ block, theme, username }: PreviewBlockProps) {
               {contactTitle}
             </h3>
           )}
-          <div className="grid gap-3">
+          <div className="flex flex-col items-center gap-3">
             {enabledContacts.map((contact) => (
               <a
                 key={contact.id}
                 href={getHref(contact.type, contact.value)}
                 target={contact.type === 'address' ? '_blank' : undefined}
                 rel={contact.type === 'address' ? 'noopener noreferrer' : undefined}
-                className="flex items-center gap-4 p-4 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm border border-transparent hover:border-current/10"
+                className={`flex items-center justify-center gap-3 px-6 py-3.5 w-full max-w-sm transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm border border-transparent hover:border-current/10 ${
+                  theme?.linkStyle === 'pill' ? 'rounded-full' : 
+                  theme?.linkStyle === 'square' ? 'rounded-none' : 'rounded-xl'
+                }`}
                 style={{
                   backgroundColor: theme?.backgroundColor === '#000000' || theme?.textColor === '#ffffff' 
                     ? 'rgba(255, 255, 255, 0.1)' 
@@ -295,19 +298,14 @@ export function PreviewBlock({ block, theme, username }: PreviewBlockProps) {
                 }}
               >
                 <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                  style={{
-                    backgroundColor: theme?.linkColor,
-                    color: '#ffffff'
-                  }}
+                  className="shrink-0"
+                  style={{ color: theme?.linkColor }}
                 >
                   {getIcon(contact.type)}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold opacity-90 truncate">{contact.label}</div>
-                  <div className="text-sm opacity-75 truncate">{contact.value}</div>
+                <div className="text-center min-w-0">
+                  <div className="text-sm font-medium truncate">{contact.value}</div>
                 </div>
-                <ExternalLink className="w-4 h-4 opacity-50 shrink-0" />
               </a>
             ))}
           </div>
