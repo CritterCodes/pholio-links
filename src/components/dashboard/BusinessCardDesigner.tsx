@@ -42,6 +42,9 @@ interface ProfileData {
     backgroundColor: string;
     textColor: string;
     linkColor: string;
+    backgroundType?: 'solid' | 'gradient' | 'image';
+    gradientFrom?: string;
+    gradientTo?: string;
   };
 }
 
@@ -489,9 +492,11 @@ export default function BusinessCardDesigner() {
             style={{
               background: config.backgroundImage 
                 ? `url(${config.backgroundImage}) center/cover no-repeat`
-                : config.layout === 'modern' 
-                  ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
-                  : colors.background,
+                : (config.theme === 'default' && profile.theme.backgroundType === 'gradient')
+                  ? `linear-gradient(135deg, ${profile.theme.gradientFrom}, ${profile.theme.gradientTo})`
+                  : config.layout === 'modern' 
+                    ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
+                    : colors.background,
               color: colors.text
             }}
           >

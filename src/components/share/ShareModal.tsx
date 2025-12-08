@@ -22,6 +22,9 @@ interface ProfileData {
     backgroundColor: string;
     textColor: string;
     linkColor: string;
+    backgroundType?: 'solid' | 'gradient' | 'image';
+    gradientFrom?: string;
+    gradientTo?: string;
   };
   businessCard?: {
     layout: 'classic' | 'modern' | 'minimal';
@@ -72,6 +75,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
             backgroundColor: '#ffffff',
             textColor: '#000000',
             linkColor: '#3b82f6',
+            backgroundType: 'solid',
           },
           businessCard: data.businessCard
         });
@@ -238,9 +242,11 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                     style={{
                       background: cardConfig.backgroundImage 
                         ? `url(${cardConfig.backgroundImage}) center/cover no-repeat`
-                        : cardConfig.layout === 'modern' 
-                          ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
-                          : colors.background,
+                        : (cardConfig.theme === 'default' && profileData.theme.backgroundType === 'gradient')
+                          ? `linear-gradient(135deg, ${profileData.theme.gradientFrom}, ${profileData.theme.gradientTo})`
+                          : cardConfig.layout === 'modern' 
+                            ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
+                            : colors.background,
                       color: colors.text
                     }}
                   >
