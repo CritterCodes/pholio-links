@@ -160,6 +160,12 @@ export default function ThemePage() {
       const response = await fetch('/api/profile');
       if (response.ok) {
         const userData = await response.json();
+
+        // Filter out disabled social links with empty URLs on load
+        const activeSocialLinks = (userData.socialLinks || []).filter(
+          (link: FormData['socialLinks'][0]) => link.enabled && link.url && link.url.trim() !== ''
+        );
+
         const loadedData = {
           displayName: userData.displayName || '',
           profileImage: userData.profileImage || '',
@@ -167,7 +173,7 @@ export default function ThemePage() {
           subtitle: userData.subtitle || '',
           bio: userData.bio || '',
           links: userData.links || [],
-          socialLinks: userData.socialLinks || [],
+          socialLinks: activeSocialLinks,
           blocks: userData.blocks || [],
           status: userData.status,
         };
