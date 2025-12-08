@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { Save, Layout, Type, Palette, Image as ImageIcon, Check } from 'lucide-react';
+import { Save, Layout, Type, Palette, Image as ImageIcon, Check, Phone, Mail, Globe } from 'lucide-react';
 import Image from 'next/image';
 
 interface BusinessCardConfig {
@@ -10,6 +10,12 @@ interface BusinessCardConfig {
   showQr: boolean;
   showAvatar: boolean;
   showSubtitle: boolean;
+  showPhone: boolean;
+  showEmail: boolean;
+  showWebsite: boolean;
+  phoneNumber: string;
+  email: string;
+  website: string;
   theme: 'default' | 'custom';
   customColors: {
     background: string;
@@ -36,6 +42,12 @@ export default function BusinessCardDesigner() {
     showQr: true,
     showAvatar: true,
     showSubtitle: true,
+    showPhone: false,
+    showEmail: false,
+    showWebsite: false,
+    phoneNumber: '',
+    email: '',
+    website: '',
     theme: 'default',
     customColors: {
       background: '#ffffff',
@@ -180,6 +192,80 @@ export default function BusinessCardDesigner() {
                 />
                 Show QR Code
               </label>
+            </div>
+          </div>
+
+          {/* Contact Details */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+              <Phone className="w-4 h-4" /> Contact Details
+            </h3>
+            <div className="space-y-3">
+              {/* Phone */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={config.showPhone}
+                    onChange={(e) => setConfig({ ...config, showPhone: e.target.checked })}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Phone Number
+                </label>
+                {config.showPhone && (
+                  <input
+                    type="tel"
+                    placeholder="+1 (555) 000-0000"
+                    value={config.phoneNumber}
+                    onChange={(e) => setConfig({ ...config, phoneNumber: e.target.value })}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:border-gray-600"
+                  />
+                )}
+              </div>
+
+              {/* Email */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={config.showEmail}
+                    onChange={(e) => setConfig({ ...config, showEmail: e.target.checked })}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Email Address
+                </label>
+                {config.showEmail && (
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={config.email}
+                    onChange={(e) => setConfig({ ...config, email: e.target.value })}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:border-gray-600"
+                  />
+                )}
+              </div>
+
+              {/* Website */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={config.showWebsite}
+                    onChange={(e) => setConfig({ ...config, showWebsite: e.target.checked })}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Website
+                </label>
+                {config.showWebsite && (
+                  <input
+                    type="url"
+                    placeholder="https://yourwebsite.com"
+                    value={config.website}
+                    onChange={(e) => setConfig({ ...config, website: e.target.value })}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:border-gray-600"
+                  />
+                )}
+              </div>
             </div>
           </div>
 
@@ -335,6 +421,30 @@ export default function BusinessCardDesigner() {
                 <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${config.layout === 'minimal' ? 'mx-auto' : ''}`}>
                   <span className="truncate">pholio.links/{profile.username || 'username'}</span>
                 </div>
+
+                {/* Contact Details */}
+                {(config.showPhone || config.showEmail || config.showWebsite) && (
+                  <div className={`mt-4 space-y-1.5 ${config.layout === 'minimal' ? 'flex flex-col items-center' : ''}`}>
+                    {config.showPhone && config.phoneNumber && (
+                      <div className="flex items-center gap-2 text-xs opacity-90">
+                        <Phone className="w-3 h-3" />
+                        <span>{config.phoneNumber}</span>
+                      </div>
+                    )}
+                    {config.showEmail && config.email && (
+                      <div className="flex items-center gap-2 text-xs opacity-90">
+                        <Mail className="w-3 h-3" />
+                        <span>{config.email}</span>
+                      </div>
+                    )}
+                    {config.showWebsite && config.website && (
+                      <div className="flex items-center gap-2 text-xs opacity-90">
+                        <Globe className="w-3 h-3" />
+                        <span>{config.website}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* QR Code */}

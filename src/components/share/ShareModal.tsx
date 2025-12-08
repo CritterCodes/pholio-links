@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import html2canvas from 'html2canvas';
-import { X, Download, Share2, CreditCard, QrCode } from 'lucide-react';
+import { X, Download, Share2, CreditCard, QrCode, Phone, Mail, Globe } from 'lucide-react';
 import Image from 'next/image';
 
 interface ShareModalProps {
@@ -27,6 +27,12 @@ interface ProfileData {
     showQr: boolean;
     showAvatar: boolean;
     showSubtitle: boolean;
+    showPhone: boolean;
+    showEmail: boolean;
+    showWebsite: boolean;
+    phoneNumber: string;
+    email: string;
+    website: string;
     theme: 'default' | 'custom';
     customColors: {
       background: string;
@@ -116,6 +122,12 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
     showQr: true,
     showAvatar: true,
     showSubtitle: true,
+    showPhone: false,
+    showEmail: false,
+    showWebsite: false,
+    phoneNumber: '',
+    email: '',
+    website: '',
     theme: 'default',
     customColors: { background: '#ffffff', text: '#000000', accent: '#3b82f6' }
   };
@@ -263,6 +275,30 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                         <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'minimal' ? 'mx-auto' : ''}`}>
                           <span className="truncate">{profileUrl.replace('https://', '')}</span>
                         </div>
+
+                        {/* Contact Details */}
+                        {(cardConfig.showPhone || cardConfig.showEmail || cardConfig.showWebsite) && (
+                          <div className={`mt-4 space-y-1.5 ${cardConfig.layout === 'minimal' ? 'flex flex-col items-center' : ''}`}>
+                            {cardConfig.showPhone && cardConfig.phoneNumber && (
+                              <div className="flex items-center gap-2 text-xs opacity-90">
+                                <Phone className="w-3 h-3" />
+                                <span>{cardConfig.phoneNumber}</span>
+                              </div>
+                            )}
+                            {cardConfig.showEmail && cardConfig.email && (
+                              <div className="flex items-center gap-2 text-xs opacity-90">
+                                <Mail className="w-3 h-3" />
+                                <span>{cardConfig.email}</span>
+                              </div>
+                            )}
+                            {cardConfig.showWebsite && cardConfig.website && (
+                              <div className="flex items-center gap-2 text-xs opacity-90">
+                                <Globe className="w-3 h-3" />
+                                <span>{cardConfig.website}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* QR Code */}

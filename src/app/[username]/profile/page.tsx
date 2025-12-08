@@ -48,8 +48,6 @@ interface UserProfile {
   status?: {
     message: string;
     emoji?: string;
-    backgroundColor?: string;
-    textColor?: string;
   };
 }
 
@@ -176,8 +174,8 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
                     profile.theme.statusButtonStyle === 'pill' ? 'rounded-full' : 'rounded-2xl'
                   }`}
                   style={{
-                    backgroundColor: profile.status.backgroundColor || (isDark ? '#1f2937' : '#ffffff'),
-                    color: profile.status.textColor || (isDark ? '#ffffff' : '#111827')
+                    backgroundColor: (profile.theme as any).statusBackgroundColor || (isDark ? '#1f2937' : '#ffffff'),
+                    color: (profile.theme as any).statusTextColor || (isDark ? '#ffffff' : '#111827')
                   }}
                 >
                   <p className="text-sm font-medium leading-snug">
@@ -190,11 +188,11 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
                     <>
                       <div 
                         className="absolute -bottom-1 left-4 md:left-4 w-3 h-3 rounded-full border border-gray-200 dark:border-gray-700"
-                        style={{ backgroundColor: profile.status.backgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
+                        style={{ backgroundColor: (profile.theme as any).statusBackgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
                       ></div>
                       <div 
                         className="absolute -bottom-3 left-2 md:left-2 w-1.5 h-1.5 rounded-full border border-gray-200 dark:border-gray-700"
-                        style={{ backgroundColor: profile.status.backgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
+                        style={{ backgroundColor: (profile.theme as any).statusBackgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
                       ></div>
                     </>
                   )}
@@ -202,7 +200,7 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
                   {profile.theme.statusButtonStyle === 'speech' && (
                     <div 
                       className="absolute -bottom-1.5 left-4 md:left-4 w-3 h-3 border-r border-b border-gray-200 dark:border-gray-700 transform rotate-45"
-                      style={{ backgroundColor: profile.status.backgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
+                      style={{ backgroundColor: (profile.theme as any).statusBackgroundColor || (isDark ? '#1f2937' : '#ffffff') }}
                     ></div>
                   )}
                 </div>

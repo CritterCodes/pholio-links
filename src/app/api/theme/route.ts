@@ -13,6 +13,9 @@ interface ThemeData {
   gradientTo: string;
   font: string;
   backgroundImage?: string;
+  statusButtonStyle?: 'thought' | 'speech' | 'pill';
+  statusBackgroundColor?: string;
+  statusTextColor?: string;
 }
 
 export async function GET() {
@@ -101,6 +104,9 @@ export async function PUT(request: NextRequest) {
         gradientTo: themeData.gradientTo,
         font: themeData.font,
         backgroundImage: themeData.backgroundImage || undefined,
+        statusButtonStyle: themeData.statusButtonStyle,
+        statusBackgroundColor: themeData.statusBackgroundColor,
+        statusTextColor: themeData.statusTextColor,
       },
       updatedAt: new Date()
     };

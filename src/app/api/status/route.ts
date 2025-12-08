@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { message, emoji, duration, backgroundColor, textColor } = await request.json();
+    const { message, emoji, duration } = await request.json();
 
     if (!message || message.length > 144) {
       return NextResponse.json(
@@ -52,8 +52,6 @@ export async function POST(request: NextRequest) {
             message,
             emoji,
             expiresAt,
-            backgroundColor,
-            textColor,
             createdAt: new Date(),
           }
         }

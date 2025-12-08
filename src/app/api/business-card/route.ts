@@ -22,6 +22,12 @@ export async function GET(request: NextRequest) {
       showQr: true,
       showAvatar: true,
       showSubtitle: true,
+      showPhone: false,
+      showEmail: false,
+      showWebsite: false,
+      phoneNumber: '',
+      email: '',
+      website: '',
       theme: 'default',
       customColors: {
         background: '#ffffff',

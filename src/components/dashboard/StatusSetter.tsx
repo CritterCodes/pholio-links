@@ -9,8 +9,6 @@ interface Status {
   message: string;
   emoji?: string;
   expiresAt?: string;
-  backgroundColor?: string;
-  textColor?: string;
 }
 
 export function StatusSetter() {
@@ -19,8 +17,6 @@ export function StatusSetter() {
   const [message, setMessage] = useState('');
   const [emoji, setEmoji] = useState('👋');
   const [duration, setDuration] = useState('24h');
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
-  const [textColor, setTextColor] = useState('#000000');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -36,8 +32,6 @@ export function StatusSetter() {
           setStatus(data.status);
           setMessage(data.status.message);
           setEmoji(data.status.emoji || '👋');
-          setBackgroundColor(data.status.backgroundColor || '#ffffff');
-          setTextColor(data.status.textColor || '#000000');
         }
       }
     } catch (error) {
@@ -51,7 +45,7 @@ export function StatusSetter() {
       const res = await fetch('/api/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, emoji, duration, backgroundColor, textColor }),
+        body: JSON.stringify({ message, emoji, duration }),
       });
       
       if (res.ok) {
@@ -76,8 +70,6 @@ export function StatusSetter() {
         setStatus(null);
         setMessage('');
         setEmoji('👋');
-        setBackgroundColor('#ffffff');
-        setTextColor('#000000');
         setIsOpen(false);
       }
     } catch (error) {
@@ -174,47 +166,6 @@ export function StatusSetter() {
                         {d === 'permanent' ? 'Never' : d}
                       </button>
                     ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Background Color
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="color"
-                        value={backgroundColor}
-                        onChange={(e) => setBackgroundColor(e.target.value)}
-                        className="h-10 w-10 rounded cursor-pointer border border-gray-200"
-                      />
-                      <input
-                        type="text"
-                        value={backgroundColor}
-                        onChange={(e) => setBackgroundColor(e.target.value)}
-                        className="flex-1 px-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Text Color
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="color"
-                        value={textColor}
-                        onChange={(e) => setTextColor(e.target.value)}
-                        className="h-10 w-10 rounded cursor-pointer border border-gray-200"
-                      />
-                      <input
-                        type="text"
-                        value={textColor}
-                        onChange={(e) => setTextColor(e.target.value)}
-                        className="flex-1 px-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm"
-                      />
-                    </div>
                   </div>
                 </div>
 
