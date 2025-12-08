@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, FileText, BarChart2, Trash2, ExternalLink, Edit } from 'lucide-react';
 import { Form } from '@/types';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 export default function FormsPage() {
   const [forms, setForms] = useState<Form[]>([]);
@@ -107,13 +108,7 @@ export default function FormsPage() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate pr-4">
                   {form.title}
                 </h3>
-                <div className={`px-2 py-1 rounded text-xs font-medium ${
-                  form.isActive 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                    : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                }`}>
-                  {form.isActive ? 'Active' : 'Inactive'}
-                </div>
+                <StatusBadge status={form.isActive} />
               </div>
               
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-2 flex-1">

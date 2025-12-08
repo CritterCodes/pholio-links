@@ -5,13 +5,12 @@ import { BugReport } from '@/types';
 import Image from 'next/image';
 import { 
   CheckCircle, 
-  XCircle, 
-  Clock, 
-  AlertCircle, 
   Filter,
   Search,
   ExternalLink
 } from 'lucide-react';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusSelect } from '@/components/ui/StatusSelect';
 
 export default function AdminSupportPage() {
   const [reports, setReports] = useState<BugReport[]>([]);
@@ -68,26 +67,6 @@ export default function AdminSupportPage() {
     return matchesFilter && matchesSearch;
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-      case 'in-progress': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
-      case 'resolved': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-      case 'closed': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'open': return <AlertCircle className="w-4 h-4" />;
-      case 'in-progress': return <Clock className="w-4 h-4" />;
-      case 'resolved': return <CheckCircle className="w-4 h-4" />;
-      case 'closed': return <XCircle className="w-4 h-4" />;
-      default: return null;
-    }
-  };
-
   return (
     <div className="p-6">
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -110,17 +89,17 @@ export default function AdminSupportPage() {
           
           <div className="flex items-center gap-2">
             <Filter className="text-gray-400 w-4 h-4" />
-            <select
+            <StatusSelect
               value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm py-2 pl-3 pr-8 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Status</option>
-              <option value="open">Open</option>
-              <option value="in-progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
-            </select>
+              onChange={setFilter}
+              options={[
+                { value: 'all', label: 'All Status' },
+                { value: 'open', label: 'Open' },
+                { value: 'in-progress', label: 'In Progress' },
+                { value: 'resolved', label: 'Resolved' },
+                { value: 'closed', label: 'Closed' },
+              ]}
+            />
           </div>
         </div>
       </div>
@@ -140,10 +119,7 @@ export default function AdminSupportPage() {
                 <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(report.status)}`}>
-                        {getStatusIcon(report.status)}
-                        {report.status.replace('_', ' ').toUpperCase()}
-                      </span>
+                      <StatusBadge status={report.status} />
                       <span className="text-sm text-gray-500 dark:text-gray-400">
                         {new Date(report.createdAt).toLocaleString()}
                       </span>
@@ -157,17 +133,17 @@ export default function AdminSupportPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <select
+                    <StatusSelect
                       value={report.status}
-                      onChange={(e) => updateStatus(report._id!.toString(), e.target.value as any)}
+                      onChange={(val) => updateStatus(report._id!.toString(), val as any)}
                       disabled={updating === report._id?.toString()}
-                      className="text-sm border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700"
-                    >
-                      <option value="open">Open</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="resolved">Resolved</option>
-                      <option value="closed">Closed</option>
-                    </select>
+                      options={[
+                        { value: 'open', label: 'Open' },
+                        { value: 'in-progress', label: 'In Progress' },
+                        { value: 'resolved', label: 'Resolved' },
+                        { value: 'closed', label: 'Closed' },
+                      ]}
+                    />
                   </div>
                 </div>
 

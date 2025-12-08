@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { HiCheck, HiX, HiClock, HiTrash } from 'react-icons/hi';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusSelect } from '@/components/ui/StatusSelect';
 
 interface FeatureRequest {
   _id: string;
@@ -49,17 +51,6 @@ export default function AdminFeatureRequests() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-900/50 text-yellow-200 border-yellow-700';
-      case 'planned': return 'bg-blue-900/50 text-blue-200 border-blue-700';
-      case 'in_progress': return 'bg-purple-900/50 text-purple-200 border-purple-700';
-      case 'completed': return 'bg-green-900/50 text-green-200 border-green-700';
-      case 'rejected': return 'bg-red-900/50 text-red-200 border-red-700';
-      default: return 'bg-gray-800 text-gray-300 border-gray-600';
-    }
-  };
-
   if (loading) {
     return <div className="text-white">Loading requests...</div>;
   }
@@ -80,9 +71,7 @@ export default function AdminFeatureRequests() {
                         {request.title}
                       </p>
                       <div className="ml-2 flex-shrink-0 flex">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(request.status)}`}>
-                          {request.status.replace('_', ' ')}
-                        </span>
+                        <StatusBadge status={request.status} />
                       </div>
                     </div>
                     <div className="mt-2">
@@ -102,17 +91,17 @@ export default function AdminFeatureRequests() {
                   </div>
                 </div>
                 <div className="mt-4 flex justify-end space-x-3">
-                  <select
+                  <StatusSelect
                     value={request.status}
-                    onChange={(e) => updateStatus(request._id, e.target.value)}
-                    className="bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="planned">Planned</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
+                    onChange={(val) => updateStatus(request._id, val)}
+                    options={[
+                      { value: 'pending', label: 'Pending' },
+                      { value: 'planned', label: 'Planned' },
+                      { value: 'in_progress', label: 'In Progress' },
+                      { value: 'completed', label: 'Completed' },
+                      { value: 'rejected', label: 'Rejected' },
+                    ]}
+                  />
                 </div>
               </div>
             </li>
