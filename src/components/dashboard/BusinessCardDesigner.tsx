@@ -553,7 +553,7 @@ export default function BusinessCardDesigner() {
               )}
 
               {/* Info */}
-              <div className={`flex-1 min-w-0 ${config.layout === 'minimal' ? 'w-full' : 'w-full'}`}>
+              <div className={`min-w-0 ${config.layout === 'classic' ? 'w-full' : 'flex-1 w-full'}`}>
                 <h3 className={`font-bold truncate leading-tight mb-1 ${
                   config.layout === 'classic' ? 'text-2xl tracking-wide font-serif' : 'text-xl'
                 }`}>
