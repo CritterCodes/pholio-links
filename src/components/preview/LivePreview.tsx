@@ -42,6 +42,13 @@ interface LivePreviewProps {
 }
 
 export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) {
+  // Debug status
+  if (formData.status) {
+    console.log('[LivePreview] Status present:', formData.status);
+  } else {
+    console.log('[LivePreview] No status in formData');
+  }
+
   const getBackgroundStyle = () => {
     if (!theme) return { backgroundColor: '#ffffff' };
     
@@ -220,22 +227,39 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
           )}
           
           {/* Profile Image (centered, peaking halfway into banner) */}
-          <div className="flex justify-center -translate-y-1/2">
-            {formData.profileImage ? (
-              <div className="w-28 h-28 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-900">
-                <Image
-                  src={formData.profileImage}
-                  alt="Profile"
-                  width={112}
-                  height={112}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="w-28 h-28 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-900">
-                <ImageIcon className="w-10 h-10 text-gray-400 dark:text-gray-500" />
-              </div>
-            )}
+          <div className="flex justify-center -translate-y-1/2 relative">
+            <div className="relative">
+              {formData.profileImage ? (
+                <div className="w-28 h-28 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-900">
+                  <Image
+                    src={formData.profileImage}
+                    alt="Profile"
+                    width={112}
+                    height={112}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-28 h-28 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-900">
+                  <ImageIcon className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                </div>
+              )}
+
+              {/* Status Thought Bubble */}
+              {formData.status && (
+                <div className="absolute -top-12 left-24 z-20 w-max max-w-[200px]">
+                  <div className="relative bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                    <p className="text-sm font-medium leading-snug">
+                      <span className="mr-1">{formData.status.emoji}</span>
+                      {formData.status.message}
+                    </p>
+                    {/* Thought bubble circles */}
+                    <div className="absolute -bottom-1 left-4 w-3 h-3 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
+                    <div className="absolute -bottom-3 left-2 w-1.5 h-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
