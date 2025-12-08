@@ -11,7 +11,8 @@ import {
   HiColorSwatch,
   HiPhotograph, 
   HiCog, 
-  HiLogout
+  HiLogout,
+  HiShieldCheck
 } from 'react-icons/hi';
 
 const navigation = [
@@ -68,6 +69,17 @@ export default function DashboardLayout({
                   </Link>
                 );
               })}
+
+              {/* Admin Link */}
+              {(session?.user as any)?.isAdmin && (
+                <Link
+                  href="/admin"
+                  className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100 group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
+                >
+                  <HiShieldCheck className="mr-3 flex-shrink-0 h-5 w-5 text-purple-500" />
+                  Admin Portal
+                </Link>
+              )}
             </nav>
 
             {/* User Info Section */}
