@@ -17,12 +17,14 @@ import {
   HiCog, 
   HiLogout,
   HiShieldCheck,
-  HiUserGroup
+  HiUserGroup,
+  HiIdentification
 } from 'react-icons/hi';
 
 const navigation = [
   { name: 'Design', href: '/dashboard', icon: HiUser },
   { name: 'Theme', href: '/theme', icon: HiColorSwatch },
+  { name: 'Business Card', href: '/business-card', icon: HiIdentification },
   { name: 'Gallery', href: '/gallery', icon: HiPhotograph, premium: true },
   { name: 'Analytics', href: '/analytics', icon: HiChartBar, premium: true },
   { name: 'Fans', href: '/fans', icon: HiUserGroup },

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import BusinessCardDesigner from '@/components/admin/BusinessCardDesigner';
+import BusinessCardDesigner from '@/components/dashboard/BusinessCardDesigner';
 
 export const metadata: Metadata = {
   title: 'Business Card Designer | Pholio',

@@ -47,7 +47,7 @@ export function FeatureBento() {
       </motion.div>
 
       {/* Themes - Tall Card */}
-      <motion.div variants={item} className="bg-gradient-to-br from-pink-500 to-purple-600 rounded-3xl p-8 text-white shadow-sm hover:shadow-md transition-shadow">
+      <motion.div variants={item} className="md:col-span-1 bg-gradient-to-br from-pink-500 to-purple-600 rounded-3xl p-8 text-white shadow-sm hover:shadow-md transition-shadow">
         <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-4">
           <Palette className="w-5 h-5 text-white" />
         </div>
@@ -62,19 +62,8 @@ export function FeatureBento() {
         </div>
       </motion.div>
 
-      {/* Campaigns - Medium Card */}
-      <motion.div variants={item} className="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
-        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-4">
-          <Tag className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-        </div>
-        <h3 className="text-xl font-bold mb-2">Campaigns</h3>
-        <p className="text-gray-500 dark:text-gray-400">
-          Run promotions and track conversions with built-in coupon management.
-        </p>
-      </motion.div>
-
       {/* QR Codes - Medium Card */}
-      <motion.div variants={item} className="md:col-span-2 bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
+      <motion.div variants={item} className="md:col-span-3 bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
         <div>
           <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-4">
             <QrCode className="w-5 h-5 text-green-600 dark:text-green-400" />
