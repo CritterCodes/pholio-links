@@ -2,10 +2,11 @@
 
 import { useSession } from 'next-auth/react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { Settings, Menu, Eye } from 'lucide-react';
+import { Settings, Menu, Eye, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { StatusSetter } from '@/components/dashboard/StatusSetter';
+import { ShareModal } from '@/components/share/ShareModal';
 import { useState, useEffect } from 'react';
 
 interface HeaderProps {
@@ -15,6 +16,7 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
   const { data: session } = useSession();
   const [profileUrl, setProfileUrl] = useState<string>('');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfileUrl = async () => {
@@ -63,6 +65,17 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* Right side actions */}
         <div className="flex items-center gap-4">
+          {/* Share Button */}
+          {profileUrl && (
+            <button
+              onClick={() => setIsShareModalOpen(true)}
+              className="p-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              title="Share Profile"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          )}
+
           {/* View Profile Eye Button */}
           {profileUrl && (
             <a 
@@ -112,6 +125,14 @@ export function Header({ onMenuClick }: HeaderProps) {
           </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      <ShareModal 
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        username={(session?.user as any)?.username || ''}
+        profileUrl={profileUrl}
+      />
     </header>
   );
 }
