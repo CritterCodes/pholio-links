@@ -2,10 +2,11 @@
 
 import { useSession } from 'next-auth/react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { Settings, Menu } from 'lucide-react';
+import { Settings, Menu, Eye } from 'lucide-react';
 import Image from 'next/image';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { StatusSetter } from '@/components/dashboard/StatusSetter';
+import { useState, useEffect } from 'react';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -13,6 +14,29 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const { data: session } = useSession();
+  const [profileUrl, setProfileUrl] = useState<string>('');
+
+  useEffect(() => {
+    const fetchProfileUrl = async () => {
+      if (session?.user) {
+        try {
+          const res = await fetch('/api/custom-domain');
+          const data = await res.json();
+          const username = (session.user as any).username;
+          
+          if (data.customDomain) {
+            setProfileUrl(`https://${data.customDomain}`);
+          } else if (username) {
+            setProfileUrl(`https://${username}.pholio.link`);
+          }
+        } catch (error) {
+          console.error('Failed to fetch profile URL:', error);
+        }
+      }
+    };
+
+    fetchProfileUrl();
+  }, [session]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
@@ -39,6 +63,19 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* Right side actions */}
         <div className="flex items-center gap-4">
+          {/* View Profile Eye Button */}
+          {profileUrl && (
+            <a 
+              href={profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              title="View Public Profile"
+            >
+              <Eye className="w-5 h-5" />
+            </a>
+          )}
+
           {/* Status */}
           <StatusSetter />
 

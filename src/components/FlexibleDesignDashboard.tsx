@@ -101,13 +101,30 @@ export default function FlexibleDesignDashboard() {
 
   const availableBlocks: BlockType[] = ['bio', 'social_icons', 'links', 'gallery', 'divider', 'contact'];
 
+  const [customDomain, setCustomDomain] = useState<string | null>(null);
+
   useEffect(() => {
     if (session?.user?.email) {
       fetchUserData();
+      fetchCustomDomain();
     } else {
       setLoading(false);
     }
   }, [session]);
+
+  const fetchCustomDomain = async () => {
+    try {
+      const res = await fetch('/api/custom-domain');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.customDomain) {
+          setCustomDomain(data.customDomain);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch custom domain:', error);
+    }
+  };
 
   // Track changes to form data
   useEffect(() => {
@@ -476,7 +493,7 @@ export default function FlexibleDesignDashboard() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Design Dashboard</h1>
         {session?.user && (session.user as any).username && (
           <a
-            href={`https://${(session.user as any).username}.pholio.link/profile`}
+            href={customDomain ? `https://${customDomain}` : `https://${(session.user as any).username}.pholio.link`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition"
