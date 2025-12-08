@@ -16,7 +16,8 @@ import {
   HiChartBar,
   HiCog, 
   HiLogout,
-  HiShieldCheck
+  HiShieldCheck,
+  HiUserGroup
 } from 'react-icons/hi';
 
 const navigation = [
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Theme', href: '/theme', icon: HiColorSwatch },
   { name: 'Gallery', href: '/gallery', icon: HiPhotograph, premium: true },
   { name: 'Analytics', href: '/analytics', icon: HiChartBar, premium: true },
+  { name: 'Fans', href: '/fans', icon: HiUserGroup },
   { name: 'Settings', href: '/settings', icon: HiCog },
 ];
 

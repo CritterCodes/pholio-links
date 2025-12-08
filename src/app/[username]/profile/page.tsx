@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import { PreviewBlock } from '@/components/preview/PreviewBlock';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
+import { EmailCaptureBlock } from '@/components/profile/EmailCaptureBlock';
 
 interface UserProfilePageProps {
   params: Promise<{
@@ -37,6 +38,16 @@ interface UserProfile {
   heroImage: string;
   blocks: Block[];
   theme: ThemeData;
+  emailCapture?: {
+    enabled: boolean;
+    title?: string;
+    description?: string;
+    successMessage?: string;
+  };
+  status?: {
+    message: string;
+    emoji?: string;
+  };
 }
 
 // Fetch user profile from API
@@ -79,6 +90,8 @@ async function getUserProfile(username: string): Promise<UserProfile | null> {
         gradientTo: '#ffffff',
         font: 'Inter, sans-serif',
       },
+      emailCapture: data.emailCapture,
+      status: data.status,
     };
   } catch (error) {
     console.error(`[USERNAME PROFILE] Failed to fetch profile for "${username}":`, error);
@@ -149,6 +162,17 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
           <h1 style={{ color: profile.theme.textColor }} className="text-4xl font-bold mb-2">
             {profile.name || 'No Name'}
           </h1>
+
+          {/* Status Badge */}
+          {profile.status && (
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/5 backdrop-blur-sm border border-black/10 dark:bg-white/10 dark:border-white/20 mb-4 mx-auto max-w-full">
+              <span className="text-lg flex-shrink-0">{profile.status.emoji || '💭'}</span>
+              <span style={{ color: profile.theme.textColor }} className="text-sm font-medium truncate">
+                {profile.status.message}
+              </span>
+            </div>
+          )}
+
           {profile.subtitle && (
             <p style={{ color: profile.theme.textColor }} className="text-lg opacity-90 mb-4">
               {profile.subtitle}
@@ -178,6 +202,19 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
                   username={resolvedParams.username}
                 />
               ))}
+          </div>
+        )}
+
+        {/* Email Capture */}
+        {profile.emailCapture?.enabled && (
+          <div className="mt-8">
+            <EmailCaptureBlock
+              username={resolvedParams.username}
+              title={profile.emailCapture.title}
+              description={profile.emailCapture.description}
+              successMessage={profile.emailCapture.successMessage}
+              theme={profile.theme}
+            />
           </div>
         )}
 

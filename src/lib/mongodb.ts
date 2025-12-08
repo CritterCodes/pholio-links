@@ -54,6 +54,16 @@ export async function getNotificationsCollection() {
   return db.collection('notifications');
 }
 
+export async function getFansCollection() {
+  const db = await getDatabase();
+  return db.collection('fans');
+}
+
+export async function getSubscribersCollection() {
+  const db = await getDatabase();
+  return db.collection('subscribers');
+}
+
 export async function getSettingsCollection() {
   const db = await getDatabase();
   return db.collection('settings');

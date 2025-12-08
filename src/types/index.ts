@@ -11,6 +11,27 @@ export interface Notification {
   createdAt: Date;
 }
 
+export interface Subscriber {
+  _id?: ObjectId;
+  userId: ObjectId; // The profile owner
+  email: string;
+  createdAt: Date;
+}
+
+export interface Fan {
+  _id?: ObjectId;
+  userId: ObjectId; // The creator they subscribed to
+  email: string;
+  createdAt: Date;
+}
+
+export interface UserStatus {
+  message: string;
+  emoji?: string;
+  expiresAt: Date | null;
+  createdAt: Date;
+}
+
 export interface User {
   _id: ObjectId;
   email: string;
@@ -29,6 +50,22 @@ export interface User {
     layout: ContentBlock[];
     customDomain?: string; // paid accounts only
     isActive: boolean;
+    status?: UserStatus;
+    emailCapture?: {
+      enabled: boolean;
+      title?: string;
+      description?: string;
+      successMessage?: string;
+    };
+  };
+
+  // Email Capture Settings
+  emailCapture?: {
+    enabled: boolean;
+    title: string;
+    description: string;
+    buttonText: string;
+    thankYouMessage: string;
   };
   
   // Links

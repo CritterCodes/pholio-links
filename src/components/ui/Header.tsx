@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Settings, Menu } from 'lucide-react';
 import Image from 'next/image';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
+import { StatusSetter } from '@/components/dashboard/StatusSetter';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -38,6 +39,9 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* Right side actions */}
         <div className="flex items-center gap-4">
+          {/* Status */}
+          <StatusSetter />
+
           {/* Notifications */}
           <NotificationDropdown />
 

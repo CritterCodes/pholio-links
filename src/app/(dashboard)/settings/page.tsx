@@ -10,7 +10,8 @@ import {
   HiShieldCheck,
   HiCog,
   HiTrash,
-  HiLightBulb
+  HiLightBulb,
+  HiUserGroup
 } from 'react-icons/hi';
 import { FaStripe } from 'react-icons/fa';
 import FeatureRequestForm from '@/components/FeatureRequestForm';
@@ -29,9 +30,16 @@ export default function SettingsPage() {
   const [dnsVerifying, setDnsVerifying] = useState(false);
   const [dnsVerified, setDnsVerified] = useState(false);
 
+  // Fans Settings State
+  const [fansSettingsLoading, setFansSettingsLoading] = useState(false);
+  const [emailCaptureEnabled, setEmailCaptureEnabled] = useState(false);
+  const [emailCaptureSuccessMessage, setEmailCaptureSuccessMessage] = useState('');
+  const [fansSettingsSuccess, setFansSettingsSuccess] = useState('');
+
   const tabs = [
     { id: 'account', name: 'Account', icon: HiUser },
     { id: 'billing', name: 'Billing', icon: HiCreditCard },
+    { id: 'fans', name: 'Fans', icon: HiUserGroup },
     { id: 'integrations', name: 'Integrations', icon: HiGlobe },
     { id: 'security', name: 'Security', icon: HiShieldCheck },
     { id: 'features', name: 'Feature Requests', icon: HiLightBulb },
@@ -43,8 +51,50 @@ export default function SettingsPage() {
       fetchSubscription();
     } else if (activeTab === 'integrations') {
       fetchCustomDomain();
+    } else if (activeTab === 'fans') {
+      fetchFansSettings();
     }
   }, [activeTab]);
+
+  const fetchFansSettings = async () => {
+    setFansSettingsLoading(true);
+    try {
+      const res = await fetch('/api/fans/settings');
+      if (res.ok) {
+        const data = await res.json();
+        setEmailCaptureEnabled(data.enabled);
+        setEmailCaptureSuccessMessage(data.successMessage || 'Thanks for joining!');
+      }
+    } catch (error) {
+      console.error('Failed to fetch fans settings:', error);
+    } finally {
+      setFansSettingsLoading(false);
+    }
+  };
+
+  const saveFansSettings = async () => {
+    setFansSettingsLoading(true);
+    setFansSettingsSuccess('');
+    try {
+      const res = await fetch('/api/fans/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          enabled: emailCaptureEnabled,
+          successMessage: emailCaptureSuccessMessage,
+        }),
+      });
+      
+      if (res.ok) {
+        setFansSettingsSuccess('Settings saved successfully!');
+        setTimeout(() => setFansSettingsSuccess(''), 3000);
+      }
+    } catch (error) {
+      console.error('Failed to save fans settings:', error);
+    } finally {
+      setFansSettingsLoading(false);
+    }
+  };
 
   const fetchSubscription = async () => {
     try {
@@ -665,25 +715,6 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
-
-          {/* Email Capture */}
-          <div className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-green-900/30 rounded-full flex items-center justify-center">
-                  <HiUser className="h-5 w-5 text-green-400" />
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-sm font-medium text-white">Email Capture</h4>
-                  <p className="text-sm text-slate-400">Collect visitor email addresses</p>
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className="sr-only peer" />
-                <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-              </label>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -702,6 +733,83 @@ export default function SettingsPage() {
           <div className="text-center py-4">
             <HiCog className="mx-auto h-8 w-8 text-slate-500 mb-2" />
             <p className="text-sm text-slate-400">No API key generated yet</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderFansSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium text-white mb-4">Email Capture Settings</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h4 className="text-sm font-medium text-white">Enable Email Capture</h4>
+              <p className="text-sm text-slate-400">Allow visitors to subscribe to your updates</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="sr-only peer"
+                checked={emailCaptureEnabled}
+                onChange={(e) => setEmailCaptureEnabled(e.target.checked)}
+              />
+              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+            </label>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Success Message
+              </label>
+              <input
+                type="text"
+                value={emailCaptureSuccessMessage}
+                onChange={(e) => setEmailCaptureSuccessMessage(e.target.value)}
+                placeholder="Thanks for joining!"
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              />
+              <p className="text-xs text-slate-400 mt-1">
+                Message shown to visitors after they subscribe
+              </p>
+            </div>
+
+            {fansSettingsSuccess && (
+              <div className="text-sm text-green-400 bg-green-900/20 p-3 rounded">
+                {fansSettingsSuccess}
+              </div>
+            )}
+
+            <div className="pt-4">
+              <button
+                onClick={saveFansSettings}
+                disabled={fansSettingsLoading}
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-slate-600 disabled:to-slate-600 text-white rounded-lg font-medium text-sm transition-colors"
+              >
+                {fansSettingsLoading ? 'Saving...' : 'Save Settings'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-medium text-white mb-4">Manage Fans</h3>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-sm font-medium text-white">View Subscriber List</h4>
+              <p className="text-sm text-slate-400">See who has subscribed to your updates</p>
+            </div>
+            <a 
+              href="/fans" 
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium text-sm transition-colors"
+            >
+              Go to Fans Dashboard
+            </a>
           </div>
         </div>
       </div>
@@ -833,6 +941,7 @@ export default function SettingsPage() {
         <div className="lg:col-span-9">
           {activeTab === 'account' && renderAccountSettings()}
           {activeTab === 'billing' && renderBillingSettings()}
+          {activeTab === 'fans' && renderFansSettings()}
           {activeTab === 'integrations' && renderIntegrationsSettings()}
           {activeTab === 'security' && renderSecuritySettings()}
           {activeTab === 'features' && <FeatureRequestForm />}
