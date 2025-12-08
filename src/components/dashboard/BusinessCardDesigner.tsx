@@ -77,6 +77,7 @@ export default function BusinessCardDesigner() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [message, setMessage] = useState('');
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -168,19 +169,31 @@ export default function BusinessCardDesigner() {
 
   const downloadCard = async () => {
     if (cardRef.current) {
+      setDownloading(true);
       try {
+        // Wait a moment for any images to be ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         const canvas = await html2canvas(cardRef.current, {
           scale: 2,
           backgroundColor: null,
-          useCORS: true
+          useCORS: true,
+          allowTaint: true,
+          logging: true,
         });
+        
         const image = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.href = image;
         link.download = `${profile?.username || 'card'}-business-card.png`;
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
       } catch (err) {
         console.error('Failed to download card:', err);
+        setMessage('Failed to download card. Please try again.');
+      } finally {
+        setDownloading(false);
       }
     }
   };
@@ -248,9 +261,19 @@ export default function BusinessCardDesigner() {
           </button>
           <button
             onClick={downloadCard}
-            className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            disabled={downloading}
+            className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download className="w-4 h-4" /> Download
+            {downloading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-gray-900 dark:border-gray-100 border-t-transparent rounded-full animate-spin" />
+                Downloading...
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" /> Download
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -620,6 +643,7 @@ export default function BusinessCardDesigner() {
                     <img 
                       src={profile.profileImage} 
                       alt="Profile" 
+                      crossOrigin="anonymous"
                       className={`object-cover shadow-md ${
                         config.layout === 'modern' 
                           ? 'w-24 h-24 rounded-full' 
