@@ -49,6 +49,11 @@ export async function getFeatureRequestsCollection() {
   return db.collection('feature_requests');
 }
 
+export async function getSettingsCollection() {
+  const db = await getDatabase();
+  return db.collection('settings');
+}
+
 // Database initialization function
 export async function initializeDatabase() {
   const db = await getDatabase();

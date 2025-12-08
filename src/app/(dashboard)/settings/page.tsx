@@ -340,17 +340,21 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-2">
-                    {subscription.tier === 'paid' 
-                      ? (subscription.status === 'trialing' ? 'Pro Plan (Trial)' : 'Pro Plan') 
-                      : 'Free Plan'}
+                    {(session?.user as any)?.isAdmin 
+                      ? 'Admin Plan (Pro Features)' 
+                      : (subscription.tier === 'paid' 
+                        ? (subscription.status === 'trialing' ? 'Pro Plan (Trial)' : 'Pro Plan') 
+                        : 'Free Plan')}
                   </h2>
                   <p className="text-slate-400">
-                    {subscription.tier === 'paid' && subscription.currentPeriodEnd
-                      ? `${subscription.status === 'trialing' ? 'Trial ends' : 'Renews'} on ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`
-                      : 'Upgrade to unlock premium features'}
+                    {(session?.user as any)?.isAdmin
+                      ? 'You have full access to all features as an administrator.'
+                      : (subscription.tier === 'paid' && subscription.currentPeriodEnd
+                        ? `${subscription.status === 'trialing' ? 'Trial ends' : 'Renews'} on ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`
+                        : 'Upgrade to unlock premium features')}
                   </p>
                 </div>
-                {subscription.tier === 'paid' && (
+                {subscription.tier === 'paid' && !(session?.user as any)?.isAdmin && (
                   <button
                     onClick={handlePortal}
                     className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition"

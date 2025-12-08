@@ -4,6 +4,7 @@ declare module 'next-auth' {
     email: string;
     username: string;
     subscriptionTier: 'free' | 'paid';
+    isAdmin?: boolean;
   }
 
   interface Session {
@@ -12,6 +13,7 @@ declare module 'next-auth' {
       email: string;
       username: string;
       subscriptionTier: 'free' | 'paid';
+      isAdmin?: boolean;
     };
   }
 }
@@ -21,5 +23,6 @@ declare module 'next-auth/jwt' {
     id?: string;
     username?: string;
     subscriptionTier?: 'free' | 'paid';
+    isAdmin?: boolean;
   }
 }

@@ -4,6 +4,35 @@ import { NextRequest, NextResponse } from 'next/server';
 const domainCache = new Map<string, { username: string | null; timestamp: number }>();
 const CACHE_TTL = 60 * 1000; // 1 minute
 
+// Cache for maintenance mode (in-memory, 30 seconds TTL)
+let maintenanceCache: { isActive: boolean; timestamp: number } | null = null;
+const MAINTENANCE_TTL = 30 * 1000; // 30 seconds
+
+async function checkMaintenanceMode(origin: string): Promise<boolean> {
+  const now = Date.now();
+  
+  if (maintenanceCache && now - maintenanceCache.timestamp < MAINTENANCE_TTL) {
+    return maintenanceCache.isActive;
+  }
+
+  try {
+    const apiUrl = new URL('/api/internal/maintenance', origin);
+    const response = await fetch(apiUrl.toString(), {
+      next: { revalidate: 30 }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      maintenanceCache = { isActive: data.maintenanceMode, timestamp: now };
+      return data.maintenanceMode;
+    }
+  } catch (error) {
+    console.error('Error checking maintenance mode:', error);
+  }
+  
+  return false;
+}
+
 async function getCachedUser(
   domain: string,
   origin: string
@@ -78,6 +107,25 @@ export async function middleware(request: NextRequest) {
     pathname.endsWith('.ico') ||
     pathname.endsWith('.json')) {
     return NextResponse.next();
+  }
+
+  // Check Maintenance Mode
+  const isMaintenanceMode = await checkMaintenanceMode(url.origin);
+  if (isMaintenanceMode) {
+    // Allow admin routes, maintenance page, and auth API
+    if (!pathname.startsWith('/admin') && 
+        !pathname.startsWith('/maintenance') && 
+        !pathname.startsWith('/api/auth')) {
+      
+      // Block dashboard, settings, login, register
+      if (pathname.startsWith('/dashboard') || 
+          pathname.startsWith('/settings') || 
+          pathname.startsWith('/login') || 
+          pathname.startsWith('/register')) {
+        url.pathname = '/maintenance';
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   // Parse hostname parts
