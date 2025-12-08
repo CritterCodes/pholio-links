@@ -101,7 +101,8 @@ export const authOptions = {
           id: token.id as string,
           email: token.email!,
           username: token.username as string,
-          subscriptionTier: token.subscriptionTier as 'free' | 'paid',
+          // Admins automatically get paid features
+          subscriptionTier: (token.isAdmin ? 'paid' : token.subscriptionTier) as 'free' | 'paid',
           isAdmin: token.isAdmin as boolean,
         };
       }
