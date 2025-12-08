@@ -22,6 +22,18 @@ interface ProfileData {
     textColor: string;
     linkColor: string;
   };
+  businessCard?: {
+    layout: 'classic' | 'modern' | 'minimal';
+    showQr: boolean;
+    showAvatar: boolean;
+    showSubtitle: boolean;
+    theme: 'default' | 'custom';
+    customColors: {
+      background: string;
+      text: string;
+      accent: string;
+    };
+  };
 }
 
 export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModalProps) {
@@ -50,7 +62,8 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
             backgroundColor: '#ffffff',
             textColor: '#000000',
             linkColor: '#3b82f6',
-          }
+          },
+          businessCard: data.businessCard
         });
       }
     } catch (error) {
@@ -97,6 +110,21 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
   };
 
   if (!isOpen) return null;
+
+  const cardConfig = profileData?.businessCard || {
+    layout: 'classic',
+    showQr: true,
+    showAvatar: true,
+    showSubtitle: true,
+    theme: 'default',
+    customColors: { background: '#ffffff', text: '#000000', accent: '#3b82f6' }
+  };
+
+  const colors = (profileData && cardConfig.theme === 'default') ? {
+    background: profileData.theme.backgroundColor,
+    text: profileData.theme.textColor,
+    accent: profileData.theme.linkColor
+  } : cardConfig.customColors;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -188,52 +216,65 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                     ref={cardRef}
                     className="w-full aspect-[1.586/1] bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col"
                     style={{
-                      background: `linear-gradient(135deg, ${profileData.theme.backgroundColor}, ${profileData.theme.backgroundColor === '#ffffff' ? '#f3f4f6' : '#000000'})`,
-                      color: profileData.theme.textColor
+                      background: cardConfig.layout === 'modern' 
+                        ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
+                        : colors.background,
+                      color: colors.text
                     }}
                   >
                     {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
+                    {cardConfig.layout === 'modern' && (
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
+                    )}
+                    {cardConfig.layout === 'classic' && (
+                      <div className="absolute top-0 left-0 w-full h-2" style={{ backgroundColor: colors.accent }}></div>
+                    )}
                     
-                    <div className="flex-1 p-6 flex items-center gap-6 relative z-10">
+                    <div className={`flex-1 p-6 flex ${cardConfig.layout === 'minimal' ? 'flex-col items-center text-center justify-center' : 'items-center'} gap-6 relative z-10`}>
                       {/* Profile Image */}
-                      <div className="shrink-0">
-                        {profileData.profileImage ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img 
-                            src={profileData.profileImage} 
-                            alt="Profile" 
-                            className="w-24 h-24 rounded-full object-cover border-4 border-white/20 shadow-md"
-                            crossOrigin="anonymous"
-                          />
-                        ) : (
-                          <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl">
-                            {profileData.displayName.charAt(0)}
-                          </div>
-                        )}
-                      </div>
+                      {cardConfig.showAvatar && (
+                        <div className="shrink-0">
+                          {profileData.profileImage ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img 
+                              src={profileData.profileImage} 
+                              alt="Profile" 
+                              className={`w-24 h-24 object-cover shadow-md ${cardConfig.layout === 'minimal' ? 'rounded-full' : 'rounded-full border-4 border-white/20'}`}
+                              crossOrigin="anonymous"
+                            />
+                          ) : (
+                            <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl">
+                              {profileData.displayName.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Info */}
-                      <div className="flex-1 min-w-0">
+                      <div className={`flex-1 min-w-0 ${cardConfig.layout === 'minimal' ? 'w-full' : ''}`}>
                         <h3 className="text-xl font-bold truncate leading-tight mb-1">
                           {profileData.displayName}
                         </h3>
-                        <p className="text-sm opacity-80 truncate mb-3">
-                          {profileData.subtitle}
-                        </p>
-                        <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium">
+                        {cardConfig.showSubtitle && (
+                          <p className="text-sm opacity-80 truncate mb-3">
+                            {profileData.subtitle}
+                          </p>
+                        )}
+                        <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'minimal' ? 'mx-auto' : ''}`}>
                           <span className="truncate">{profileUrl.replace('https://', '')}</span>
                         </div>
                       </div>
 
                       {/* QR Code */}
-                      <div className="shrink-0 bg-white p-2 rounded-lg shadow-sm">
-                        <QRCodeCanvas
-                          value={profileUrl}
-                          size={64}
-                          level={"M"}
-                        />
-                      </div>
+                      {cardConfig.showQr && cardConfig.layout !== 'minimal' && (
+                        <div className="shrink-0 bg-white p-2 rounded-lg shadow-sm">
+                          <QRCodeCanvas
+                            value={profileUrl}
+                            size={64}
+                            level={"M"}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Footer Branding */}

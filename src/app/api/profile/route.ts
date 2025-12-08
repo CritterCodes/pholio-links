@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
       links: user.profile?.links || [],
       socialLinks: user.profile?.socialLinks || [],
       blocks: user.profile?.blocks || [],
+      businessCard: user.profile?.businessCard,
       theme: user.profile?.theme || {
         backgroundColor: '#ffffff',
         textColor: '#000000',
