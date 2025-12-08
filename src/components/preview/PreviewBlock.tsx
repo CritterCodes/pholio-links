@@ -248,22 +248,67 @@ export function PreviewBlock({ block, theme, username }: PreviewBlockProps) {
 
       if (enabledContacts.length === 0) return null;
 
+      // Helper to get href
+      const getHref = (type: string, value: string) => {
+        switch (type) {
+          case 'phone': return `tel:${value}`;
+          case 'email': return `mailto:${value}`;
+          case 'address': return `https://maps.google.com/?q=${encodeURIComponent(value)}`;
+          default: return '#';
+        }
+      };
+
+      // Helper to get icon
+      const getIcon = (type: string) => {
+        switch (type) {
+          case 'phone': return <Phone className="w-5 h-5" />;
+          case 'email': return <Mail className="w-5 h-5" />;
+          case 'address': return <MapPin className="w-5 h-5" />;
+          default: return <Globe className="w-5 h-5" />;
+        }
+      };
+
       return (
-        <div className="w-full space-y-3 mb-4">
-          <h3 className="text-lg font-semibold text-center">{contactTitle}</h3>
-          <div className="space-y-2">
+        <div className="w-full mb-6">
+          {contactTitle && (
+            <h3 
+              className="text-lg font-bold text-center mb-4"
+              style={{ color: theme?.textColor }}
+            >
+              {contactTitle}
+            </h3>
+          )}
+          <div className="grid gap-3">
             {enabledContacts.map((contact) => (
-              <div key={contact.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="w-6 h-6 flex items-center justify-center text-gray-600 dark:text-gray-400">
-                  {contact.type === 'phone' && <span className="text-sm">📞</span>}
-                  {contact.type === 'email' && <span className="text-sm">📧</span>}
-                  {contact.type === 'address' && <span className="text-sm">📍</span>}
+              <a
+                key={contact.id}
+                href={getHref(contact.type, contact.value)}
+                target={contact.type === 'address' ? '_blank' : undefined}
+                rel={contact.type === 'address' ? 'noopener noreferrer' : undefined}
+                className="flex items-center gap-4 p-4 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm border border-transparent hover:border-current/10"
+                style={{
+                  backgroundColor: theme?.backgroundColor === '#000000' || theme?.textColor === '#ffffff' 
+                    ? 'rgba(255, 255, 255, 0.1)' 
+                    : 'rgba(255, 255, 255, 0.8)',
+                  color: theme?.textColor,
+                  backdropFilter: 'blur(8px)'
+                }}
+              >
+                <div 
+                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: theme?.linkColor,
+                    color: '#ffffff'
+                  }}
+                >
+                  {getIcon(contact.type)}
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300">{contact.label}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{contact.value}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold opacity-90 truncate">{contact.label}</div>
+                  <div className="text-sm opacity-75 truncate">{contact.value}</div>
                 </div>
-              </div>
+                <ExternalLink className="w-4 h-4 opacity-50 shrink-0" />
+              </a>
             ))}
           </div>
         </div>
