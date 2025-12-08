@@ -111,22 +111,39 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
                 )}
                 
                 {/* Profile Image (centered, peaking halfway into banner) */}
-                <div className="flex justify-center -translate-y-1/2">
-                  {formData.profileImage ? (
-                    <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-900">
-                      <Image
-                        src={formData.profileImage}
-                        alt="Profile"
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-900">
-                      <ImageIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
-                    </div>
-                  )}
+                <div className="flex justify-center -translate-y-1/2 relative">
+                  <div className="relative">
+                    {formData.profileImage ? (
+                      <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-900">
+                        <Image
+                          src={formData.profileImage}
+                          alt="Profile"
+                          width={80}
+                          height={80}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-900">
+                        <ImageIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                      </div>
+                    )}
+
+                    {/* Status Thought Bubble */}
+                    {formData.status && (
+                      <div className="absolute -top-8 left-16 z-20 w-max max-w-[150px]">
+                        <div className="relative bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                          <p className="text-xs font-medium leading-snug">
+                            <span className="mr-1">{formData.status.emoji}</span>
+                            {formData.status.message}
+                          </p>
+                          {/* Thought bubble circles */}
+                          <div className="absolute -bottom-1 left-3 w-2 h-2 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
+                          <div className="absolute -bottom-2.5 left-1.5 w-1 h-1 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
@@ -141,22 +158,6 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
                     <h3 className="text-lg font-bold text-gray-400 dark:text-gray-500 mb-1">
                       Your Name
                     </h3>
-                  )}
-
-                  {/* Status Badge */}
-                  {formData.status && (
-                    <div 
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border mb-2 mx-auto max-w-full shadow-sm"
-                      style={{
-                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.85)',
-                        borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)',
-                      }}
-                    >
-                      <span className="text-base flex-shrink-0 leading-none">{formData.status.emoji || '💭'}</span>
-                      <span style={{ color: isDark ? '#ffffff' : '#000000' }} className="text-xs font-medium truncate">
-                        {formData.status.message}
-                      </span>
-                    </div>
                   )}
                   
                   {formData.subtitle && (

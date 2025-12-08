@@ -142,22 +142,39 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
       {/* Main Content */}
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Profile Image */}
-        <div className={profile.heroImage ? '-mt-20 mb-8 relative z-10' : 'mb-8'}>
-          {profile.profileImage ? (
-            <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mx-auto">
-              <Image
-                src={profile.profileImage}
-                alt={profile.name}
-                width={128}
-                height={128}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 mx-auto flex items-center justify-center">
-              <ImageIcon className="w-16 h-16 text-gray-400" />
-            </div>
-          )}
+        <div className={profile.heroImage ? '-mt-20 mb-8 relative z-10 flex justify-center' : 'mb-8 flex justify-center'}>
+          <div className="relative">
+            {profile.profileImage ? (
+              <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden">
+                <Image
+                  src={profile.profileImage}
+                  alt={profile.name}
+                  width={128}
+                  height={128}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center">
+                <ImageIcon className="w-16 h-16 text-gray-400" />
+              </div>
+            )}
+
+            {/* Status Thought Bubble */}
+            {profile.status && (
+              <div className="absolute -top-12 left-24 z-20 w-max max-w-[200px]">
+                <div className="relative bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                  <p className="text-sm font-medium leading-snug">
+                    <span className="mr-1">{profile.status.emoji}</span>
+                    {profile.status.message}
+                  </p>
+                  {/* Thought bubble circles */}
+                  <div className="absolute -bottom-1 left-4 w-3 h-3 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
+                  <div className="absolute -bottom-3 left-2 w-1.5 h-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Profile Info */}
@@ -165,22 +182,6 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
           <h1 style={{ color: profile.theme.textColor }} className="text-4xl font-bold mb-2">
             {profile.name || 'No Name'}
           </h1>
-
-          {/* Status Badge */}
-          {profile.status && (
-            <div 
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md border mb-6 mx-auto max-w-full shadow-sm transition-transform hover:scale-105"
-              style={{
-                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.85)',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)',
-              }}
-            >
-              <span className="text-xl flex-shrink-0 leading-none">{profile.status.emoji || '💭'}</span>
-              <span style={{ color: isDark ? '#ffffff' : '#000000' }} className="text-sm font-medium truncate">
-                {profile.status.message}
-              </span>
-            </div>
-          )}
 
           {profile.subtitle && (
             <p style={{ color: profile.theme.textColor }} className="text-lg opacity-90 mb-4">
