@@ -64,7 +64,8 @@ export const authOptions = {
             email: user.email,
             username: user.username,
             subscriptionTier: user.subscriptionTier,
-          } as AuthUser;
+            isAdmin: user.isAdmin || false,
+          } as any;
         } catch (error) {
           console.error('Auth error:', error);
           throw new Error('Authentication failed');
@@ -75,11 +76,11 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
-        token.id = (user as AuthUser)._id.toString();
-        token.username = (user as AuthUser).username;
-        token.subscriptionTier = (user as AuthUser).subscriptionTier;
+        token.id = user.id;
+        token.username = user.username;
+        token.subscriptionTier = user.subscriptionTier;
         token.email = user.email;
-        token.isAdmin = (user as AuthUser).isAdmin || false;
+        token.isAdmin = user.isAdmin || false;
       } else if (token.email) {
         // Refresh subscription tier from database on every token refresh
         try {
