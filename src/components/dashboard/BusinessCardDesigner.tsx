@@ -505,14 +505,14 @@ export default function BusinessCardDesigner() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
             )}
             {config.layout === 'classic' && (
-              <div className="absolute top-0 left-0 w-full h-full border-[12px] border-current opacity-10 z-0 pointer-events-none"></div>
+              <div className="absolute inset-3 border-2 border-current opacity-30 z-0 pointer-events-none rounded-lg"></div>
             )}
 
             <div className={`flex-1 p-6 flex ${
               config.layout === 'minimal' 
                 ? `items-center gap-6 ${config.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
                 : config.layout === 'classic'
-                  ? 'flex-col items-center justify-center text-center gap-3'
+                  ? 'flex-col items-center justify-center text-center gap-2'
                   : 'items-center gap-6'
             } relative z-10`}>
               
@@ -550,14 +550,19 @@ export default function BusinessCardDesigner() {
               {/* Info */}
               <div className={`flex-1 min-w-0 ${config.layout === 'minimal' ? 'w-full' : 'w-full'}`}>
                 <h3 className={`font-bold truncate leading-tight mb-1 ${
-                  config.layout === 'classic' ? 'text-2xl tracking-wide' : 'text-xl'
+                  config.layout === 'classic' ? 'text-2xl tracking-wide font-serif' : 'text-xl'
                 }`}>
                   {profile.displayName}
                 </h3>
                 {config.showSubtitle && (
-                  <p className={`text-sm opacity-80 truncate ${config.layout === 'classic' ? 'mb-4 uppercase tracking-widest text-xs' : 'mb-3'}`}>
+                  <p className={`text-sm opacity-80 truncate ${config.layout === 'classic' ? 'mb-3 uppercase tracking-widest text-xs font-medium' : 'mb-3'}`}>
                     {profile.subtitle}
                   </p>
+                )}
+
+                {/* Classic Divider */}
+                {config.layout === 'classic' && (
+                  <div className="w-12 h-px bg-current opacity-30 mx-auto mb-3"></div>
                 )}
                 
                 {/* URL Display - Only show here if QR is hidden */}
@@ -573,7 +578,7 @@ export default function BusinessCardDesigner() {
                     config.layout === 'minimal' 
                       ? (config.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') 
                       : config.layout === 'classic'
-                        ? 'flex flex-row flex-wrap justify-center gap-4'
+                        ? 'flex flex-row flex-wrap justify-center gap-x-6 gap-y-2'
                         : ''
                   }`}>
                     {config.showPhone && config.phoneNumber && (
