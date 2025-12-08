@@ -663,19 +663,23 @@ export default function BusinessCardDesigner() {
                 
                 {/* URL Display - Only show here if QR is hidden or layout is classic */}
                 {(!config.showQr || config.layout === 'classic') && (
-                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${config.layout === 'modern' ? '' : ''}`}>
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${
+                    config.layout === 'classic' 
+                      ? 'absolute top-6 right-6' 
+                      : ''
+                  }`}>
                     <span className="truncate">{displayUrl}</span>
                   </div>
                 )}
 
                 {/* Contact Details */}
                 {(config.showPhone || config.showEmail) && (
-                  <div className={`mt-4 space-y-1.5 ${
+                  <div className={`mt-4 ${
                     config.layout === 'modern' 
-                      ? (config.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') 
+                      ? (config.minimalLayoutSwap ? 'flex flex-col items-end space-y-1.5' : 'flex flex-col items-start space-y-1.5') 
                       : config.layout === 'classic'
                         ? 'flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2'
-                        : ''
+                        : 'space-y-1.5'
                   }`}>
                     {config.showPhone && config.phoneNumber && (
                       <div className="flex items-center gap-2 text-xs opacity-90">
