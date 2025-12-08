@@ -25,6 +25,7 @@ interface ProfileData {
     backgroundType?: 'solid' | 'gradient' | 'image';
     gradientFrom?: string;
     gradientTo?: string;
+    font?: string;
   };
   businessCard?: {
     layout: 'classic' | 'modern' | 'minimal';
@@ -44,6 +45,10 @@ interface ProfileData {
       background: string;
       text: string;
       accent: string;
+      backgroundType: 'solid' | 'gradient';
+      gradientFrom: string;
+      gradientTo: string;
+      gradientDirection: 'to right' | 'to bottom' | 'to bottom right' | 'to top right';
     };
   };
 }
@@ -148,6 +153,25 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
     accent: profileData.theme.linkColor
   } : cardConfig.customColors;
 
+  const getBackgroundStyle = () => {
+    if (cardConfig.backgroundImage) {
+      return `url(${cardConfig.backgroundImage}) center/cover no-repeat`;
+    }
+
+    if (cardConfig.theme === 'default') {
+       if (profileData?.theme.backgroundType === 'gradient') {
+         return `linear-gradient(135deg, ${profileData.theme.gradientFrom}, ${profileData.theme.gradientTo})`;
+       }
+       return profileData?.theme.backgroundColor || '#ffffff';
+    }
+
+    if (cardConfig.customColors.backgroundType === 'gradient') {
+       return `linear-gradient(${cardConfig.customColors.gradientDirection}, ${cardConfig.customColors.gradientFrom}, ${cardConfig.customColors.gradientTo})`;
+    }
+    
+    return cardConfig.customColors.background;
+  };
+
   const displayUrl = profileData?.customDomain || profileUrl.replace(/^https?:\/\//, '');
 
   return (
@@ -240,14 +264,9 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                     ref={cardRef}
                     className="w-full aspect-[1.75/1] bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col"
                     style={{
-                      background: cardConfig.backgroundImage 
-                        ? `url(${cardConfig.backgroundImage}) center/cover no-repeat`
-                        : (cardConfig.theme === 'default' && profileData.theme.backgroundType === 'gradient')
-                          ? `linear-gradient(135deg, ${profileData.theme.gradientFrom}, ${profileData.theme.gradientTo})`
-                          : cardConfig.layout === 'modern' 
-                            ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
-                            : colors.background,
-                      color: colors.text
+                      background: getBackgroundStyle(),
+                      color: colors.text,
+                      fontFamily: cardConfig.theme === 'default' ? profileData.theme.font : 'inherit'
                     }}
                   >
                     {/* Overlay for readability if background image is present */}
@@ -256,7 +275,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                     )}
 
                     {/* Decorative Elements */}
-                    {cardConfig.layout === 'modern' && !cardConfig.backgroundImage && (
+                    {cardConfig.layout === 'modern' && !cardConfig.backgroundImage && cardConfig.customColors.backgroundType !== 'gradient' && (
                       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
                     )}
                     {cardConfig.layout === 'classic' && (
@@ -267,7 +286,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                       cardConfig.layout === 'minimal' 
                         ? `items-center gap-6 ${cardConfig.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
                         : cardConfig.layout === 'classic'
-                          ? 'flex-col items-center justify-center text-center gap-2'
+                          ? 'flex-col items-center justify-center text-center gap-1'
                           : 'items-center gap-6'
                     } relative z-10`}>
                       {/* Profile Image */}
@@ -303,21 +322,21 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                       )}
 
                       {/* Info */}
-                      <div className={`min-w-0 ${cardConfig.layout === 'classic' ? 'w-full' : 'flex-1 w-full'}`}>
+                      <div className={`min-w-0 ${cardConfig.layout === 'classic' ? 'w-full shrink' : 'flex-1 w-full'}`}>
                         <h3 className={`font-bold truncate leading-tight mb-1 ${
                           cardConfig.layout === 'classic' ? 'text-2xl tracking-wide font-serif' : 'text-xl'
                         }`}>
                           {profileData.displayName}
                         </h3>
                         {cardConfig.showSubtitle && (
-                          <p className={`text-sm opacity-80 truncate ${cardConfig.layout === 'classic' ? 'mb-3 uppercase tracking-widest text-xs font-medium' : 'mb-3'}`}>
+                          <p className={`text-sm opacity-80 truncate ${cardConfig.layout === 'classic' ? 'mb-2 uppercase tracking-widest text-xs font-medium' : 'mb-3'}`}>
                             {profileData.subtitle}
                           </p>
                         )}
 
                         {/* Classic Divider */}
                         {cardConfig.layout === 'classic' && (
-                          <div className="w-12 h-px bg-current opacity-30 mx-auto mb-3"></div>
+                          <div className="w-12 h-px bg-current opacity-30 mx-auto mb-2"></div>
                         )}
                         
                         {/* URL Display - Only show here if QR is hidden */}

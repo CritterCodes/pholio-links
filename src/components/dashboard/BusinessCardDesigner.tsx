@@ -25,6 +25,10 @@ interface BusinessCardConfig {
     background: string;
     text: string;
     accent: string;
+    backgroundType: 'solid' | 'gradient';
+    gradientFrom: string;
+    gradientTo: string;
+    gradientDirection: 'to right' | 'to bottom' | 'to bottom right' | 'to top right';
   };
 }
 
@@ -45,6 +49,7 @@ interface ProfileData {
     backgroundType?: 'solid' | 'gradient' | 'image';
     gradientFrom?: string;
     gradientTo?: string;
+    font?: string;
   };
 }
 
@@ -66,7 +71,11 @@ export default function BusinessCardDesigner() {
     customColors: {
       background: '#ffffff',
       text: '#000000',
-      accent: '#3b82f6'
+      accent: '#3b82f6',
+      backgroundType: 'solid',
+      gradientFrom: '#ffffff',
+      gradientTo: '#f3f4f6',
+      gradientDirection: 'to bottom right'
     }
   });
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -194,6 +203,25 @@ export default function BusinessCardDesigner() {
     text: profile.theme.textColor,
     accent: profile.theme.linkColor
   } : config.customColors;
+
+  const getBackgroundStyle = () => {
+    if (config.backgroundImage) {
+      return `url(${config.backgroundImage}) center/cover no-repeat`;
+    }
+
+    if (config.theme === 'default') {
+       if (profile.theme.backgroundType === 'gradient') {
+         return `linear-gradient(135deg, ${profile.theme.gradientFrom}, ${profile.theme.gradientTo})`;
+       }
+       return profile.theme.backgroundColor;
+    }
+
+    if (config.customColors.backgroundType === 'gradient') {
+       return `linear-gradient(${config.customColors.gradientDirection}, ${config.customColors.gradientFrom}, ${config.customColors.gradientTo})`;
+    }
+    
+    return config.customColors.background;
+  };
 
   const profileUrl = profile.customDomain 
     ? `https://${profile.customDomain}`
@@ -405,32 +433,117 @@ export default function BusinessCardDesigner() {
             </div>
 
             {config.theme === 'custom' && (
-              <div className="space-y-3">
+              <div className="space-y-4">
+                {/* Background Type Selection */}
                 <div>
-                  <label className="text-xs text-gray-500 block mb-1">Background</label>
+                  <label className="text-xs text-gray-500 block mb-2">Background Style</label>
                   <div className="flex gap-2">
-                    <input
-                      type="color"
-                      value={config.customColors.background}
-                      onChange={(e) => setConfig({
+                    <button
+                      onClick={() => setConfig({
                         ...config,
-                        customColors: { ...config.customColors, background: e.target.value }
+                        customColors: { ...config.customColors, backgroundType: 'solid' }
                       })}
-                      className="h-8 w-8 rounded cursor-pointer border border-gray-200"
-                    />
-                    <input
-                      type="text"
-                      value={config.customColors.background}
-                      onChange={(e) => setConfig({
+                      className={`flex-1 py-1.5 text-xs rounded border transition-all ${
+                        config.customColors.backgroundType === 'solid'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      Solid
+                    </button>
+                    <button
+                      onClick={() => setConfig({
                         ...config,
-                        customColors: { ...config.customColors, background: e.target.value }
+                        customColors: { ...config.customColors, backgroundType: 'gradient' }
                       })}
-                      className="flex-1 text-sm border border-gray-200 rounded px-2"
-                    />
+                      className={`flex-1 py-1.5 text-xs rounded border transition-all ${
+                        config.customColors.backgroundType === 'gradient'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                          : 'border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      Gradient
+                    </button>
                   </div>
                 </div>
+
+                {config.customColors.backgroundType === 'solid' ? (
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">Background Color</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="color"
+                        value={config.customColors.background}
+                        onChange={(e) => setConfig({
+                          ...config,
+                          customColors: { ...config.customColors, background: e.target.value }
+                        })}
+                        className="h-8 w-8 rounded cursor-pointer border border-gray-200"
+                      />
+                      <input
+                        type="text"
+                        value={config.customColors.background}
+                        onChange={(e) => setConfig({
+                          ...config,
+                          customColors: { ...config.customColors, background: e.target.value }
+                        })}
+                        className="flex-1 text-sm border border-gray-200 rounded px-2"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">Direction</label>
+                      <select
+                        value={config.customColors.gradientDirection}
+                        onChange={(e) => setConfig({
+                          ...config,
+                          customColors: { ...config.customColors, gradientDirection: e.target.value as any }
+                        })}
+                        className="w-full text-sm border border-gray-200 rounded px-2 py-1.5 dark:bg-gray-700 dark:border-gray-600"
+                      >
+                        <option value="to right">Left to Right</option>
+                        <option value="to bottom">Top to Bottom</option>
+                        <option value="to bottom right">Diagonal (Top-Left to Bottom-Right)</option>
+                        <option value="to top right">Diagonal (Bottom-Left to Top-Right)</option>
+                      </select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-xs text-gray-500 block mb-1">Start Color</label>
+                        <div className="flex gap-1">
+                          <input
+                            type="color"
+                            value={config.customColors.gradientFrom}
+                            onChange={(e) => setConfig({
+                              ...config,
+                              customColors: { ...config.customColors, gradientFrom: e.target.value }
+                            })}
+                            className="h-8 w-8 rounded cursor-pointer border border-gray-200"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500 block mb-1">End Color</label>
+                        <div className="flex gap-1">
+                          <input
+                            type="color"
+                            value={config.customColors.gradientTo}
+                            onChange={(e) => setConfig({
+                              ...config,
+                              customColors: { ...config.customColors, gradientTo: e.target.value }
+                            })}
+                            className="h-8 w-8 rounded cursor-pointer border border-gray-200"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div>
-                  <label className="text-xs text-gray-500 block mb-1">Text</label>
+                  <label className="text-xs text-gray-500 block mb-1">Text Color</label>
                   <div className="flex gap-2">
                     <input
                       type="color"
@@ -490,14 +603,9 @@ export default function BusinessCardDesigner() {
             ref={cardRef}
             className="w-full max-w-md aspect-[1.75/1] rounded-xl shadow-2xl overflow-hidden relative flex flex-col transition-all duration-300"
             style={{
-              background: config.backgroundImage 
-                ? `url(${config.backgroundImage}) center/cover no-repeat`
-                : (config.theme === 'default' && profile.theme.backgroundType === 'gradient')
-                  ? `linear-gradient(135deg, ${profile.theme.gradientFrom}, ${profile.theme.gradientTo})`
-                  : config.layout === 'modern' 
-                    ? `linear-gradient(135deg, ${colors.background}, ${colors.background === '#ffffff' ? '#f3f4f6' : '#000000'})`
-                    : colors.background,
-              color: colors.text
+              background: getBackgroundStyle(),
+              color: colors.text,
+              fontFamily: config.theme === 'default' ? profile.theme.font : 'inherit'
             }}
           >
             {/* Overlay for readability if background image is present */}
@@ -506,7 +614,7 @@ export default function BusinessCardDesigner() {
             )}
 
             {/* Decorative Elements based on layout */}
-            {config.layout === 'modern' && !config.backgroundImage && (
+            {config.layout === 'modern' && !config.backgroundImage && config.customColors.backgroundType !== 'gradient' && (
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
             )}
             {config.layout === 'classic' && (
@@ -517,7 +625,7 @@ export default function BusinessCardDesigner() {
               config.layout === 'minimal' 
                 ? `items-center gap-6 ${config.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
                 : config.layout === 'classic'
-                  ? 'flex-col items-center justify-center text-center gap-2'
+                  ? 'flex-col items-center justify-center text-center gap-1'
                   : 'items-center gap-6'
             } relative z-10`}>
               
@@ -560,14 +668,14 @@ export default function BusinessCardDesigner() {
                   {profile.displayName}
                 </h3>
                 {config.showSubtitle && (
-                  <p className={`text-sm opacity-80 truncate ${config.layout === 'classic' ? 'mb-3 uppercase tracking-widest text-xs font-medium' : 'mb-3'}`}>
+                  <p className={`text-sm opacity-80 truncate ${config.layout === 'classic' ? 'mb-2 uppercase tracking-widest text-xs font-medium' : 'mb-3'}`}>
                     {profile.subtitle}
                   </p>
                 )}
 
                 {/* Classic Divider */}
                 {config.layout === 'classic' && (
-                  <div className="w-12 h-px bg-current opacity-30 mx-auto mb-3"></div>
+                  <div className="w-12 h-px bg-current opacity-30 mx-auto mb-2"></div>
                 )}
                 
                 {/* URL Display - Only show here if QR is hidden */}
