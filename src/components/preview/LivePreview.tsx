@@ -213,7 +213,7 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
 
   // Desktop preview
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full w-full flex flex-col">
       <div 
         className="flex-1 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700"
         style={{

@@ -535,7 +535,7 @@ export default function ThemePage() {
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex justify-center">
+            <div className={previewMode === 'mobile' ? "flex justify-center" : "w-full"}>
               <LivePreview formData={formData} previewMode={previewMode} theme={theme} />
             </div>
           </div>
