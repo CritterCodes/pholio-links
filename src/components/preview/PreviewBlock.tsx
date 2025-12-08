@@ -36,7 +36,7 @@ export function PreviewBlock({ block, theme, username }: PreviewBlockProps) {
   };
 
   const getLinkButtonClass = () => {
-    const baseClass = "w-full px-4 py-3 text-center font-medium transition-all duration-200 hover:opacity-90";
+    const baseClass = "w-full max-w-sm mx-auto px-6 py-3.5 text-center font-medium transition-all duration-200 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] shadow-sm";
     let styleClass = '';
     
     if (theme?.linkStyle === 'pill') {
@@ -44,7 +44,7 @@ export function PreviewBlock({ block, theme, username }: PreviewBlockProps) {
     } else if (theme?.linkStyle === 'square') {
       styleClass = 'rounded-none';
     } else {
-      styleClass = 'rounded-lg';
+      styleClass = 'rounded-xl';
     }
     
     return `${baseClass} ${styleClass}`;
