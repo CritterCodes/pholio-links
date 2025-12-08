@@ -49,6 +49,17 @@ export async function getFeatureRequestsCollection() {
   return db.collection('feature_requests');
 }
 
+export async function getFormsCollection() {
+  const db = await getDatabase();
+  return db.collection('forms');
+}
+
+export async function getFormSubmissionsCollection() {
+  const db = await getDatabase();
+  return db.collection('form_submissions');
+}
+
+
 export async function getNotificationsCollection() {
   const db = await getDatabase();
   return db.collection('notifications');

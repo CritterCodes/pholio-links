@@ -123,7 +123,7 @@ export interface AuthUser extends User {
 }
 
 // Block-based design system types
-export type BlockType = 'profile-image' | 'title' | 'subtitle' | 'bio' | 'social-icons' | 'links';
+export type BlockType = 'profile-image' | 'title' | 'subtitle' | 'bio' | 'social-icons' | 'links' | 'form';
 
 export interface ContentBlock {
   id: string;
@@ -186,3 +186,35 @@ export interface SplashScreenData {
 
 // Database insertion types (without _id)
 export type UserInsert = Omit<User, '_id'>;
+
+export interface FormField {
+  id: string;
+  type: 'text' | 'email' | 'textarea' | 'number' | 'select' | 'checkbox' | 'radio';
+  label: string;
+  placeholder?: string;
+  required: boolean;
+  options?: string[]; // For select, radio
+}
+
+export interface Form {
+  _id?: ObjectId;
+  userId: ObjectId;
+  title: string;
+  description?: string;
+  fields: FormField[];
+  submitButtonText: string;
+  successMessage: string;
+  isActive: boolean;
+  views: number;
+  submissionsCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface FormSubmission {
+  _id?: ObjectId;
+  formId: ObjectId;
+  data: Record<string, any>; // key is field.id
+  submittedAt: Date;
+  viewed: boolean;
+}

@@ -18,7 +18,8 @@ import {
   HiLogout,
   HiShieldCheck,
   HiUserGroup,
-  HiIdentification
+  HiIdentification,
+  HiClipboardList
 } from 'react-icons/hi';
 
 const navigation = [
@@ -26,6 +27,7 @@ const navigation = [
   { name: 'Theme', href: '/theme', icon: HiColorSwatch },
   { name: 'Business Card', href: '/business-card', icon: HiIdentification },
   { name: 'Gallery', href: '/gallery', icon: HiPhotograph, premium: true },
+  { name: 'Forms', href: '/forms', icon: HiClipboardList, premium: true },
   { name: 'Analytics', href: '/analytics', icon: HiChartBar, premium: true },
   { name: 'Fans', href: '/fans', icon: HiUserGroup },
   { name: 'Settings', href: '/settings', icon: HiCog },

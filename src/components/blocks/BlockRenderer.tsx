@@ -6,6 +6,7 @@ import { SocialIconsBlock } from '../blocks/SocialIconsBlock';
 import { GalleryBlock } from '../blocks/GalleryBlock';
 import { DividerBlock } from '../blocks/DividerBlock';
 import { ContactBlock } from '../blocks/ContactBlock';
+import { FormBlock } from '../blocks/FormBlock';
 // import { SubtitleBlock } from '../blocks/SubtitleBlock'; // Moved to Basic Details section
 
 interface Block {
@@ -89,6 +90,16 @@ export function BlockRenderer({ block, onUpdate, onRemove, onToggleVisibility }:
     case 'contact':
       return (
         <ContactBlock
+          block={block}
+          onUpdate={onUpdate}
+          onRemove={onRemove}
+          onToggleVisibility={onToggleVisibility}
+        />
+      );
+
+    case 'form':
+      return (
+        <FormBlock
           block={block}
           onUpdate={onUpdate}
           onRemove={onRemove}

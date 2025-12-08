@@ -2,7 +2,7 @@
 
 import { X, Plus } from 'lucide-react';
 
-type BlockType = 'profile_image' | 'title' | 'subtitle' | 'bio' | 'social_icons' | 'links' | 'gallery' | 'divider' | 'contact';
+type BlockType = 'profile_image' | 'title' | 'subtitle' | 'bio' | 'social_icons' | 'links' | 'gallery' | 'divider' | 'contact' | 'form';
 
 interface AddBlockModalProps {
   isOpen: boolean;
@@ -72,9 +72,16 @@ const blockOptions: BlockOption[] = [
   },
   {
     type: 'contact',
-    title: 'Contact Info',
-    description: 'Share your contact details',
-    icon: '📞',
+    title: 'Contact Form',
+    description: 'Add a simple contact form',
+    icon: '📧',
+  },
+  {
+    type: 'form',
+    title: 'Custom Form',
+    description: 'Link to one of your custom forms',
+    icon: '📋',
+    isPro: true,
   },
 ];
 

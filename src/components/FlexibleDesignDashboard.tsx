@@ -14,7 +14,7 @@ import {
   Type
 } from 'lucide-react';
 
-type BlockType = 'profile_image' | 'title' | 'subtitle' | 'bio' | 'social_icons' | 'links' | 'gallery' | 'divider' | 'contact';
+type BlockType = 'profile_image' | 'title' | 'subtitle' | 'bio' | 'social_icons' | 'links' | 'gallery' | 'divider' | 'contact' | 'form';
 
 interface Link {
   _id: string;

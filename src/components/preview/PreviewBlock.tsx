@@ -1,6 +1,6 @@
 'use client';
 
-import { Instagram, Twitter, Facebook, Youtube, Linkedin, Github, Globe, ImageIcon, ExternalLink, Phone, Mail, MapPin } from 'lucide-react';
+import { Instagram, Twitter, Facebook, Youtube, Linkedin, Github, Globe, ImageIcon, ExternalLink, Phone, Mail, MapPin, ClipboardList } from 'lucide-react';
 import { trackLinkClick } from '@/components/AnalyticsTracker';
 
 interface Block {
@@ -232,6 +232,31 @@ export function PreviewBlock({ block, theme, username }: PreviewBlockProps) {
             }}
           />
         </div>
+      );
+
+    case 'form':
+      const formData = block.content as { formId?: string; buttonText?: string };
+      if (!formData.formId) return null;
+      
+      const formUrl = username ? `/${username}/forms/${formData.formId}` : '#';
+
+      return (
+        <a
+          href={formUrl}
+          className={getLinkButtonClass()}
+          style={{ 
+            backgroundColor: theme?.linkColor || '#3b82f6',
+            color: '#ffffff',
+            display: 'block',
+            textDecoration: 'none',
+            marginBottom: '1rem'
+          }}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <span className="font-medium">{formData.buttonText || 'Fill out form'}</span>
+            <ClipboardList className="w-4 h-4 opacity-70" />
+          </div>
+        </a>
       );
 
     case 'contact':
