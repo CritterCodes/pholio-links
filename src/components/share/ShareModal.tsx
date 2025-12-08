@@ -28,16 +28,14 @@ interface ProfileData {
     font?: string;
   };
   businessCard?: {
-    layout: 'classic' | 'modern' | 'minimal';
+    layout: 'classic' | 'modern';
     showQr: boolean;
     showAvatar: boolean;
     showSubtitle: boolean;
     showPhone: boolean;
     showEmail: boolean;
-    showWebsite: boolean;
     phoneNumber: string;
     email: string;
-    website: string;
     backgroundImage?: string;
     minimalLayoutSwap?: boolean;
     theme: 'default' | 'custom';
@@ -275,18 +273,15 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                     )}
 
                     {/* Decorative Elements */}
-                    {cardConfig.layout === 'modern' && !cardConfig.backgroundImage && cardConfig.customColors.backgroundType !== 'gradient' && (
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
-                    )}
                     {cardConfig.layout === 'classic' && (
                       <div className="absolute inset-3 border-2 border-current opacity-30 z-0 pointer-events-none rounded-lg"></div>
                     )}
                     
                     <div className={`flex-1 p-6 flex ${
-                      cardConfig.layout === 'minimal' 
+                      cardConfig.layout === 'modern' 
                         ? `items-center gap-6 ${cardConfig.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
                         : cardConfig.layout === 'classic'
-                          ? 'flex-col items-center justify-center text-center gap-4'
+                          ? 'flex-col items-center justify-center text-center gap-3'
                           : 'items-center gap-6'
                     } relative z-10`}>
                       {/* Profile Image */}
@@ -298,7 +293,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                               src={profileData.profileImage} 
                               alt="Profile" 
                               className={`object-cover shadow-md ${
-                                cardConfig.layout === 'minimal' 
+                                cardConfig.layout === 'modern' 
                                   ? 'w-24 h-24 rounded-full' 
                                   : cardConfig.layout === 'classic'
                                     ? 'w-20 h-20 rounded-full border-2 border-current'
@@ -316,8 +311,8 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                         </div>
                       )}
 
-                      {/* Divider for Minimal Layout */}
-                      {cardConfig.layout === 'minimal' && cardConfig.showAvatar && (
+                      {/* Divider for Modern Layout */}
+                      {cardConfig.layout === 'modern' && cardConfig.showAvatar && (
                         <div className="w-px h-24 bg-current opacity-20 shrink-0"></div>
                       )}
 
@@ -341,15 +336,15 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                         
                         {/* URL Display - Only show here if QR is hidden or layout is classic */}
                         {(!cardConfig.showQr || cardConfig.layout === 'classic') && (
-                          <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'minimal' ? '' : ''}`}>
+                          <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'modern' ? '' : ''}`}>
                             <span className="truncate">{displayUrl}</span>
                           </div>
                         )}
 
                         {/* Contact Details */}
-                        {(cardConfig.showPhone || cardConfig.showEmail || cardConfig.showWebsite) && (
+                        {(cardConfig.showPhone || cardConfig.showEmail) && (
                           <div className={`mt-4 space-y-1.5 ${
-                            cardConfig.layout === 'minimal' 
+                            cardConfig.layout === 'modern' 
                               ? (cardConfig.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') 
                               : cardConfig.layout === 'classic'
                                 ? 'flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2'
@@ -365,12 +360,6 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                               <div className="flex items-center gap-2 text-xs opacity-90">
                                 <Mail className="w-3 h-3" />
                                 <span>{cardConfig.email}</span>
-                              </div>
-                            )}
-                            {cardConfig.showWebsite && cardConfig.website && (
-                              <div className="flex items-center gap-2 text-xs opacity-90">
-                                <Globe className="w-3 h-3" />
-                                <span>{cardConfig.website}</span>
                               </div>
                             )}
                           </div>

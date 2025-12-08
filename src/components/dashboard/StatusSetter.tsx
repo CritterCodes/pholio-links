@@ -138,11 +138,11 @@ export function StatusSetter() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="What's happening?"
-                      maxLength={144}
+                      maxLength={80}
                       className="w-full h-12 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-white"
                     />
                     <div className="text-right text-xs text-gray-400 mt-1">
-                      {message.length}/144
+                      {message.length}/80
                     </div>
                   </div>
                 </div>

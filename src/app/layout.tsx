@@ -15,8 +15,48 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Pholio.Links - Your Link in Bio',
-  description: 'Create your personalized link in bio page with Pholio.Links',
+  title: {
+    default: 'Pholio.Links | The Ultimate Link in Bio & Digital Business Card',
+    template: '%s | Pholio.Links'
+  },
+  description: 'Create a stunning link in bio, digital business card, and portfolio in minutes. The best Linktree alternative for creators, professionals, and businesses.',
+  keywords: ['link in bio', 'digital business card', 'portfolio builder', 'creator tools', 'social media links', 'linktree alternative', 'beacons alternative'],
+  authors: [{ name: 'CritterCodes' }],
+  creator: 'CritterCodes',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://pholio.links',
+    title: 'Pholio.Links | The Ultimate Link in Bio & Digital Business Card',
+    description: 'One link for everything. Share your profile, business card, and portfolio with a single URL.',
+    siteName: 'Pholio.Links',
+    images: [
+      {
+        url: '/og-image.png', // We should ensure this exists or use a placeholder
+        width: 1200,
+        height: 630,
+        alt: 'Pholio.Links Preview',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Pholio.Links | The Ultimate Link in Bio',
+    description: 'One link for everything. Share your profile, business card, and portfolio with a single URL.',
+    images: ['/og-image.png'],
+    creator: '@CritterCodes',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 // Force dynamic rendering so middleware can execute on all requests

@@ -12,9 +12,9 @@ export async function POST(request: NextRequest) {
 
     const { message, emoji, duration } = await request.json();
 
-    if (!message || message.length > 144) {
+    if (!message || message.length > 80) {
       return NextResponse.json(
-        { message: 'Status must be between 1 and 144 characters' },
+        { message: 'Status must be between 1 and 80 characters' },
         { status: 400 }
       );
     }

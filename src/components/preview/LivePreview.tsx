@@ -143,7 +143,7 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
                         <div className={`relative bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 shadow-xl border border-gray-200 dark:border-gray-700 ${
                           theme?.statusButtonStyle === 'pill' ? 'rounded-full' : 'rounded-2xl'
                         }`}>
-                          <p className="text-xs font-medium leading-snug">
+                          <p className="text-xs font-medium leading-snug break-words whitespace-normal">
                             <span className="mr-1">{formData.status.emoji}</span>
                             {formData.status.message}
                           </p>

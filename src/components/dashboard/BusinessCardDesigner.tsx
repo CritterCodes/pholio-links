@@ -8,16 +8,14 @@ import FileUpload from '@/components/FileUpload';
 import html2canvas from 'html2canvas';
 
 interface BusinessCardConfig {
-  layout: 'classic' | 'modern' | 'minimal';
+  layout: 'classic' | 'modern';
   showQr: boolean;
   showAvatar: boolean;
   showSubtitle: boolean;
   showPhone: boolean;
   showEmail: boolean;
-  showWebsite: boolean;
   phoneNumber: string;
   email: string;
-  website: string;
   backgroundImage?: string;
   minimalLayoutSwap?: boolean;
   theme: 'default' | 'custom';
@@ -61,10 +59,8 @@ export default function BusinessCardDesigner() {
     showSubtitle: true,
     showPhone: false,
     showEmail: false,
-    showWebsite: false,
     phoneNumber: '',
     email: '',
-    website: '',
     backgroundImage: '',
     minimalLayoutSwap: false,
     theme: 'default',
@@ -275,8 +271,8 @@ export default function BusinessCardDesigner() {
             <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
               <Layout className="w-4 h-4" /> Layout
             </h3>
-            <div className="grid grid-cols-3 gap-2">
-              {['classic', 'modern', 'minimal'].map((layout) => (
+            <div className="grid grid-cols-2 gap-2">
+              {['classic', 'modern'].map((layout) => (
                 <button
                   key={layout}
                   onClick={() => setConfig({ ...config, layout: layout as any })}
@@ -291,8 +287,8 @@ export default function BusinessCardDesigner() {
               ))}
             </div>
             
-            {/* Minimal Layout Options */}
-            {config.layout === 'minimal' && (
+            {/* Modern Layout Options (formerly Minimal) */}
+            {config.layout === 'modern' && (
               <div className="mt-3">
                 <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
                   <input
@@ -390,28 +386,6 @@ export default function BusinessCardDesigner() {
                     placeholder="you@example.com"
                     value={config.email}
                     onChange={(e) => setConfig({ ...config, email: e.target.value })}
-                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:border-gray-600"
-                  />
-                )}
-              </div>
-
-              {/* Website */}
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={config.showWebsite}
-                    onChange={(e) => setConfig({ ...config, showWebsite: e.target.checked })}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  Website
-                </label>
-                {config.showWebsite && (
-                  <input
-                    type="url"
-                    placeholder="https://yourwebsite.com"
-                    value={config.website}
-                    onChange={(e) => setConfig({ ...config, website: e.target.value })}
                     className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:border-gray-600"
                   />
                 )}
@@ -626,18 +600,15 @@ export default function BusinessCardDesigner() {
             )}
 
             {/* Decorative Elements based on layout */}
-            {config.layout === 'modern' && !config.backgroundImage && config.customColors.backgroundType !== 'gradient' && (
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
-            )}
             {config.layout === 'classic' && (
               <div className="absolute inset-3 border-2 border-current opacity-30 z-0 pointer-events-none rounded-lg"></div>
             )}
 
             <div className={`flex-1 p-6 flex ${
-              config.layout === 'minimal' 
+              config.layout === 'modern' 
                 ? `items-center gap-6 ${config.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
                 : config.layout === 'classic'
-                  ? 'flex-col items-center justify-center text-center gap-4'
+                  ? 'flex-col items-center justify-center text-center gap-3'
                   : 'items-center gap-6'
             } relative z-10`}>
               
@@ -650,7 +621,7 @@ export default function BusinessCardDesigner() {
                       src={profile.profileImage} 
                       alt="Profile" 
                       className={`object-cover shadow-md ${
-                        config.layout === 'minimal' 
+                        config.layout === 'modern' 
                           ? 'w-24 h-24 rounded-full' 
                           : config.layout === 'classic'
                             ? 'w-20 h-20 rounded-full border-2 border-current'
@@ -667,8 +638,8 @@ export default function BusinessCardDesigner() {
                 </div>
               )}
 
-              {/* Divider for Minimal Layout */}
-              {config.layout === 'minimal' && config.showAvatar && (
+              {/* Divider for Modern Layout */}
+              {config.layout === 'modern' && config.showAvatar && (
                 <div className="w-px h-24 bg-current opacity-20 shrink-0"></div>
               )}
 
@@ -692,15 +663,15 @@ export default function BusinessCardDesigner() {
                 
                 {/* URL Display - Only show here if QR is hidden or layout is classic */}
                 {(!config.showQr || config.layout === 'classic') && (
-                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${config.layout === 'minimal' ? '' : ''}`}>
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${config.layout === 'modern' ? '' : ''}`}>
                     <span className="truncate">{displayUrl}</span>
                   </div>
                 )}
 
                 {/* Contact Details */}
-                {(config.showPhone || config.showEmail || config.showWebsite) && (
+                {(config.showPhone || config.showEmail) && (
                   <div className={`mt-4 space-y-1.5 ${
-                    config.layout === 'minimal' 
+                    config.layout === 'modern' 
                       ? (config.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') 
                       : config.layout === 'classic'
                         ? 'flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2'
@@ -716,12 +687,6 @@ export default function BusinessCardDesigner() {
                       <div className="flex items-center gap-2 text-xs opacity-90">
                         <Mail className="w-3 h-3" />
                         <span>{config.email}</span>
-                      </div>
-                    )}
-                    {config.showWebsite && config.website && (
-                      <div className="flex items-center gap-2 text-xs opacity-90">
-                        <Globe className="w-3 h-3" />
-                        <span>{config.website}</span>
                       </div>
                     )}
                   </div>
