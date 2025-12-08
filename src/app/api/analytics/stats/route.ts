@@ -111,7 +111,7 @@ export async function GET(req: Request) {
 
     // Enrich topLinks with title and url
     result.topLinks = result.topLinks.map((link: any) => {
-      const linkData = linkMap.get(link._id.toString());
+      const linkData = linkMap.get(link._id.toString()) as any;
       return {
         ...link,
         title: linkData?.title || 'Unknown Link',
