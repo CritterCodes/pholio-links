@@ -35,6 +35,7 @@ interface ProfileData {
     email: string;
     website: string;
     backgroundImage?: string;
+    minimalLayoutSwap?: boolean;
     theme: 'default' | 'custom';
     customColors: {
       background: string;
@@ -132,6 +133,7 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
     email: '',
     website: '',
     backgroundImage: '',
+    minimalLayoutSwap: false,
     theme: 'default',
     customColors: { background: '#ffffff', text: '#000000', accent: '#3b82f6' }
   };
@@ -255,7 +257,11 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                       <div className="absolute top-0 left-0 w-full h-2 z-10" style={{ backgroundColor: colors.accent }}></div>
                     )}
                     
-                    <div className={`flex-1 p-6 flex ${cardConfig.layout === 'minimal' ? 'flex-col items-center text-center justify-center' : 'items-center'} gap-6 relative z-10`}>
+                    <div className={`flex-1 p-6 flex ${
+                      cardConfig.layout === 'minimal' 
+                        ? `items-center gap-6 ${cardConfig.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
+                        : 'items-center gap-6'
+                    } relative z-10`}>
                       {/* Profile Image */}
                       {cardConfig.showAvatar && (
                         <div className="shrink-0">
@@ -275,6 +281,11 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                         </div>
                       )}
 
+                      {/* Divider for Minimal Layout */}
+                      {cardConfig.layout === 'minimal' && cardConfig.showAvatar && (
+                        <div className="w-px h-24 bg-current opacity-20 shrink-0"></div>
+                      )}
+
                       {/* Info */}
                       <div className={`flex-1 min-w-0 ${cardConfig.layout === 'minimal' ? 'w-full' : ''}`}>
                         <h3 className="text-xl font-bold truncate leading-tight mb-1">
@@ -285,13 +296,17 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                             {profileData.subtitle}
                           </p>
                         )}
-                        <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'minimal' ? 'mx-auto' : ''}`}>
-                          <span className="truncate">{displayUrl}</span>
-                        </div>
+                        
+                        {/* URL Display - Only show here if QR is hidden */}
+                        {!cardConfig.showQr && (
+                          <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${cardConfig.layout === 'minimal' ? '' : ''}`}>
+                            <span className="truncate">{displayUrl}</span>
+                          </div>
+                        )}
 
                         {/* Contact Details */}
                         {(cardConfig.showPhone || cardConfig.showEmail || cardConfig.showWebsite) && (
-                          <div className={`mt-4 space-y-1.5 ${cardConfig.layout === 'minimal' ? 'flex flex-col items-center' : ''}`}>
+                          <div className={`mt-4 space-y-1.5 ${cardConfig.layout === 'minimal' ? (cardConfig.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') : ''}`}>
                             {cardConfig.showPhone && cardConfig.phoneNumber && (
                               <div className="flex items-center gap-2 text-xs opacity-90">
                                 <Phone className="w-3 h-3" />
@@ -315,13 +330,18 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                       </div>
 
                       {/* QR Code */}
-                      {cardConfig.showQr && cardConfig.layout !== 'minimal' && (
-                        <div className="shrink-0 bg-white p-2 rounded-lg shadow-sm">
-                          <QRCodeCanvas
-                            value={profileUrl}
-                            size={64}
-                            level={"M"}
-                          />
+                      {cardConfig.showQr && (
+                        <div className="flex flex-col items-center gap-2 shrink-0">
+                          <div className="bg-white p-2 rounded-lg shadow-sm">
+                            <QRCodeCanvas
+                              value={profileUrl}
+                              size={64}
+                              level={"M"}
+                            />
+                          </div>
+                          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-medium max-w-[80px]">
+                            <span className="truncate">{displayUrl}</span>
+                          </div>
                         </div>
                       )}
                     </div>
