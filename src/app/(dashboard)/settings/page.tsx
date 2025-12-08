@@ -9,9 +9,11 @@ import {
   HiGlobe, 
   HiShieldCheck,
   HiCog,
-  HiTrash
+  HiTrash,
+  HiLightBulb
 } from 'react-icons/hi';
 import { FaStripe } from 'react-icons/fa';
+import FeatureRequestForm from '@/components/FeatureRequestForm';
 
 export default function SettingsPage() {
   const { data: session, status } = useSession();
@@ -32,6 +34,7 @@ export default function SettingsPage() {
     { id: 'billing', name: 'Billing', icon: HiCreditCard },
     { id: 'integrations', name: 'Integrations', icon: HiGlobe },
     { id: 'security', name: 'Security', icon: HiShieldCheck },
+    { id: 'features', name: 'Feature Requests', icon: HiLightBulb },
   ];
 
   // Fetch subscription on component mount
@@ -828,6 +831,7 @@ export default function SettingsPage() {
           {activeTab === 'billing' && renderBillingSettings()}
           {activeTab === 'integrations' && renderIntegrationsSettings()}
           {activeTab === 'security' && renderSecuritySettings()}
+          {activeTab === 'features' && <FeatureRequestForm />}
         </div>
       </div>
     </div>

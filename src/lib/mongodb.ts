@@ -44,6 +44,11 @@ export async function getUsersCollection() {
   return db.collection('users');
 }
 
+export async function getFeatureRequestsCollection() {
+  const db = await getDatabase();
+  return db.collection('feature_requests');
+}
+
 // Database initialization function
 export async function initializeDatabase() {
   const db = await getDatabase();

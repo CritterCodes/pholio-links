@@ -75,10 +75,11 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
-        token.id = user.id;
+        token.id = (user as AuthUser)._id.toString();
         token.username = (user as AuthUser).username;
         token.subscriptionTier = (user as AuthUser).subscriptionTier;
         token.email = user.email;
+        token.isAdmin = (user as AuthUser).isAdmin || false;
       } else if (token.email) {
         // Refresh subscription tier from database on every token refresh
         try {
@@ -86,6 +87,7 @@ export const authOptions = {
           const dbUser = await usersCollection.findOne({ email: token.email });
           if (dbUser) {
             token.subscriptionTier = dbUser.subscriptionTier || 'free';
+            token.isAdmin = dbUser.isAdmin || false;
           }
         } catch (error) {
           console.error('Error refreshing subscription tier:', error);
@@ -100,6 +102,7 @@ export const authOptions = {
           email: token.email!,
           username: token.username as string,
           subscriptionTier: token.subscriptionTier as 'free' | 'paid',
+          isAdmin: token.isAdmin as boolean,
         };
       }
       return session;

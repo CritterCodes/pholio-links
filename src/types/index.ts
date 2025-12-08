@@ -7,6 +7,7 @@ export interface User {
   hashedPassword: string;
   subscriptionTier: 'free' | 'paid';
   stripeCustomerId?: string;
+  isAdmin?: boolean; // Admin flag
   
   // Profile information
   profile: {
@@ -55,6 +56,22 @@ export interface User {
   
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface FeatureRequest {
+  _id: ObjectId;
+  title: string;
+  description: string;
+  status: 'pending' | 'planned' | 'in_progress' | 'completed' | 'rejected';
+  votes: number;
+  userId: ObjectId; // Requester
+  username: string; // Denormalized for display
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AuthUser extends User {
+  id: string;
 }
 
 // Block-based design system types
