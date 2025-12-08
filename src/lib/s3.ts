@@ -18,7 +18,7 @@ const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || 'pholio-bucket';
 export async function uploadFile(
   file: File,
   userId: string,
-  folder: 'profiles' | 'gallery' | 'splash' | 'heroes'
+  folder: 'profiles' | 'gallery' | 'splash' | 'heroes' | 'business-cards'
 ): Promise<string> {
   const fileExtension = file.name.split('.').pop();
   const fileName = `${folder}/${userId}/${Date.now()}.${fileExtension}`;
@@ -67,4 +67,8 @@ export async function uploadGalleryImage(file: File, userId: string): Promise<st
 
 export async function uploadSplashImage(file: File, userId: string): Promise<string> {
   return uploadFile(file, userId, 'splash');
+}
+
+export async function uploadBusinessCardImage(file: File, userId: string): Promise<string> {
+  return uploadFile(file, userId, 'business-cards');
 }
