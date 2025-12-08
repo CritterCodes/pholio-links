@@ -254,13 +254,15 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-bl-full"></div>
                     )}
                     {cardConfig.layout === 'classic' && (
-                      <div className="absolute top-0 left-0 w-full h-2 z-10" style={{ backgroundColor: colors.accent }}></div>
+                      <div className="absolute top-0 left-0 w-full h-full border-[12px] border-current opacity-10 z-0 pointer-events-none"></div>
                     )}
                     
                     <div className={`flex-1 p-6 flex ${
                       cardConfig.layout === 'minimal' 
                         ? `items-center gap-6 ${cardConfig.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
-                        : 'items-center gap-6'
+                        : cardConfig.layout === 'classic'
+                          ? 'flex-col items-center justify-center text-center gap-3'
+                          : 'items-center gap-6'
                     } relative z-10`}>
                       {/* Profile Image */}
                       {cardConfig.showAvatar && (
@@ -270,11 +272,19 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                             <img 
                               src={profileData.profileImage} 
                               alt="Profile" 
-                              className={`w-24 h-24 object-cover shadow-md ${cardConfig.layout === 'minimal' ? 'rounded-full' : 'rounded-full border-4 border-white/20'}`}
+                              className={`object-cover shadow-md ${
+                                cardConfig.layout === 'minimal' 
+                                  ? 'w-24 h-24 rounded-full' 
+                                  : cardConfig.layout === 'classic'
+                                    ? 'w-20 h-20 rounded-full border-2 border-current'
+                                    : 'w-24 h-24 rounded-full border-4 border-white/20'
+                              }`}
                               crossOrigin="anonymous"
                             />
                           ) : (
-                            <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl">
+                            <div className={`bg-gray-200 flex items-center justify-center text-2xl ${
+                              cardConfig.layout === 'classic' ? 'w-20 h-20 rounded-full' : 'w-24 h-24 rounded-full'
+                            }`}>
                               {profileData.displayName.charAt(0)}
                             </div>
                           )}
@@ -287,12 +297,14 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
                       )}
 
                       {/* Info */}
-                      <div className={`flex-1 min-w-0 ${cardConfig.layout === 'minimal' ? 'w-full' : ''}`}>
-                        <h3 className="text-xl font-bold truncate leading-tight mb-1">
+                      <div className={`flex-1 min-w-0 ${cardConfig.layout === 'minimal' ? 'w-full' : 'w-full'}`}>
+                        <h3 className={`font-bold truncate leading-tight mb-1 ${
+                          cardConfig.layout === 'classic' ? 'text-2xl tracking-wide' : 'text-xl'
+                        }`}>
                           {profileData.displayName}
                         </h3>
                         {cardConfig.showSubtitle && (
-                          <p className="text-sm opacity-80 truncate mb-3">
+                          <p className={`text-sm opacity-80 truncate ${cardConfig.layout === 'classic' ? 'mb-4 uppercase tracking-widest text-xs' : 'mb-3'}`}>
                             {profileData.subtitle}
                           </p>
                         )}
@@ -306,7 +318,13 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
 
                         {/* Contact Details */}
                         {(cardConfig.showPhone || cardConfig.showEmail || cardConfig.showWebsite) && (
-                          <div className={`mt-4 space-y-1.5 ${cardConfig.layout === 'minimal' ? (cardConfig.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') : ''}`}>
+                          <div className={`mt-2 space-y-1.5 ${
+                            cardConfig.layout === 'minimal' 
+                              ? (cardConfig.minimalLayoutSwap ? 'flex flex-col items-end' : 'flex flex-col items-start') 
+                              : cardConfig.layout === 'classic'
+                                ? 'flex flex-row flex-wrap justify-center gap-4'
+                                : ''
+                          }`}>
                             {cardConfig.showPhone && cardConfig.phoneNumber && (
                               <div className="flex items-center gap-2 text-xs opacity-90">
                                 <Phone className="w-3 h-3" />
@@ -331,16 +349,16 @@ export function ShareModal({ isOpen, onClose, username, profileUrl }: ShareModal
 
                       {/* QR Code */}
                       {cardConfig.showQr && (
-                        <div className="flex flex-col items-center gap-2 shrink-0">
-                          <div className="bg-white p-2 rounded-lg shadow-sm">
+                        <div className={`flex flex-col items-center gap-2 shrink-0 ${cardConfig.layout === 'classic' ? 'mt-1' : ''}`}>
+                          <div className="bg-white p-1.5 rounded-lg shadow-sm">
                             <QRCodeCanvas
                               value={profileUrl}
-                              size={64}
+                              size={cardConfig.layout === 'classic' ? 48 : 64}
                               level={"M"}
                             />
                           </div>
-                          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-medium max-w-[80px]">
-                            <span className="truncate">{displayUrl}</span>
+                          <div className="inline-flex items-center justify-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-medium w-full">
+                            <span className="break-all text-center leading-tight">{displayUrl}</span>
                           </div>
                         </div>
                       )}
