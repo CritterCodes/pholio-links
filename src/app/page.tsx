@@ -3,8 +3,10 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, Check, Sparkles, Users, Zap } from 'lucide-react';
+import { Check } from 'lucide-react';
 import CampaignBanner from '@/components/CampaignBanner';
+import { Hero } from '@/components/landing/Hero';
+import { FeatureBento } from '@/components/landing/FeatureBento';
 
 function extractSubdomainFromHost(): string | null {
   if (typeof window === 'undefined') return null;
@@ -51,25 +53,25 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-white dark:bg-slate-900 text-gray-900 dark:text-white overflow-x-hidden">
       <CampaignBanner />
       
       {/* Navigation */}
-      <nav className="border-b border-white/10 bg-slate-900/50 backdrop-blur-xl fixed w-full z-50">
+      <nav className="border-b border-gray-200 dark:border-white/10 bg-white/80 dark:bg-slate-900/50 backdrop-blur-xl fixed w-full z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+          <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             Pholio
           </div>
           <div className="flex gap-4">
             <Link
               href="/login"
-              className="text-gray-300 hover:text-white transition"
+              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition font-medium"
             >
               Sign In
             </Link>
             <Link
               href="/register"
-              className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-2 rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition"
+              className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-2 rounded-lg hover:scale-105 transition font-medium"
             >
               Get Started
             </Link>
@@ -77,97 +79,18 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto">
-        <div className="inline-block mb-4 px-4 py-2 bg-purple-500/20 border border-purple-500/50 rounded-full">
-          <span className="text-sm font-medium text-purple-300">✨ Modern Link in Bio Platform</span>
-        </div>
-        
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-          Your Digital<span className="bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent"> Presence</span>
-        </h1>
-        
-        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          Create a stunning personal brand website with custom themes, analytics, and everything you need to grow your audience.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/register"
-            className="bg-gradient-to-r from-purple-500 to-pink-600 px-8 py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition flex items-center justify-center gap-2"
-          >
-            Get Started Free <ArrowRight className="w-5 h-5" />
-          </Link>
-          <button className="border border-gray-400 px-8 py-4 rounded-lg font-semibold hover:border-white transition">
-            Watch Demo
-          </button>
-        </div>
-      </section>
+      <Hero />
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-black/20">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16">Powerful Features</h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 p-8 rounded-xl hover:border-purple-500/50 transition">
-              <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
-                <Sparkles className="w-6 h-6 text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Custom Themes</h3>
-              <p className="text-gray-400">
-                Choose from beautiful pre-designed themes or create your own with our intuitive theme builder.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 p-8 rounded-xl hover:border-purple-500/50 transition">
-              <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
-                <Zap className="w-6 h-6 text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Lightning Fast</h3>
-              <p className="text-gray-400">
-                Optimized for speed and performance. Your profile loads instantly, no matter where your audience is.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 p-8 rounded-xl hover:border-purple-500/50 transition">
-              <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Analytics</h3>
-              <p className="text-gray-400">
-                Track clicks, views, and engagement. Understand what resonates with your audience.
-              </p>
-            </div>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Everything you need</h2>
+            <p className="text-xl text-gray-500 dark:text-gray-400">
+              Powerful features to help you grow your audience and business.
+            </p>
           </div>
-        </div>
-      </section>
-
-      {/* Benefits Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black/20">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16">Why Choose Pholio?</h2>
-          
-          <div className="space-y-4">
-            {[
-              'Subdomain-based profiles - your unique brand on pholio.link',
-              'Fully customizable themes with dark mode support',
-              'Add links, galleries, contact forms, and more',
-              'Social media integration and analytics',
-              'Free tier with optional premium features',
-              'SEO optimized for better discoverability',
-            ].map((benefit, i) => (
-              <div key={i} className="flex items-start gap-4">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-600 flex items-center justify-center flex-shrink-0 mt-1">
-                  <Check className="w-4 h-4" />
-                </div>
-                <p className="text-lg text-gray-300">{benefit}</p>
-              </div>
-            ))}
-          </div>
+          <FeatureBento />
         </div>
       </section>
 
@@ -175,104 +98,104 @@ export default function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-4">Simple, Transparent Pricing</h2>
-          <p className="text-center text-gray-400 mb-16">Start free, upgrade anytime</p>
+          <p className="text-center text-gray-500 dark:text-gray-400 mb-16">Start free, upgrade anytime</p>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Free Tier */}
-            <div className="border border-gray-700 p-8 rounded-xl">
+            <div className="border border-gray-200 dark:border-gray-700 p-8 rounded-3xl bg-white dark:bg-slate-800/50">
               <h3 className="text-2xl font-bold mb-2">Free</h3>
-              <p className="text-gray-400 mb-6">Perfect to get started</p>
-              <p className="text-4xl font-bold mb-6">$0<span className="text-lg text-gray-400">/mo</span></p>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">Perfect to get started</p>
+              <p className="text-4xl font-bold mb-6">$0<span className="text-lg text-gray-500 dark:text-gray-400">/mo</span></p>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-500" />
                   <span>Custom profile</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-500" />
                   <span>Basic theme</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
-                  <span>5 links</span>
+                  <Check className="w-5 h-5 text-green-500" />
+                  <span>Unlimited links</span>
                 </li>
-                <li className="flex items-center gap-2 text-gray-500">
+                <li className="flex items-center gap-2 text-gray-400">
                   <Check className="w-5 h-5" />
-                  <span>Analytics</span>
+                  <span>Basic Analytics</span>
                 </li>
               </ul>
               <Link
                 href="/register"
-                className="w-full border border-gray-700 py-3 rounded-lg font-semibold hover:border-white transition text-center block"
+                className="w-full border border-gray-200 dark:border-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition text-center block"
               >
                 Get Started
               </Link>
             </div>
 
             {/* Pro Tier */}
-            <div className="border border-purple-500 p-8 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-600 px-4 py-1 rounded-full text-sm font-semibold">
+            <div className="border border-purple-500 p-8 rounded-3xl bg-white dark:bg-slate-800 relative shadow-xl shadow-purple-500/10">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-1 rounded-full text-sm font-semibold text-white">
                 MOST POPULAR
               </div>
               <h3 className="text-2xl font-bold mb-2">Pro</h3>
-              <p className="text-gray-400 mb-6">For growing brands</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">For growing brands</p>
               <div className="mb-6">
                 <div className="flex items-baseline gap-2 mb-2">
                   <span className="text-4xl font-bold">$7</span>
-                  <span className="text-lg text-gray-400">/mo</span>
+                  <span className="text-lg text-gray-500 dark:text-gray-400">/mo</span>
                 </div>
-                <p className="text-sm text-gray-400">or $60/year (save 29%)</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">or $60/year (save 29%)</p>
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-500" />
                   <span>Everything in Free</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
-                  <span>Unlimited links</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-500" />
                   <span>Advanced themes</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
-                  <span>Analytics</span>
+                  <Check className="w-5 h-5 text-green-500" />
+                  <span>Deep Analytics</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-5 h-5 text-green-500" />
+                  <span>Campaign Manager</span>
                 </li>
               </ul>
               <Link
                 href="/register"
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-600 py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition text-center block"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition text-center block"
               >
                 Start Free Trial
               </Link>
             </div>
 
             {/* Enterprise Tier */}
-            <div className="border border-gray-700 p-8 rounded-xl">
+            <div className="border border-gray-200 dark:border-gray-700 p-8 rounded-3xl bg-white dark:bg-slate-800/50">
               <h3 className="text-2xl font-bold mb-2">Custom</h3>
-              <p className="text-gray-400 mb-6">For enterprises</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">For enterprises</p>
               <p className="text-4xl font-bold mb-6">Custom</p>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-500" />
                   <span>Everything in Pro</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-500" />
                   <span>Custom domain</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-500" />
                   <span>Priority support</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-500" />
                   <span>API access</span>
                 </li>
               </ul>
-              <button className="w-full border border-gray-700 py-3 rounded-lg font-semibold hover:border-white transition">
+              <button className="w-full border border-gray-200 dark:border-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                 Contact Sales
               </button>
             </div>
@@ -281,13 +204,14 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-600 to-pink-600">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-pink-900/50" />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-4xl font-bold mb-6">Ready to build your brand?</h2>
-          <p className="text-xl text-white/90 mb-8">Join thousands of creators already using Pholio</p>
+          <p className="text-xl text-gray-300 mb-8">Join thousands of creators already using Pholio</p>
           <Link
             href="/register"
-            className="inline-block bg-white text-purple-600 px-8 py-4 rounded-lg font-bold hover:shadow-lg transition"
+            className="inline-block bg-white text-gray-900 px-8 py-4 rounded-xl font-bold hover:scale-105 transition"
           >
             Sign Up Free →
           </Link>
@@ -295,9 +219,19 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-black/40 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center text-gray-400">
-          <p>&copy; 2024 Pholio. All rights reserved.</p>
+      <footer className="border-t border-gray-200 dark:border-white/10 bg-white dark:bg-black/40 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Pholio
+          </div>
+          <div className="text-gray-500 dark:text-gray-400 text-sm">
+            &copy; 2024 Pholio. All rights reserved.
+          </div>
+          <div className="flex gap-6 text-gray-500 dark:text-gray-400">
+            <Link href="#" className="hover:text-purple-600 transition">Terms</Link>
+            <Link href="#" className="hover:text-purple-600 transition">Privacy</Link>
+            <Link href="#" className="hover:text-purple-600 transition">Contact</Link>
+          </div>
         </div>
       </footer>
     </div>
