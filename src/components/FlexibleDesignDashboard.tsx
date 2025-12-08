@@ -100,7 +100,7 @@ export default function FlexibleDesignDashboard() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<FormData>(defaultFormData);
 
-  const availableBlocks: BlockType[] = ['bio', 'social_icons', 'links', 'gallery', 'divider', 'contact'];
+  const availableBlocks: BlockType[] = ['bio', 'social_icons', 'links', 'gallery', 'divider', 'contact', 'form'];
 
   const [customDomain, setCustomDomain] = useState<string | null>(null);
 
