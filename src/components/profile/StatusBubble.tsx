@@ -21,7 +21,7 @@ export function StatusBubble({ status, theme, isDark = false, className }: Statu
   const borderColor = isDark ? 'rgba(55, 65, 81, 1)' : 'rgba(229, 231, 235, 1)';
 
   return (
-    <div className={cn("absolute z-20 w-max max-w-[200px] sm:max-w-[250px]", className)}>
+    <div className={cn("absolute z-20 max-w-[200px] sm:max-w-[250px]", className)}>
       <div 
         className={cn(
           "relative px-4 py-2 shadow-xl border transition-all duration-200",
@@ -33,7 +33,7 @@ export function StatusBubble({ status, theme, isDark = false, className }: Statu
           borderColor: borderColor
         }}
       >
-        <p className="text-sm font-medium leading-snug break-words whitespace-normal">
+        <p className="text-sm font-medium leading-snug break-words whitespace-normal break-all">
           <span className="mr-1.5 inline-block">{status.emoji}</span>
           {status.message}
         </p>
