@@ -9,12 +9,6 @@ export const metadata: Metadata = {
 export default function BusinessCardPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Business Card Designer</h1>
-        <p className="text-muted-foreground">
-          Customize how your digital business card looks when shared.
-        </p>
-      </div>
       <BusinessCardDesigner />
     </div>
   );

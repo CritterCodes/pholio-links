@@ -230,7 +230,42 @@ export default function BusinessCardDesigner() {
   const displayUrl = profile.customDomain || `pholio.links/${profile.username || 'username'}`;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Business Card Designer</h1>
+          <p className="text-muted-foreground text-gray-500">
+            Customize how your digital business card looks when shared.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="flex items-center justify-center gap-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            {saving ? 'Saving...' : (
+              <>
+                <Save className="w-4 h-4" /> Save Changes
+              </>
+            )}
+          </button>
+          <button
+            onClick={downloadCard}
+            className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            <Download className="w-4 h-4" /> Download
+          </button>
+        </div>
+      </div>
+
+      {message && (
+        <p className={`text-sm ${message.includes('Failed') ? 'text-red-500' : 'text-green-500'}`}>
+          {message}
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Controls */}
       <div className="lg:col-span-1 space-y-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 space-y-6">
@@ -570,31 +605,6 @@ export default function BusinessCardDesigner() {
               </div>
             )}
           </div>
-
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full flex items-center justify-center gap-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            {saving ? 'Saving...' : (
-              <>
-                <Save className="w-4 h-4" /> Save Changes
-              </>
-            )}
-          </button>
-          
-          <button
-            onClick={downloadCard}
-            className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <Download className="w-4 h-4" /> Download Card
-          </button>
-
-          {message && (
-            <p className={`text-sm text-center ${message.includes('Failed') ? 'text-red-500' : 'text-green-500'}`}>
-              {message}
-            </p>
-          )}
         </div>
       </div>
 
@@ -740,6 +750,7 @@ export default function BusinessCardDesigner() {
           This is a preview of how your business card will look when shared.
         </p>
       </div>
+    </div>
     </div>
   );
 }
