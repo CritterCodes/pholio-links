@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { getAnalyticsCollection } from '@/lib/mongodb';
+import { getAnalyticsCollection, getUsersCollection } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
 export async function GET(req: Request) {
@@ -24,7 +24,13 @@ export async function GET(req: Request) {
     const range = searchParams.get('range') || '30d'; // 7d, 30d, 90d
 
     const analyticsCollection = await getAnalyticsCollection();
+    const usersCollection = await getUsersCollection();
     const userId = new ObjectId(session.user.id);
+
+    // Fetch user profile to get link details
+    const user = await usersCollection.findOne({ _id: userId });
+    const userLinks = user?.blocks?.filter((b: any) => b.type === 'link') || [];
+    const linkMap = new Map(userLinks.map((l: any) => [l._id.toString(), l.content]));
 
     // Calculate date range
     const now = new Date();
@@ -101,7 +107,19 @@ export async function GET(req: Request) {
       }
     ]).toArray();
 
-    return NextResponse.json(stats[0]);
+    const result = stats[0];
+
+    // Enrich topLinks with title and url
+    result.topLinks = result.topLinks.map((link: any) => {
+      const linkData = linkMap.get(link._id.toString());
+      return {
+        ...link,
+        title: linkData?.title || 'Unknown Link',
+        url: linkData?.url || '#'
+      };
+    });
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Error fetching analytics stats:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

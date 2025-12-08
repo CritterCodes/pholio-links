@@ -190,10 +190,47 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Top Referrers */}
-      <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Top Referrers</h3>
-        <div className="overflow-x-auto">
+      {/* Top Referrers & Top Links */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top Links */}
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Top Performing Links</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+              <thead>
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Link</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Clicks</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
+                {stats.topLinks.map((link: any, i: number) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{link.title}</span>
+                        <span className="text-xs text-gray-500 truncate max-w-[200px]">{link.url}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-right">
+                      {link.clicks}
+                    </td>
+                  </tr>
+                ))}
+                {stats.topLinks.length === 0 && (
+                  <tr>
+                    <td colSpan={2} className="px-6 py-4 text-center text-sm text-gray-500">No clicks recorded yet.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Top Referrers */}
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Top Referrers</h3>
+          <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
             <thead>
               <tr>
@@ -215,6 +252,7 @@ export default function AnalyticsPage() {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
     </div>
   );
