@@ -49,6 +49,11 @@ export async function getFeatureRequestsCollection() {
   return db.collection('feature_requests');
 }
 
+export async function getNotificationsCollection() {
+  const db = await getDatabase();
+  return db.collection('notifications');
+}
+
 export async function getSettingsCollection() {
   const db = await getDatabase();
   return db.collection('settings');

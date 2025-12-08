@@ -1,5 +1,16 @@
 import { ObjectId } from 'mongodb';
 
+export interface Notification {
+  _id?: ObjectId;
+  userId: ObjectId;
+  type: 'growth' | 'billing' | 'product' | 'system';
+  title: string;
+  message: string;
+  read: boolean;
+  link?: string;
+  createdAt: Date;
+}
+
 export interface User {
   _id: ObjectId;
   email: string;

@@ -2,8 +2,9 @@
 
 import { useSession } from 'next-auth/react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { Settings, Bell, Menu } from 'lucide-react';
+import { Settings, Menu } from 'lucide-react';
 import Image from 'next/image';
+import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -38,9 +39,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         {/* Right side actions */}
         <div className="flex items-center gap-4">
           {/* Notifications */}
-          <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <Bell className="w-5 h-5" />
-          </button>
+          <NotificationDropdown />
 
           {/* Theme Toggle */}
           <ThemeToggle />
