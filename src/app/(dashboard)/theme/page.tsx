@@ -17,6 +17,7 @@ interface ThemeData {
   gradientFrom: string;
   gradientTo: string;
   font: string;
+  statusButtonStyle?: 'thought' | 'speech' | 'pill';
 }
 
 interface Block {
@@ -125,6 +126,7 @@ export default function ThemePage() {
     gradientFrom: '#ffffff',
     gradientTo: '#f3f4f6',
     font: 'Inter, sans-serif',
+    statusButtonStyle: 'thought',
   });
   
   const [formData, setFormData] = useState<FormData>(defaultFormData);
@@ -418,6 +420,28 @@ export default function ThemePage() {
                         style === 'square' ? 'rounded-none' : 'rounded-full'
                       } ${
                         theme.linkStyle === style
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      {style.charAt(0).toUpperCase() + style.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status Bubble Style */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Status Bubble Style
+                </label>
+                <div className="flex gap-2">
+                  {(['thought', 'speech', 'pill'] as const).map((style) => (
+                    <button
+                      key={style}
+                      onClick={() => handleThemeChange('statusButtonStyle', style)}
+                      className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                        (theme.statusButtonStyle || 'thought') === style
                           ? 'bg-blue-600 text-white'
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}

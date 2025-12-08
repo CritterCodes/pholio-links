@@ -47,6 +47,7 @@ interface ThemeData {
   gradientTo: string;
   font: string;
   backgroundImage?: string;
+  statusButtonStyle?: 'thought' | 'speech' | 'pill';
 }
 
 interface FormData {
