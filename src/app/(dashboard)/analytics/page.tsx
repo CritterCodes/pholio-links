@@ -89,18 +89,9 @@ export default function AnalyticsPage() {
     }));
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-4 md:p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h1>
-        <select
-          value={range}
-          onChange={(e) => setRange(e.target.value)}
-          className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-md px-3 py-1 text-sm"
-        >
-          <option value="7d">Last 7 Days</option>
-          <option value="30d">Last 30 Days</option>
-          <option value="90d">Last 90 Days</option>
-        </select>
       </div>
 
       {/* Key Metrics */}
@@ -143,18 +134,71 @@ export default function AnalyticsPage() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Traffic Over Time */}
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-6">Traffic Over Time</h3>
-          <div className="h-80">
+        <div className="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Traffic Over Time</h3>
+            <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-1 self-start sm:self-auto">
+              <button
+                onClick={() => setRange('7d')}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  range === '7d'
+                    ? 'bg-white dark:bg-slate-600 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                7 Days
+              </button>
+              <button
+                onClick={() => setRange('30d')}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  range === '30d'
+                    ? 'bg-white dark:bg-slate-600 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                30 Days
+              </button>
+              <button
+                onClick={() => setRange('90d')}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  range === '90d'
+                    ? 'bg-white dark:bg-slate-600 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                90 Days
+              </button>
+            </div>
+          </div>
+          <div className="h-64 md:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} />
-                <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} tickFormatter={(str) => str.slice(5)} />
-                <YAxis stroke="#9CA3AF" fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} vertical={false} />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#9CA3AF" 
+                  fontSize={12} 
+                  tickFormatter={(str) => str.slice(5)}
+                  tickMargin={10}
+                />
+                <YAxis 
+                  stroke="#9CA3AF" 
+                  fontSize={12} 
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '0.5rem', color: '#fff' }}
+                  cursor={{ stroke: '#6B7280', strokeWidth: 1, strokeDasharray: '4 4' }}
                 />
-                <Line type="monotone" dataKey="views" stroke="#8884d8" strokeWidth={2} dot={false} />
+                <Line 
+                  type="monotone" 
+                  dataKey="views" 
+                  stroke="#8b5cf6" 
+                  strokeWidth={3} 
+                  dot={{ r: 4, fill: '#8b5cf6', strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 6, fill: '#8b5cf6', strokeWidth: 2, stroke: '#fff' }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
