@@ -80,6 +80,14 @@ export default function AnalyticsPage() {
   const totalClicks = stats.totals.find((t: any) => t._id === 'click')?.count || 0;
   const ctr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : '0';
 
+  // Process daily stats for the chart
+  const chartData = stats.daily
+    .filter((item: any) => item._id.type === 'view')
+    .map((item: any) => ({
+      date: item._id.date,
+      views: item.count
+    }));
+
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
@@ -139,14 +147,14 @@ export default function AnalyticsPage() {
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-6">Traffic Over Time</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={stats.daily}>
+              <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} />
-                <XAxis dataKey="_id.date" stroke="#9CA3AF" fontSize={12} tickFormatter={(str) => str.slice(5)} />
+                <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} tickFormatter={(str) => str.slice(5)} />
                 <YAxis stroke="#9CA3AF" fontSize={12} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '0.5rem', color: '#fff' }}
                 />
-                <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="views" stroke="#8884d8" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
