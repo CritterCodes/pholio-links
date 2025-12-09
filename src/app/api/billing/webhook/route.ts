@@ -4,26 +4,40 @@ import stripe from '@/lib/stripe';
 import { getUsersCollection } from '@/lib/mongodb';
 import { printService } from '@/lib/print-service';
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const webhookSecrets = [
+  process.env.STRIPE_WEBHOOK_SECRET,
+  process.env.STRIPE_WEBHOOK_SECRET_2
+].filter(Boolean) as string[];
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
     const sig = (await headers()).get('stripe-signature');
 
-    if (!sig || !webhookSecret) {
+    if (!sig || webhookSecrets.length === 0) {
       return NextResponse.json(
-        { error: 'Missing signature or webhook secret' },
+        { error: 'Missing signature or webhook secrets' },
         { status: 400 }
       );
     }
 
     // Verify webhook signature
     let event;
-    try {
-      event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-    } catch (err) {
-      console.error('Webhook signature verification failed:', err);
+    let verificationError;
+
+    // Try all secrets
+    for (const secret of webhookSecrets) {
+      try {
+        event = stripe.webhooks.constructEvent(body, sig, secret);
+        break; // If successful, stop trying
+      } catch (err) {
+        verificationError = err;
+        // Continue to next secret
+      }
+    }
+
+    if (!event) {
+      console.error('Webhook signature verification failed for all secrets:', verificationError);
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
@@ -64,7 +78,7 @@ export async function POST(request: NextRequest) {
                 }
               },
               items: [{
-                sku: 'GLOBAL-BC-01', // Default SKU, maybe map from metadata.finish if needed
+                sku: 'GLOBAL-BUS-CARD', // Default SKU, maybe map from metadata.finish if needed
                 copies: parseInt(metadata.quantity),
                 sizing: 'fill',
                 assets: [{
