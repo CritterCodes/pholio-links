@@ -63,12 +63,12 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         {/* Right side actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {/* Share Button */}
           {profileUrl && (
             <button
               onClick={() => setIsShareModalOpen(true)}
-              className="p-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="hidden md:block p-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               title="Share Profile"
             >
               <Share2 className="w-5 h-5" />
@@ -81,7 +81,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               href={profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="hidden md:block p-2 text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               title="View Public Profile"
             >
               <Eye className="w-5 h-5" />
@@ -92,10 +92,12 @@ export function Header({ onMenuClick }: HeaderProps) {
           <NotificationDropdown />
 
           {/* Theme Toggle */}
-          <ThemeToggle />
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
 
           {/* Settings */}
-          <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+          <button className="hidden md:block p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
             <Settings className="w-5 h-5" />
           </button>
 

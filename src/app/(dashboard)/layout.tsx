@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
@@ -8,7 +8,9 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Header } from '@/components/ui/Header';
 import CampaignBanner from '@/components/CampaignBanner';
-import { X } from 'lucide-react';
+import { X, Share2, Eye } from 'lucide-react';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { ShareModal } from '@/components/share/ShareModal';
 import { 
   HiUser, 
   HiColorSwatch,
@@ -43,6 +45,30 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileUrl, setProfileUrl] = useState<string>('');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchProfileUrl = async () => {
+      if (session?.user) {
+        try {
+          const res = await fetch('/api/custom-domain');
+          const data = await res.json();
+          const username = (session.user as any).username;
+          
+          if (data.customDomain) {
+            setProfileUrl(`https://${data.customDomain}`);
+          } else if (username) {
+            setProfileUrl(`https://${username}.pholio.link`);
+          }
+        } catch (error) {
+          console.error('Failed to fetch profile URL:', error);
+        }
+      }
+    };
+
+    fetchProfileUrl();
+  }, [session]);
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/login' });
@@ -55,6 +81,14 @@ export default function DashboardLayout({
       
       {/* Global Header */}
       <Header onMenuClick={() => setMobileMenuOpen(true)} />
+
+      {/* Share Modal */}
+      <ShareModal 
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        username={(session?.user as any)?.username || ''}
+        profileUrl={profileUrl}
+      />
       
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
@@ -120,6 +154,41 @@ export default function DashboardLayout({
                     Admin Portal
                   </Link>
                 )}
+
+                {/* Divider */}
+                <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
+
+                {/* Mobile Actions */}
+                {profileUrl && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        setIsShareModalOpen(true);
+                      }}
+                      className="w-full group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100 transition-colors"
+                    >
+                      <Share2 className="mr-4 h-6 w-6 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                      Share Profile
+                    </button>
+
+                    <a
+                      href={profileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100 transition-colors"
+                    >
+                      <Eye className="mr-4 h-6 w-6 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                      View Public Profile
+                    </a>
+                  </>
+                )}
+                
+                <div className="px-2 py-2 flex items-center justify-between">
+                   <span className="text-base font-medium text-gray-600 dark:text-gray-300">Theme</span>
+                   <ThemeToggle />
+                </div>
               </nav>
             </div>
             
