@@ -239,27 +239,27 @@ export default function BusinessCardDesigner() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Business Card Designer</h1>
-          <p className="text-muted-foreground text-gray-500">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Business Card Designer</h1>
+          <p className="text-sm md:text-base text-muted-foreground text-gray-500">
             Customize how your digital business card looks when shared.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center justify-center gap-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
           >
             {saving ? 'Saving...' : (
               <>
-                <Save className="w-4 h-4" /> Save Changes
+                <Save className="w-4 h-4" /> Save
               </>
             )}
           </button>
           <button
             onClick={downloadCard}
             disabled={downloading}
-            className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {downloading ? (
               <>
@@ -281,10 +281,10 @@ export default function BusinessCardDesigner() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
       {/* Controls */}
-      <div className="lg:col-span-1 space-y-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 space-y-6">
+      <div className="lg:col-span-1 space-y-6 order-2 lg:order-1">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 shadow-sm border border-gray-200 dark:border-gray-700 space-y-6">
           
           {/* Layout */}
           <div>
@@ -603,11 +603,11 @@ export default function BusinessCardDesigner() {
       </div>
 
       {/* Preview */}
-      <div className="lg:col-span-2">
-        <div className="bg-gray-100 dark:bg-gray-900 rounded-xl p-8 flex items-center justify-center min-h-[400px] border border-gray-200 dark:border-gray-800">
+      <div className="lg:col-span-2 order-1 lg:order-2">
+        <div className="bg-gray-100 dark:bg-gray-900 rounded-xl p-4 md:p-8 flex items-center justify-center min-h-[300px] md:min-h-[400px] border border-gray-200 dark:border-gray-800 sticky top-4">
           <div 
             ref={cardRef}
-            className="w-full max-w-md aspect-[1.75/1] rounded-xl shadow-2xl overflow-hidden relative flex flex-col transition-all duration-300"
+            className="w-full max-w-md aspect-[1.75/1] rounded-xl shadow-2xl overflow-hidden relative flex flex-col transition-all duration-300 text-[0.8rem] md:text-base"
             style={{
               background: getBackgroundStyle(),
               color: colors.text,
@@ -624,12 +624,12 @@ export default function BusinessCardDesigner() {
               <div className="absolute inset-3 border-2 border-current opacity-30 z-0 pointer-events-none rounded-lg"></div>
             )}
 
-            <div className={`flex-1 p-6 flex ${
+            <div className={`flex-1 p-4 md:p-6 flex ${
               config.layout === 'modern' 
-                ? `items-center gap-6 ${config.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
+                ? `items-center gap-4 md:gap-6 ${config.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
                 : config.layout === 'classic'
-                  ? 'flex-col items-center justify-center text-center gap-3'
-                  : 'items-center gap-6'
+                  ? 'flex-col items-center justify-center text-center gap-2 md:gap-3'
+                  : 'items-center gap-4 md:gap-6'
             } relative z-10`}>
               
               {/* Profile Image */}
@@ -643,15 +643,15 @@ export default function BusinessCardDesigner() {
                       crossOrigin="anonymous"
                       className={`object-cover shadow-md ${
                         config.layout === 'modern' 
-                          ? 'w-24 h-24 rounded-full' 
+                          ? 'w-16 h-16 md:w-24 md:h-24 rounded-full' 
                           : config.layout === 'classic'
-                            ? 'w-20 h-20 rounded-full border-2 border-current'
-                            : 'w-24 h-24 rounded-full border-4 border-white/20'
+                            ? 'w-14 h-14 md:w-20 md:h-20 rounded-full border-2 border-current'
+                            : 'w-16 h-16 md:w-24 md:h-24 rounded-full border-4 border-white/20'
                       }`}
                     />
                   ) : (
-                    <div className={`bg-gray-200 flex items-center justify-center text-2xl ${
-                      config.layout === 'classic' ? 'w-20 h-20 rounded-full' : 'w-24 h-24 rounded-full'
+                    <div className={`bg-gray-200 flex items-center justify-center text-xl md:text-2xl ${
+                      config.layout === 'classic' ? 'w-14 h-14 md:w-20 md:h-20 rounded-full' : 'w-16 h-16 md:w-24 md:h-24 rounded-full'
                     }`}>
                       {profile.displayName.charAt(0)}
                     </div>
@@ -661,18 +661,18 @@ export default function BusinessCardDesigner() {
 
               {/* Divider for Modern Layout */}
               {config.layout === 'modern' && config.showAvatar && (
-                <div className="w-px h-24 bg-current opacity-20 shrink-0"></div>
+                <div className="w-px h-16 md:h-24 bg-current opacity-20 shrink-0"></div>
               )}
 
               {/* Info */}
               <div className={`min-w-0 ${config.layout === 'classic' ? 'w-full' : 'flex-1 w-full'}`}>
                 <h3 className={`font-bold truncate leading-tight mb-1 ${
-                  config.layout === 'classic' ? 'text-2xl tracking-wide font-serif' : 'text-xl'
+                  config.layout === 'classic' ? 'text-lg md:text-2xl tracking-wide font-serif' : 'text-base md:text-xl'
                 }`}>
                   {profile.displayName}
                 </h3>
                 {config.showSubtitle && (
-                  <p className={`text-sm opacity-80 truncate ${config.layout === 'classic' ? 'mb-2 uppercase tracking-widest text-xs font-medium' : 'mb-3'}`}>
+                  <p className={`text-xs md:text-sm opacity-80 truncate ${config.layout === 'classic' ? 'mb-2 uppercase tracking-widest text-[10px] md:text-xs font-medium' : 'mb-2 md:mb-3'}`}>
                     {profile.subtitle}
                   </p>
                 )}
