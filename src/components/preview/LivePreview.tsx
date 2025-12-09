@@ -3,7 +3,6 @@
 import { ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { PreviewBlock } from './PreviewBlock';
-import { StatusBubble } from '@/components/profile/StatusBubble';
 
 interface Block {
   _id: string;
@@ -19,10 +18,6 @@ interface FormData {
   heroImage: string;
   subtitle: string;
   blocks: Block[];
-  status?: {
-    message: string;
-    emoji?: string;
-  };
 }
 
 interface ThemeData {
@@ -34,7 +29,6 @@ interface ThemeData {
   gradientFrom: string;
   gradientTo: string;
   font: string;
-  statusButtonStyle?: 'thought' | 'speech' | 'pill';
 }
 
 interface LivePreviewProps {
@@ -44,13 +38,6 @@ interface LivePreviewProps {
 }
 
 export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) {
-  // Debug status
-  if (formData.status) {
-    console.log('[LivePreview] Status present:', formData.status);
-  } else {
-    console.log('[LivePreview] No status in formData');
-  }
-
   const getBackgroundStyle = () => {
     if (!theme) return { backgroundColor: '#ffffff' };
     
@@ -136,16 +123,6 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
                       <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-900">
                         <ImageIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                       </div>
-                    )}
-
-                    {/* Status Bubble */}
-                    {formData.status && (
-                      <StatusBubble 
-                        status={formData.status}
-                        theme={theme}
-                        isDark={isDark}
-                        className="absolute -top-12 left-1/2 -translate-x-1/2"
-                      />
                     )}
                   </div>
                 </div>
@@ -239,32 +216,6 @@ export function LivePreview({ formData, previewMode, theme }: LivePreviewProps) 
               ) : (
                 <div className="w-28 h-28 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-900">
                   <ImageIcon className="w-10 h-10 text-gray-400 dark:text-gray-500" />
-                </div>
-              )}
-
-              {/* Status Bubble */}
-              {formData.status && (
-                <div className="absolute -top-12 left-24 z-20 w-max max-w-[200px]">
-                  <div className={`relative bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 shadow-xl border border-gray-200 dark:border-gray-700 ${
-                    theme?.statusButtonStyle === 'pill' ? 'rounded-full' : 'rounded-2xl'
-                  }`}>
-                    <p className="text-sm font-medium leading-snug">
-                      <span className="mr-1">{formData.status.emoji}</span>
-                      {formData.status.message}
-                    </p>
-                    
-                    {/* Bubble Tail */}
-                    {(theme?.statusButtonStyle === 'thought' || !theme?.statusButtonStyle) && (
-                      <>
-                        <div className="absolute -bottom-1 left-4 w-3 h-3 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
-                        <div className="absolute -bottom-3 left-2 w-1.5 h-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700"></div>
-                      </>
-                    )}
-                    
-                    {theme?.statusButtonStyle === 'speech' && (
-                      <div className="absolute -bottom-1.5 left-4 w-3 h-3 bg-white dark:bg-gray-800 border-r border-b border-gray-200 dark:border-gray-700 transform rotate-45"></div>
-                    )}
-                  </div>
                 </div>
               )}
             </div>

@@ -4,7 +4,6 @@ import { ImageIcon } from 'lucide-react';
 import { PreviewBlock } from '@/components/preview/PreviewBlock';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import { EmailCaptureBlock } from '@/components/profile/EmailCaptureBlock';
-import { StatusBubble } from '@/components/profile/StatusBubble';
 
 interface UserProfilePageProps {
   params: Promise<{
@@ -29,7 +28,6 @@ interface ThemeData {
   gradientFrom: string;
   gradientTo: string;
   font: string;
-  statusButtonStyle?: 'thought' | 'speech' | 'pill';
 }
 
 interface UserProfile {
@@ -45,10 +43,6 @@ interface UserProfile {
     title?: string;
     description?: string;
     successMessage?: string;
-  };
-  status?: {
-    message: string;
-    emoji?: string;
   };
 }
 
@@ -93,7 +87,6 @@ async function getUserProfile(username: string): Promise<UserProfile | null> {
         font: 'Inter, sans-serif',
       },
       emailCapture: data.emailCapture,
-      status: data.status,
     };
   } catch (error) {
     console.error(`[USERNAME PROFILE] Failed to fetch profile for "${username}":`, error);
@@ -112,11 +105,6 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
   }
 
   console.log(`[USERNAME PROFILE] Rendering profile page for: "${resolvedParams.username}"`);
-  if (profile.status) {
-    console.log(`[USERNAME PROFILE] Status found:`, profile.status);
-  } else {
-    console.log(`[USERNAME PROFILE] No status found.`);
-  }
 
   const getBackgroundStyle = () => {
     if (profile.theme.backgroundType === 'gradient') {
@@ -165,16 +153,6 @@ export default async function UsernameProfilePage({ params }: UserProfilePagePro
               <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center">
                 <ImageIcon className="w-16 h-16 text-gray-400" />
               </div>
-            )}
-
-            {/* Status Bubble */}
-            {profile.status && (
-              <StatusBubble 
-                status={profile.status}
-                theme={profile.theme}
-                isDark={isDark}
-                className="absolute -top-16 left-1/2 -translate-x-1/2 md:left-24 md:translate-x-0"
-              />
             )}
           </div>
         </div>

@@ -5,7 +5,6 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Settings, Menu, Eye, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
-import { StatusSetter } from '@/components/dashboard/StatusSetter';
 import { ShareModal } from '@/components/share/ShareModal';
 import { useState, useEffect } from 'react';
 
@@ -88,9 +87,6 @@ export function Header({ onMenuClick }: HeaderProps) {
               <Eye className="w-5 h-5" />
             </a>
           )}
-
-          {/* Status */}
-          <StatusSetter />
 
           {/* Notifications */}
           <NotificationDropdown />

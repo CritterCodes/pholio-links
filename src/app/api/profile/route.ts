@@ -35,12 +35,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check status expiration
-    let status = user.profile?.status;
-    if (status?.expiresAt && new Date(status.expiresAt) < new Date()) {
-      status = undefined;
-    }
-
     // Return user profile data with all the new fields
     return NextResponse.json({
       displayName: user.profile?.name || user.name || '',
@@ -48,7 +42,6 @@ export async function GET(request: NextRequest) {
       heroImage: user.profile?.heroImage || '',
       subtitle: user.profile?.subtitle || '',
       bio: user.profile?.bio || '',
-      status,
       emailCapture: user.profile?.emailCapture,
       links: user.profile?.links || [],
       socialLinks: user.profile?.socialLinks || [],
