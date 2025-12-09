@@ -34,23 +34,29 @@ export async function GET(req: Request) {
 
     // Calculate date range
     const now = new Date();
-    const startDate = new Date();
-    if (range === '7d') startDate.setDate(now.getDate() - 7);
-    else if (range === '90d') startDate.setDate(now.getDate() - 90);
-    else startDate.setDate(now.getDate() - 30); // Default 30d
+    let rangeDays = 30;
+    if (range === '7d') rangeDays = 7;
+    else if (range === '90d') rangeDays = 90;
+    
+    const currentStart = new Date(now);
+    currentStart.setDate(now.getDate() - rangeDays);
+    
+    const previousStart = new Date(currentStart);
+    previousStart.setDate(currentStart.getDate() - rangeDays);
 
     // Aggregation Pipeline
     const stats = await analyticsCollection.aggregate([
       {
         $match: {
           profileOwnerId: userId,
-          timestamp: { $gte: startDate }
+          timestamp: { $gte: previousStart }
         }
       },
       {
         $facet: {
-          // Total Counts
+          // Total Counts (Current Period)
           totals: [
+            { $match: { timestamp: { $gte: currentStart } } },
             {
               $group: {
                 _id: '$type',
@@ -58,8 +64,19 @@ export async function GET(req: Request) {
               }
             }
           ],
-          // Daily Stats
+          // Total Counts (Previous Period)
+          totalsPrevious: [
+            { $match: { timestamp: { $lt: currentStart } } },
+            {
+              $group: {
+                _id: '$type',
+                count: { $sum: 1 }
+              }
+            }
+          ],
+          // Daily Stats (Current Period)
           daily: [
+            { $match: { timestamp: { $gte: currentStart } } },
             {
               $group: {
                 _id: {
@@ -71,9 +88,23 @@ export async function GET(req: Request) {
             },
             { $sort: { "_id.date": 1 } }
           ],
-          // Top Links (Clicks)
+          // Daily Stats (Previous Period)
+          dailyPrevious: [
+            { $match: { timestamp: { $lt: currentStart } } },
+            {
+              $group: {
+                _id: {
+                  date: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } },
+                  type: "$type"
+                },
+                count: { $sum: 1 }
+              }
+            },
+            { $sort: { "_id.date": 1 } }
+          ],
+          // Top Links (Clicks) - Current Period Only
           topLinks: [
-            { $match: { type: 'click', linkId: { $ne: null } } },
+            { $match: { timestamp: { $gte: currentStart }, type: 'click', linkId: { $ne: null } } },
             {
               $group: {
                 _id: '$linkId',
@@ -83,8 +114,9 @@ export async function GET(req: Request) {
             { $sort: { clicks: -1 } },
             { $limit: 5 }
           ],
-          // Device Stats
+          // Device Stats - Current Period Only
           devices: [
+            { $match: { timestamp: { $gte: currentStart } } },
             {
               $group: {
                 _id: '$metadata.device',
@@ -92,8 +124,9 @@ export async function GET(req: Request) {
               }
             }
           ],
-          // Referrer Stats
+          // Referrer Stats - Current Period Only
           referrers: [
+            { $match: { timestamp: { $gte: currentStart } } },
             {
               $group: {
                 _id: '$metadata.referrer',

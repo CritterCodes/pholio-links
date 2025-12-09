@@ -9,13 +9,11 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell
 } from 'recharts';
-import { HiCursorClick, HiEye, HiChartBar, HiDeviceMobile, HiGlobe } from 'react-icons/hi';
+import { HiCursorClick, HiEye, HiChartBar, HiArrowSmUp, HiArrowSmDown } from 'react-icons/hi';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088FE'];
 
@@ -76,17 +74,108 @@ export default function AnalyticsPage() {
 
   if (!stats) return null;
 
-  const totalViews = stats.totals.find((t: any) => t._id === 'view')?.count || 0;
-  const totalClicks = stats.totals.find((t: any) => t._id === 'click')?.count || 0;
+  // Helper to safely get counts
+  const getCount = (list: any[], type: string) => list?.find((t: any) => t._id === type)?.count || 0;
+
+  // Current Period Totals
+  const totalViews = getCount(stats.totals, 'view');
+  const totalClicks = getCount(stats.totals, 'click');
   const ctr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : '0';
 
-  // Process daily stats for the chart
-  const chartData = stats.daily
-    .filter((item: any) => item._id.type === 'view')
-    .map((item: any) => ({
-      date: item._id.date,
-      views: item.count
-    }));
+  // Previous Period Totals
+  const prevViews = getCount(stats.totalsPrevious, 'view');
+  const prevClicks = getCount(stats.totalsPrevious, 'click');
+  const prevCtr = prevViews > 0 ? ((prevClicks / prevViews) * 100).toFixed(1) : '0';
+
+  // Calculate Percentage Changes
+  const calcChange = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 100);
+  };
+
+  const viewsChange = calcChange(totalViews, prevViews);
+  const clicksChange = calcChange(totalClicks, prevClicks);
+  const ctrChange = calcChange(parseFloat(ctr), parseFloat(prevCtr));
+
+  // Process daily stats for the comparison chart
+  // We need to map dates to a common index (Day 1, Day 2, etc.) to overlay them
+  const daysMap = new Map();
+
+  // Helper to fill map
+  const fillMap = (data: any[], key: string) => {
+    data.filter((item: any) => item._id.type === 'view').forEach((item: any) => {
+      // We use the date string as a key, but for comparison we need to align by index
+      // Since the API returns sorted data, we can just use the array index if the dates are continuous
+      // However, to be robust, let's just trust the API returns sorted arrays and map by index
+    });
+  };
+
+  // Create a merged dataset based on the range duration
+  // The API returns sparse data (only days with events), so we should ideally fill gaps
+  // For simplicity, we'll map the existing data points to their relative position
+  
+  // Better approach: Create an array of the last N days
+  const getDatesArray = (days: number) => {
+    const dates = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      dates.push(d.toISOString().split('T')[0]);
+    }
+    return dates;
+  };
+
+  const rangeDays = range === '7d' ? 7 : range === '30d' ? 30 : 90;
+  const currentDates = getDatesArray(rangeDays);
+  
+  // Create a map for quick lookup
+  const currentDataMap = new Map(stats.daily.filter((i: any) => i._id.type === 'view').map((i: any) => [i._id.date, i.count]));
+  
+  // For previous data, we need to map it to the current dates (1st day of prev range -> 1st day of current range)
+  // The API returns previous data sorted by date.
+  const prevDataList = stats.dailyPrevious.filter((i: any) => i._id.type === 'view');
+  
+  // We need to align previous data. 
+  // Let's assume the previous period has the same number of days.
+  // We can map the i-th day of previous data to the i-th day of current data?
+  // No, previous data is also sparse.
+  
+  // Let's build a "relative day index" map for previous data
+  // If range is 7d, previous range is [today-14, today-7].
+  // We need to calculate the start date of the previous range.
+  const prevEndDate = new Date();
+  prevEndDate.setDate(prevEndDate.getDate() - rangeDays);
+  const prevStartDate = new Date(prevEndDate);
+  prevStartDate.setDate(prevStartDate.getDate() - rangeDays + 1); // +1 to match inclusive range logic roughly
+
+  const chartData = currentDates.map((date, index) => {
+    // Current value
+    const currentVal = currentDataMap.get(date) || 0;
+
+    // Previous value
+    // Calculate the corresponding date in the previous period
+    const d = new Date(date);
+    d.setDate(d.getDate() - rangeDays);
+    const prevDateStr = d.toISOString().split('T')[0];
+    
+    const prevVal = prevDataList.find((i: any) => i._id.date === prevDateStr)?.count || 0;
+
+    return {
+      date,
+      views: currentVal,
+      prevViews: prevVal
+    };
+  });
+
+  const renderChange = (change: number) => {
+    const isPositive = change >= 0;
+    return (
+      <div className={`flex items-center text-xs font-medium ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+        {isPositive ? <HiArrowSmUp className="w-4 h-4" /> : <HiArrowSmDown className="w-4 h-4" />}
+        <span>{Math.abs(change)}%</span>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6 p-4 md:p-6">
@@ -97,37 +186,45 @@ export default function AnalyticsPage() {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Views</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{totalViews}</p>
-            </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-              <HiEye className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Views</p>
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+              <HiEye className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
+          <div className="flex items-baseline gap-2">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">{totalViews}</p>
+            {renderChange(viewsChange)}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">vs. previous {rangeDays} days</p>
         </div>
+
         <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Clicks</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{totalClicks}</p>
-            </div>
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
-              <HiCursorClick className="w-6 h-6 text-green-600 dark:text-green-400" />
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Clicks</p>
+            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full">
+              <HiCursorClick className="w-5 h-5 text-green-600 dark:text-green-400" />
             </div>
           </div>
+          <div className="flex items-baseline gap-2">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">{totalClicks}</p>
+            {renderChange(clicksChange)}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">vs. previous {rangeDays} days</p>
         </div>
+
         <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Click-Through Rate</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{ctr}%</p>
-            </div>
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-              <HiChartBar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Click-Through Rate</p>
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+              <HiChartBar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
+          <div className="flex items-baseline gap-2">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">{ctr}%</p>
+            {renderChange(ctrChange)}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">vs. previous {rangeDays} days</p>
         </div>
       </div>
 
@@ -136,38 +233,33 @@ export default function AnalyticsPage() {
         {/* Traffic Over Time */}
         <div className="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-lg shadow border border-gray-200 dark:border-slate-700">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Traffic Over Time</h3>
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Traffic Over Time</h3>
+              <div className="flex items-center gap-4 mt-1 text-xs">
+                <div className="flex items-center gap-1">
+                  <span className="w-3 h-0.5 bg-purple-500"></span>
+                  <span className="text-gray-500">Current</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-3 h-0.5 bg-gray-400 border-t border-dashed"></span>
+                  <span className="text-gray-500">Previous</span>
+                </div>
+              </div>
+            </div>
             <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-1 self-start sm:self-auto">
-              <button
-                onClick={() => setRange('7d')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                  range === '7d'
-                    ? 'bg-white dark:bg-slate-600 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                7 Days
-              </button>
-              <button
-                onClick={() => setRange('30d')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                  range === '30d'
-                    ? 'bg-white dark:bg-slate-600 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                30 Days
-              </button>
-              <button
-                onClick={() => setRange('90d')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                  range === '90d'
-                    ? 'bg-white dark:bg-slate-600 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                90 Days
-              </button>
+              {['7d', '30d', '90d'].map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRange(r)}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    range === r
+                      ? 'bg-white dark:bg-slate-600 text-gray-900 dark:text-white shadow-sm'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  {r === '7d' ? '7 Days' : r === '30d' ? '30 Days' : '90 Days'}
+                </button>
+              ))}
             </div>
           </div>
           <div className="h-64 md:h-80">
@@ -190,14 +282,26 @@ export default function AnalyticsPage() {
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '0.5rem', color: '#fff' }}
                   cursor={{ stroke: '#6B7280', strokeWidth: 1, strokeDasharray: '4 4' }}
+                  labelFormatter={(label) => new Date(label).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="views" 
+                  name="Current Period"
                   stroke="#8b5cf6" 
                   strokeWidth={3} 
-                  dot={{ r: 4, fill: '#8b5cf6', strokeWidth: 2, stroke: '#fff' }}
+                  dot={false}
                   activeDot={{ r: 6, fill: '#8b5cf6', strokeWidth: 2, stroke: '#fff' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="prevViews" 
+                  name="Previous Period"
+                  stroke="#9CA3AF" 
+                  strokeWidth={2} 
+                  strokeDasharray="5 5"
+                  dot={false}
+                  activeDot={{ r: 6, fill: '#9CA3AF', strokeWidth: 2, stroke: '#fff' }}
                 />
               </LineChart>
             </ResponsiveContainer>
