@@ -80,6 +80,26 @@ export default function BusinessCardDesigner() {
   const [downloading, setDownloading] = useState(false);
   const [message, setMessage] = useState('');
   const cardRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (containerRef.current) {
+        const parentWidth = containerRef.current.offsetWidth;
+        const cardWidth = 450; // Fixed width for desktop look
+        // Add some padding safety
+        const newScale = Math.min(1, (parentWidth - 48) / cardWidth); 
+        setScale(newScale);
+      }
+    };
+
+    window.addEventListener('resize', updateScale);
+    // Initial delay to ensure layout is ready
+    setTimeout(updateScale, 100);
+    
+    return () => window.removeEventListener('resize', updateScale);
+  }, [loading]);
 
   useEffect(() => {
     fetchData();
@@ -604,135 +624,137 @@ export default function BusinessCardDesigner() {
 
       {/* Preview */}
       <div className="lg:col-span-2 order-1 lg:order-2">
-        <div className="bg-gray-100 dark:bg-gray-900 rounded-xl p-4 md:p-8 flex items-center justify-center min-h-[300px] md:min-h-[400px] border border-gray-200 dark:border-gray-800 sticky top-4">
-          <div 
-            ref={cardRef}
-            className="w-full max-w-md aspect-[1.75/1] rounded-xl shadow-2xl overflow-hidden relative flex flex-col transition-all duration-300 text-[0.8rem] md:text-base"
-            style={{
-              background: getBackgroundStyle(),
-              color: colors.text,
-              fontFamily: config.theme === 'default' ? profile.theme.font : 'inherit'
-            }}
-          >
-            {/* Overlay for readability if background image is present */}
-            {config.backgroundImage && (
-              <div className="absolute inset-0 bg-black/30 z-0"></div>
-            )}
+        <div ref={containerRef} className="bg-gray-100 dark:bg-gray-900 rounded-xl p-4 md:p-8 flex items-center justify-center min-h-[300px] md:min-h-[400px] border border-gray-200 dark:border-gray-800 sticky top-4 overflow-hidden">
+          <div style={{ transform: `scale(${scale})` }} className="origin-center transition-transform duration-200">
+            <div 
+              ref={cardRef}
+              className="w-[450px] aspect-[1.75/1] rounded-xl shadow-2xl overflow-hidden relative flex flex-col text-base"
+              style={{
+                background: getBackgroundStyle(),
+                color: colors.text,
+                fontFamily: config.theme === 'default' ? profile.theme.font : 'inherit'
+              }}
+            >
+              {/* Overlay for readability if background image is present */}
+              {config.backgroundImage && (
+                <div className="absolute inset-0 bg-black/30 z-0"></div>
+              )}
 
-            {/* Decorative Elements based on layout */}
-            {config.layout === 'classic' && (
-              <div className="absolute inset-3 border-2 border-current opacity-30 z-0 pointer-events-none rounded-lg"></div>
-            )}
+              {/* Decorative Elements based on layout */}
+              {config.layout === 'classic' && (
+                <div className="absolute inset-3 border-2 border-current opacity-30 z-0 pointer-events-none rounded-lg"></div>
+              )}
 
-            <div className={`flex-1 p-4 md:p-6 flex ${
-              config.layout === 'modern' 
-                ? `items-center gap-4 md:gap-6 ${config.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
-                : config.layout === 'classic'
-                  ? 'flex-col items-center justify-center text-center gap-2 md:gap-3'
-                  : 'items-center gap-4 md:gap-6'
-            } relative z-10`}>
-              
-              {/* Profile Image */}
-              {config.showAvatar && (
-                <div className="shrink-0">
-                  {profile.profileImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img 
-                      src={profile.profileImage} 
-                      alt="Profile" 
-                      crossOrigin="anonymous"
-                      className={`object-cover shadow-md ${
-                        config.layout === 'modern' 
-                          ? 'w-16 h-16 md:w-24 md:h-24 rounded-full' 
-                          : config.layout === 'classic'
-                            ? 'w-14 h-14 md:w-20 md:h-20 rounded-full border-2 border-current'
-                            : 'w-16 h-16 md:w-24 md:h-24 rounded-full border-4 border-white/20'
-                      }`}
-                    />
-                  ) : (
-                    <div className={`bg-gray-200 flex items-center justify-center text-xl md:text-2xl ${
-                      config.layout === 'classic' ? 'w-14 h-14 md:w-20 md:h-20 rounded-full' : 'w-16 h-16 md:w-24 md:h-24 rounded-full'
+              <div className={`flex-1 p-6 flex ${
+                config.layout === 'modern' 
+                  ? `items-center gap-6 ${config.minimalLayoutSwap ? 'flex-row-reverse text-right' : 'flex-row text-left'}`
+                  : config.layout === 'classic'
+                    ? 'flex-col items-center justify-center text-center gap-3'
+                    : 'items-center gap-6'
+              } relative z-10`}>
+                
+                {/* Profile Image */}
+                {config.showAvatar && (
+                  <div className="shrink-0">
+                    {profile.profileImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img 
+                        src={profile.profileImage} 
+                        alt="Profile" 
+                        crossOrigin="anonymous"
+                        className={`object-cover shadow-md ${
+                          config.layout === 'modern' 
+                            ? 'w-24 h-24 rounded-full' 
+                            : config.layout === 'classic'
+                              ? 'w-20 h-20 rounded-full border-2 border-current'
+                              : 'w-24 h-24 rounded-full border-4 border-white/20'
+                        }`}
+                      />
+                    ) : (
+                      <div className={`bg-gray-200 flex items-center justify-center text-2xl ${
+                        config.layout === 'classic' ? 'w-20 h-20 rounded-full' : 'w-24 h-24 rounded-full'
+                      }`}>
+                        {profile.displayName.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Divider for Modern Layout */}
+                {config.layout === 'modern' && config.showAvatar && (
+                  <div className="w-px h-24 bg-current opacity-20 shrink-0"></div>
+                )}
+
+                {/* Info */}
+                <div className={`min-w-0 ${config.layout === 'classic' ? 'w-full' : 'flex-1 w-full'}`}>
+                  <h3 className={`font-bold truncate leading-tight mb-1 ${
+                    config.layout === 'classic' ? 'text-2xl tracking-wide font-serif' : 'text-xl'
+                  }`}>
+                    {profile.displayName}
+                  </h3>
+                  {config.showSubtitle && (
+                    <p className={`text-sm opacity-80 truncate ${config.layout === 'classic' ? 'mb-2 uppercase tracking-widest text-xs font-medium' : 'mb-3'}`}>
+                      {profile.subtitle}
+                    </p>
+                  )}
+
+                  {/* Classic Divider */}
+                  {config.layout === 'classic' && (
+                    <div className="w-12 h-px bg-current opacity-30 mx-auto mb-2"></div>
+                  )}
+                  
+                  {/* URL Display - Only show here if QR is hidden or layout is classic */}
+                  {(!config.showQr || config.layout === 'classic') && (
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${
+                      config.layout === 'classic' 
+                        ? 'absolute top-6 right-6' 
+                        : ''
                     }`}>
-                      {profile.displayName.charAt(0)}
+                      <span className="truncate">{displayUrl}</span>
+                    </div>
+                  )}
+
+                  {/* Contact Details */}
+                  {(config.showPhone || config.showEmail) && (
+                    <div className={`mt-4 ${
+                      config.layout === 'modern' 
+                        ? (config.minimalLayoutSwap ? 'flex flex-col items-end space-y-1.5' : 'flex flex-col items-start space-y-1.5') 
+                        : config.layout === 'classic'
+                          ? 'flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2'
+                          : 'space-y-1.5'
+                    }`}>
+                      {config.showPhone && config.phoneNumber && (
+                        <div className="flex items-center gap-2 text-xs opacity-90">
+                          <Phone className="w-3 h-3" />
+                          <span>{config.phoneNumber}</span>
+                        </div>
+                      )}
+                      {config.showEmail && config.email && (
+                        <div className="flex items-center gap-2 text-xs opacity-90">
+                          <Mail className="w-3 h-3" />
+                          <span>{config.email}</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
 
-              {/* Divider for Modern Layout */}
-              {config.layout === 'modern' && config.showAvatar && (
-                <div className="w-px h-16 md:h-24 bg-current opacity-20 shrink-0"></div>
-              )}
-
-              {/* Info */}
-              <div className={`min-w-0 ${config.layout === 'classic' ? 'w-full' : 'flex-1 w-full'}`}>
-                <h3 className={`font-bold truncate leading-tight mb-1 ${
-                  config.layout === 'classic' ? 'text-lg md:text-2xl tracking-wide font-serif' : 'text-base md:text-xl'
-                }`}>
-                  {profile.displayName}
-                </h3>
-                {config.showSubtitle && (
-                  <p className={`text-xs md:text-sm opacity-80 truncate ${config.layout === 'classic' ? 'mb-2 uppercase tracking-widest text-[10px] md:text-xs font-medium' : 'mb-2 md:mb-3'}`}>
-                    {profile.subtitle}
-                  </p>
-                )}
-
-                {/* Classic Divider */}
-                {config.layout === 'classic' && (
-                  <div className="w-12 h-px bg-current opacity-30 mx-auto mb-2"></div>
-                )}
-                
-                {/* URL Display - Only show here if QR is hidden or layout is classic */}
-                {(!config.showQr || config.layout === 'classic') && (
-                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-xs font-medium ${
-                    config.layout === 'classic' 
-                      ? 'absolute top-6 right-6' 
-                      : ''
-                  }`}>
-                    <span className="truncate">{displayUrl}</span>
-                  </div>
-                )}
-
-                {/* Contact Details */}
-                {(config.showPhone || config.showEmail) && (
-                  <div className={`mt-4 ${
-                    config.layout === 'modern' 
-                      ? (config.minimalLayoutSwap ? 'flex flex-col items-end space-y-1.5' : 'flex flex-col items-start space-y-1.5') 
-                      : config.layout === 'classic'
-                        ? 'flex flex-row flex-wrap justify-center items-center gap-x-6 gap-y-2'
-                        : 'space-y-1.5'
-                  }`}>
-                    {config.showPhone && config.phoneNumber && (
-                      <div className="flex items-center gap-2 text-xs opacity-90">
-                        <Phone className="w-3 h-3" />
-                        <span>{config.phoneNumber}</span>
-                      </div>
-                    )}
-                    {config.showEmail && config.email && (
-                      <div className="flex items-center gap-2 text-xs opacity-90">
-                        <Mail className="w-3 h-3" />
-                        <span>{config.email}</span>
-                      </div>
-                    )}
+                {/* QR Code */}
+                {config.showQr && config.layout !== 'classic' && (
+                  <div className="flex flex-col items-center gap-2 shrink-0">
+                    <div className="bg-white p-1.5 rounded-lg shadow-sm">
+                      <QRCodeCanvas
+                        value={profileUrl || 'https://pholio.links'}
+                        size={64}
+                        level={"M"}
+                      />
+                    </div>
+                    <div className="inline-flex items-center justify-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-medium w-full">
+                      <span className="break-all text-center leading-tight">{displayUrl}</span>
+                    </div>
                   </div>
                 )}
               </div>
-
-              {/* QR Code */}
-              {config.showQr && config.layout !== 'classic' && (
-                <div className="flex flex-col items-center gap-2 shrink-0">
-                  <div className="bg-white p-1.5 rounded-lg shadow-sm">
-                    <QRCodeCanvas
-                      value={profileUrl || 'https://pholio.links'}
-                      size={64}
-                      level={"M"}
-                    />
-                  </div>
-                  <div className="inline-flex items-center justify-center gap-1.5 px-2 py-1 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-medium w-full">
-                    <span className="break-all text-center leading-tight">{displayUrl}</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
