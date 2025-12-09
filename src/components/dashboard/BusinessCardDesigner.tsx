@@ -314,10 +314,10 @@ export default function BusinessCardDesigner() {
             )}
           </button>
           <button
-            onClick={handleOrderPrints}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
+            disabled
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gray-400 dark:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium cursor-not-allowed text-sm opacity-70"
           >
-            <Printer className="w-4 h-4" /> Order Prints
+            <Printer className="w-4 h-4" /> Order Prints (Coming Soon)
           </button>
         </div>
       </div>
