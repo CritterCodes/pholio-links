@@ -106,6 +106,8 @@ export class PrintService {
   }
 }
 
+export const printService = new PrintService();
+
 // Example Usage:
 /*
 const printService = new PrintService();

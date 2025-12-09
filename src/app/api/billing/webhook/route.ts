@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import stripe from '@/lib/stripe';
 import { getUsersCollection } from '@/lib/mongodb';
+import { printService } from '@/lib/print-service';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -34,10 +35,60 @@ export async function POST(request: NextRequest) {
     // Handle different event types
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as unknown as { customer: string; metadata?: Record<string, string> };
+        const session = event.data.object as any;
         const customerId = session.customer;
         const metadata = session.metadata || {};
 
+        // Handle Print Orders
+        if (metadata.type === 'print_order') {
+          console.log('🖨️ Processing print order:', session.id);
+          
+          try {
+            const shipping = session.shipping;
+            if (!shipping) {
+              throw new Error('No shipping details provided');
+            }
+
+            await printService.createOrder({
+              shippingMethod: 'Standard', // Default to Standard for now
+              recipient: {
+                name: shipping.name,
+                email: session.customer_details?.email || '',
+                address: {
+                  line1: shipping.address.line1,
+                  line2: shipping.address.line2 || '',
+                  townOrCity: shipping.address.city,
+                  stateOrCounty: shipping.address.state,
+                  postalOrZipCode: shipping.address.postal_code,
+                  countryCode: shipping.address.country,
+                }
+              },
+              items: [{
+                sku: 'GLOBAL-BC-01', // Default SKU, maybe map from metadata.finish if needed
+                copies: parseInt(metadata.quantity),
+                sizing: 'fill',
+                assets: [{
+                  printArea: 'default',
+                  url: metadata.imageUrl
+                }]
+              }],
+              idempotencyKey: session.id,
+              metadata: {
+                stripeSessionId: session.id,
+                userId: metadata.userId
+              }
+            });
+            
+            console.log('✅ Print order created successfully');
+          } catch (error) {
+            console.error('❌ Failed to create print order:', error);
+            // TODO: Notify admin or user of failure
+          }
+          
+          return NextResponse.json({ received: true });
+        }
+
+        // Handle Subscriptions
         if (customerId) {
           // Update user with Stripe customer ID
           await usersCollection.updateOne(

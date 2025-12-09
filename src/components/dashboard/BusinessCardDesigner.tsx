@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { Save, Layout, Type, Palette, Image as ImageIcon, Check, Phone, Mail, Globe, Trash2, Download } from 'lucide-react';
+import { Save, Layout, Type, Palette, Image as ImageIcon, Check, Phone, Mail, Globe, Trash2, Download, Printer } from 'lucide-react';
 import Image from 'next/image';
 import FileUpload from '@/components/FileUpload';
 import { toPng } from 'html-to-image';
+import PrintOrderModal from './PrintOrderModal';
 
 interface BusinessCardConfig {
   layout: 'classic' | 'modern';
@@ -79,6 +80,8 @@ export default function BusinessCardDesigner() {
   const [saving, setSaving] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [message, setMessage] = useState('');
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -215,6 +218,24 @@ export default function BusinessCardDesigner() {
     }
   };
 
+  const handleOrderPrints = async () => {
+    if (cardRef.current) {
+      try {
+        // Generate high-res preview for the modal
+        const dataUrl = await toPng(cardRef.current, {
+          cacheBust: true,
+          pixelRatio: 2,
+          backgroundColor: 'transparent',
+        });
+        setPreviewImage(dataUrl);
+        setIsPrintModalOpen(true);
+      } catch (err) {
+        console.error('Failed to generate preview:', err);
+        setMessage('Failed to open print options. Please try again.');
+      }
+    }
+  };
+
   if (loading) {
     return <div className="p-8 text-center">Loading designer...</div>;
   }
@@ -292,8 +313,20 @@ export default function BusinessCardDesigner() {
               </>
             )}
           </button>
+          <button
+            onClick={handleOrderPrints}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
+          >
+            <Printer className="w-4 h-4" /> Order Prints
+          </button>
         </div>
       </div>
+
+      <PrintOrderModal 
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        designImage={previewImage}
+      />
 
       {message && (
         <p className={`text-sm ${message.includes('Failed') ? 'text-red-500' : 'text-green-500'}`}>
